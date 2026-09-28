@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Menu, Search, Bell, ChevronDown, ShieldCheck } from "lucide-react";
+import { Menu, Search, Bell, ChevronDown, ShieldCheck, User } from "lucide-react";
 import AdminAuthModal from "./AdminAuthModal";
-import { isAuthenticated } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar({ onMenuClick }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(isAuthenticated());
+  const { isAdmin, user } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-line bg-paper/90 px-5 py-3.5 backdrop-blur">
@@ -55,11 +55,15 @@ export default function Navbar({ onMenuClick }) {
           className="flex items-center gap-2 rounded-pill border border-ink/10 bg-white py-1.5 pl-1.5 pr-3 text-sm hover:border-ink/30 transition-all cursor-pointer"
           title="Click to manage Admin Authentication"
         >
-          <span className={`grid h-7 w-7 place-items-center rounded-full text-xs font-semibold text-white ${isAdmin ? "bg-accent-deep" : "bg-ink"}`}>
-            {isAdmin ? <ShieldCheck size={14} /> : "AK"}
+          <span
+            className={`grid h-7 w-7 place-items-center rounded-full text-xs font-semibold text-white ${
+              isAdmin ? "bg-accent-deep" : "bg-ink"
+            }`}
+          >
+            {isAdmin ? <ShieldCheck size={14} /> : <User size={14} />}
           </span>
           <span className="hidden font-medium text-ink sm:inline">
-            {isAdmin ? "Admin Portal" : "Ananya K."}
+            {isAdmin ? (user?.name?.split(" ")[0] || "Admin") : "Sign In"}
           </span>
           <ChevronDown size={14} className="text-muted" />
         </button>
@@ -68,7 +72,6 @@ export default function Navbar({ onMenuClick }) {
       <AdminAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        onAuthChange={(val) => setIsAdmin(val)}
       />
     </header>
   );

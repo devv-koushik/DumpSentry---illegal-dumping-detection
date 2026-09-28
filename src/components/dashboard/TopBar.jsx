@@ -12,7 +12,10 @@ import {
   User,
   Wifi,
   Settings,
+  ShieldCheck,
 } from "lucide-react";
+import AdminAuthModal from "../AdminAuthModal";
+import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
   { label: "Overview", path: "/dashboard", icon: LayoutDashboard },
@@ -26,8 +29,11 @@ const NAV_ITEMS = [
 export default function TopBar({ onOpenUpload }) {
   const location = useLocation();
   const [notifCount] = useState(4);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const { isAdmin, user } = useAuth();
 
   return (
+    <>
     <motion.header
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -131,10 +137,33 @@ export default function TopBar({ onOpenUpload }) {
           )}
         </button>
 
-        <div className="h-7 w-7 rounded-full bg-paper2 border border-line flex items-center justify-center">
-          <User size={13} className="text-muted" />
-        </div>
+        {/* Admin avatar / login button */}
+        <button
+          onClick={() => setAuthModalOpen(true)}
+          title={isAdmin ? `Signed in as ${user?.name || "Admin"}` : "Sign in as Admin"}
+          className={`flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold transition-all ${
+            isAdmin
+              ? "border-accent/30 bg-accent/10 text-accent-deep hover:bg-accent/20"
+              : "border-line bg-white text-muted hover:text-ink hover:border-ink/20"
+          }`}
+        >
+          {isAdmin ? (
+            <ShieldCheck size={12} className="text-accent-deep" />
+          ) : (
+            <User size={12} />
+          )}
+          <span className="hidden lg:inline">
+            {isAdmin ? (user?.name?.split(" ")[0] || "Admin") : "Sign In"}
+          </span>
+        </button>
       </div>
     </motion.header>
+
+    {/* Admin Auth Modal */}
+    <AdminAuthModal
+      isOpen={authModalOpen}
+      onClose={() => setAuthModalOpen(false)}
+    />
+  </>  
   );
 }
