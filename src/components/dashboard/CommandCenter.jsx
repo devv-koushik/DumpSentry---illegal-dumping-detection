@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { DETECTIONS as INITIAL_DETECTIONS } from "../../data/detections";
+import { fetchDetections } from "../../services/mockDetections";
 import TopBar from "./TopBar";
 import CenterMap from "./CenterMap";
 import FloatingStats from "./FloatingStats";
@@ -12,6 +13,15 @@ import UploadModal from "./UploadModal";
 
 export default function CommandCenter() {
   const [detections, setDetections] = useState(INITIAL_DETECTIONS);
+
+  // Load live detections from API (falls back to mock if offline)
+  useEffect(() => {
+    fetchDetections({ limit: 100 }).then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setDetections(data);
+      }
+    }).catch(() => {});
+  }, []);
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [modalDetection, setModalDetection] = useState(null);
   const [isUploadOpen, setIsUploadOpen] = useState(false);

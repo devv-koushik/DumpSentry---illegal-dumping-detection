@@ -10,7 +10,14 @@ import sys
 import shutil
 import argparse
 from pathlib import Path
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError as e:
+    raise SystemExit(
+        "ultralytics is not installed. Install it with:\n"
+        "  pip install ultralytics\n"
+        f"Original error: {e}"
+    )
 
 AI_SERVICE_ROOT = Path(__file__).resolve().parent.parent
 DATA_YAML = AI_SERVICE_ROOT / "data.yaml"

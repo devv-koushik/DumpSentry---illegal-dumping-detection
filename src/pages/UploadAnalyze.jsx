@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RotateCcw, MapPin } from "lucide-react";
+import { RotateCcw, MapPin, Cpu } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import UploadZone from "../components/UploadZone";
 import AIAnalysisProgress from "../components/AIAnalysisProgress";
@@ -39,7 +39,7 @@ export default function UploadAnalyze() {
 
   return (
     <div>
-      <PageHeader title="Analyze New Drone Image" description="Upload a capture to run it through the mock detection pipeline." />
+      <PageHeader title="Analyze New Drone Image" description="Upload a drone capture to run it through the YOLOv11 AI detection pipeline with geospatial authority routing." />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -98,10 +98,12 @@ export default function UploadAnalyze() {
             <AIAnalysisProgress activeIndex={result ? ANALYSIS_STAGES.length : stageIndex} />
           ) : (
             <div className="card p-6">
-              <p className="eyebrow mb-3">Before you analyze</p>
+              <p className="eyebrow mb-3">Pipeline Overview</p>
               <ul className="space-y-3 text-sm text-muted">
-                <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0" /> Results are estimates — every detection needs human verification.</li>
-                <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0" /> This pipeline is mocked; connect a real model in <code className="font-mono text-xs">services/mockAI.js</code>.</li>
+                <li className="flex gap-2.5"><Cpu size={14} className="mt-0.5 flex-shrink-0 text-accent" /> YOLOv11 AI model detects and classifies waste types.</li>
+                <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0 text-accent" /> GPS + OSM geospatial lookup identifies nearby facilities.</li>
+                <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0 text-accent" /> Rule engine routes alerts to the correct authority automatically.</li>
+                <li className="flex gap-2.5 text-xs"><MapPin size={13} className="mt-0.5 flex-shrink-0" /> All AI outputs require human verification before enforcement action.</li>
               </ul>
             </div>
           )}
