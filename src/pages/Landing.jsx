@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import LandingNav from "../components/LandingNav";
 import { OVERVIEW_STATS } from "../data/detections";
-import { useLenis } from "../components/SmoothScroll";
+import { useLenis } from "../context/LenisContext";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },

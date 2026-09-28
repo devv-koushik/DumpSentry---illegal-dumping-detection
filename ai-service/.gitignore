@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+dataset/raw/
+dataset/processed/
+dataset/train/
+dataset/val/
+dataset/test/
+runs/
+*.pt
+!models/README.md

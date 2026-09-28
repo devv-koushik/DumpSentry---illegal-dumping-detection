@@ -1,16 +1,23 @@
-// Mock "backend" for detections. Every function returns a Promise and
-// simulates network latency, so swapping this file for a real API client
-// (fetch/axios calls to your backend) later requires no changes in any
-// component that consumes it — only this file changes.
+// DumpSentry Detection Service
+// Tries real backend API first; falls back to local data if backend is offline.
 
+import * as api from "./api";
 import { DETECTIONS } from "../data/detections";
 
 let store = [...DETECTIONS];
-
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export async function fetchDetections(filters = {}) {
-  await delay(450);
+  try {
+    const realData = await api.fetchDetections(filters);
+    if (Array.isArray(realData) && realData.length > 0) {
+      return realData;
+    }
+  } catch {
+    // Backend offline / not reachable - use local store
+  }
+
+  await delay(250);
   let results = [...store];
 
   if (filters.status && filters.status !== "All") {
@@ -37,20 +44,41 @@ export async function fetchDetections(filters = {}) {
 }
 
 export async function fetchDetectionById(id) {
-  await delay(350);
+  try {
+    const realItem = await api.fetchDetectionById(id);
+    if (realItem) return realItem;
+  } catch {
+    // fallback to local item
+  }
+
+  await delay(200);
   const found = store.find((d) => d.id === id);
   if (!found) throw new Error(`Detection ${id} not found`);
   return found;
 }
 
 export async function updateDetectionStatus(id, status) {
-  await delay(400);
+  try {
+    const updated = await api.updateDetectionStatus(id, status);
+    if (updated) return updated;
+  } catch {
+    // fallback
+  }
+
+  await delay(250);
   store = store.map((d) => (d.id === id ? { ...d, status } : d));
   return store.find((d) => d.id === id);
 }
 
 export async function updateAlertStatus(id, alertStatus) {
-  await delay(400);
+  try {
+    const updated = await api.updateAlertStatus(id, alertStatus);
+    if (updated) return updated;
+  } catch {
+    // fallback
+  }
+
+  await delay(250);
   store = store.map((d) => (d.id === id ? { ...d, alertStatus } : d));
   return store.find((d) => d.id === id);
 }

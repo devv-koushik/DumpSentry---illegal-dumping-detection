@@ -16,11 +16,16 @@ export default function DetectionDetails() {
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    setLoading(true);
+    let isCurrent = true;
     fetchDetectionById(id).then((d) => {
-      setDetection(d);
-      setLoading(false);
+      if (isCurrent) {
+        setDetection(d);
+        setLoading(false);
+      }
     });
+    return () => {
+      isCurrent = false;
+    };
   }, [id]);
 
   function notify(msg) {

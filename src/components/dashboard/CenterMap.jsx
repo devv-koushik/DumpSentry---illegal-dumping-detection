@@ -1,7 +1,6 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
-import { motion } from "framer-motion";
 import { DRONE, FLIGHT_PATH } from "../../data/drone";
 
 // ── Custom marker icons ──

@@ -11,9 +11,21 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+*.env
+
+# Backend uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
 
 # Editor directories and files
 .vscode/*
+!.vscode/settings.json
 !.vscode/extensions.json
 .idea
 .DS_Store

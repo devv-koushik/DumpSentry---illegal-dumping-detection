@@ -196,7 +196,7 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
                               : "bg-white border-line text-muted"
                           }`}
                         >
-                          {stg.title}
+                          {typeof stg === "object" ? stg.title : stg}
                         </div>
                       ))}
                     </div>

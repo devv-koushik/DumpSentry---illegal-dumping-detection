@@ -17,16 +17,34 @@ import PageHeader from "../components/PageHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { TREND_DATA, CATEGORY_DATA, STATUS_DISTRIBUTION, CONTEXT_DISTRIBUTION } from "../data/detections";
 import { fetchAlerts } from "../services/mockAlerts";
+import { fetchAnalytics } from "../services/api";
 
 const COLORS = ["#e2a33b", "#16241d", "#3f8a5c", "#c94b3f", "#5c665d", "#8a9584"];
 
 export default function Analytics() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState({
+    trend: TREND_DATA,
+    categoryData: CATEGORY_DATA,
+    statusDistribution: STATUS_DISTRIBUTION,
+    contextDistribution: CONTEXT_DISTRIBUTION,
+  });
 
   useEffect(() => {
-    fetchAlerts().then((a) => {
-      setAlerts(a);
+    Promise.all([
+      fetchAlerts(),
+      fetchAnalytics().catch(() => null),
+    ]).then(([alertsRes, liveAnalytics]) => {
+      setAlerts(alertsRes || []);
+      if (liveAnalytics && liveAnalytics.trend) {
+        setAnalyticsData({
+          trend: liveAnalytics.trend || TREND_DATA,
+          categoryData: liveAnalytics.categoryData || CATEGORY_DATA,
+          statusDistribution: liveAnalytics.statusDistribution || STATUS_DISTRIBUTION,
+          contextDistribution: liveAnalytics.contextDistribution || CONTEXT_DISTRIBUTION,
+        });
+      }
       setLoading(false);
     });
   }, []);
@@ -47,7 +65,7 @@ export default function Analytics() {
       <div className="grid gap-6 lg:grid-cols-2">
         <ChartCard title="Detection Trend">
           <ResponsiveContainer width="100%" height={260}>
-            <LineChart data={TREND_DATA}>
+            <LineChart data={analyticsData.trend}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
               <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={28} />
@@ -60,8 +78,8 @@ export default function Analytics() {
         <ChartCard title="Waste Categories">
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
-              <Pie data={CATEGORY_DATA} dataKey="value" nameKey="name" innerRadius={54} outerRadius={90} paddingAngle={2}>
-                {CATEGORY_DATA.map((_, i) => (
+              <Pie data={analyticsData.categoryData} dataKey="value" nameKey="name" innerRadius={54} outerRadius={90} paddingAngle={2}>
+                {analyticsData.categoryData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
@@ -72,7 +90,7 @@ export default function Analytics() {
 
         <ChartCard title="Incident Status">
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={STATUS_DISTRIBUTION}>
+            <BarChart data={analyticsData.statusDistribution}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#5c665d" }} axisLine={false} tickLine={false} interval={0} />
               <YAxis tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={28} />
@@ -84,7 +102,7 @@ export default function Analytics() {
 
         <ChartCard title="Context Distribution">
           <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={CONTEXT_DISTRIBUTION} layout="vertical" margin={{ left: 24 }}>
+            <BarChart data={analyticsData.contextDistribution} layout="vertical" margin={{ left: 24 }}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={100} />

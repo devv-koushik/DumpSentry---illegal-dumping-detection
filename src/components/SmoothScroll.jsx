@@ -1,11 +1,6 @@
-import { useEffect, createContext, useContext, useRef } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import Lenis from "lenis";
-
-const LenisContext = createContext(null);
-
-export function useLenis() {
-  return useContext(LenisContext);
-}
+import { LenisContext } from "../context/LenisContext";
 
 export default function SmoothScroll({ children }) {
   const lenisRef = useRef(null);
@@ -37,7 +32,7 @@ export default function SmoothScroll({ children }) {
     };
   }, []);
 
-  const scrollTo = (target, options = {}) => {
+  const scrollTo = useCallback((target, options = {}) => {
     if (lenisRef.current) {
       lenisRef.current.scrollTo(target, {
         offset: -80,
@@ -51,10 +46,18 @@ export default function SmoothScroll({ children }) {
         el.scrollIntoView({ behavior: "smooth" });
       }
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    scrollTo,
+    getLenis: () => lenisRef.current,
+    get lenis() {
+      return lenisRef.current;
+    },
+  }), [scrollTo]);
 
   return (
-    <LenisContext.Provider value={{ lenis: lenisRef.current, scrollTo }}>
+    <LenisContext.Provider value={contextValue}>
       {children}
     </LenisContext.Provider>
   );

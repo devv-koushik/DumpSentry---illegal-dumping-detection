@@ -1,0 +1,22 @@
+# DumpSentry YOLOv11 Waste Detection Dataset Configuration
+
+path: ./dataset # dataset root dir
+train: train/images # train images (relative to 'path')
+val: val/images # val images (relative to 'path')
+test: test/images # test images (optional)
+
+# Number of classes
+nc: 10
+
+# Class names mapping
+names:
+  0: plastic
+  1: cardboard_paper
+  2: metal
+  3: glass
+  4: organic_waste
+  5: electronic_waste
+  6: biomedical_waste
+  7: construction_debris
+  8: automotive_parts
+  9: mixed_hazardous

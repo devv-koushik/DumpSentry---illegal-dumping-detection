@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { useLenis } from "./SmoothScroll";
+import { useLenis } from "../context/LenisContext";
 
 const LINKS = [
   { href: "#how-it-works", label: "How It Works" },

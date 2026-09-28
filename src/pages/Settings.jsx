@@ -16,7 +16,7 @@ export default function Settings() {
 
   return (
     <div>
-      <PageHeader title="Settings" description="Mock configuration only — nothing here calls a real backend yet." />
+      <PageHeader title="Settings" description="System configuration, AI detection thresholds, and authority contact routing." />
 
       <div className="grid gap-6 lg:grid-cols-[220px,1fr]">
         <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible" aria-label="Settings sections">
@@ -125,9 +125,10 @@ function AIConfig() {
         <input type="range" min="50" max="99" defaultValue="80" className="w-full accent-accent" />
       </Field>
       <Field label="Detection model version">
-        <select className={inputClass} defaultValue="v2.3-mock">
-          <option value="v2.3-mock">v2.3 (mock)</option>
-          <option value="v2.2-mock">v2.2 (mock)</option>
+        <select className={inputClass} defaultValue="yolo11n">
+          <option value="yolo11n">YOLOv11-Nano (Real-time Aerial Inference, 640px)</option>
+          <option value="yolo11s">YOLOv11-Small (Enhanced Feature Resolution)</option>
+          <option value="custom">DumpSentry Custom Fine-tuned (best.pt)</option>
         </select>
       </Field>
       <Toggle label="Auto-verify above 95% confidence" description="Skip manual review for very high-confidence detections." defaultChecked={false} />

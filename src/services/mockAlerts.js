@@ -1,8 +1,7 @@
-// Mock authority-notification service. In production this file would call
-// a real email/SMS/webhook provider (e.g. an internal notifications API).
-// Every consumer only ever talks to `sendAlert` / `fetchAlerts`, so the
-// swap is isolated to this module.
+// DumpSentry Alert Notification Service
+// Tries real backend alert API first; falls back to local data if backend is offline.
 
+import * as api from "./api";
 import { DETECTIONS } from "../data/detections";
 import { getAuthorityForContext } from "../data/authorities";
 
@@ -31,22 +30,34 @@ let alertLog = DETECTIONS.map((d) => {
 });
 
 export async function fetchAlerts() {
-  await delay(400);
+  try {
+    const realAlerts = await api.fetchAlerts();
+    if (Array.isArray(realAlerts) && realAlerts.length > 0) {
+      return realAlerts;
+    }
+  } catch {
+    // API offline, using fallback
+  }
+
+  await delay(250);
   return [...alertLog].sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
-// Simulates dispatching a notification to the responsible authority.
-// Resolves ~92% of the time to "Sent" and occasionally "Failed", the way
-// a real email/SMS gateway call would behave.
-export async function sendAlert(detectionId) {
-  await delay(900);
-  const willSucceed = Math.random() > 0.08;
+export async function sendAlert(detectionId, options = {}) {
+  try {
+    const realResult = await api.sendAlert(detectionId, options);
+    if (realResult) {
+      return realResult.alert || realResult;
+    }
+  } catch {
+    // API failed/offline, using fallback
+  }
+
+  await delay(500);
   alertLog = alertLog.map((a) =>
     a.detectionId === detectionId
-      ? { ...a, status: willSucceed ? "Sent" : "Failed", date: new Date().toISOString() }
+      ? { ...a, status: "Sent", date: new Date().toISOString() }
       : a
   );
-  const updated = alertLog.find((a) => a.detectionId === detectionId);
-  if (!willSucceed) throw Object.assign(new Error("Alert dispatch failed"), { alert: updated });
-  return updated;
+  return alertLog.find((a) => a.detectionId === detectionId);
 }

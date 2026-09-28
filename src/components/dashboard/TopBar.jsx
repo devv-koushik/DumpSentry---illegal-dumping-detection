@@ -11,7 +11,6 @@ import {
   Radio,
   User,
   Wifi,
-  Home,
   Settings,
 } from "lucide-react";
 
