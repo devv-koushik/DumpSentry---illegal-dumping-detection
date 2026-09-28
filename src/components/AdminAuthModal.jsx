@@ -7,7 +7,7 @@ import {
 import { login as apiLogin } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
-export default function AdminAuthModal({ isOpen, onClose }) {
+export default function AdminAuthModal({ isOpen, onClose, message }) {
   const { isAdmin, user, login, logout } = useAuth();
   const [email, setEmail] = useState("admin@dumpsentry.ai");
   const [password, setPassword] = useState("");
@@ -156,9 +156,21 @@ export default function AdminAuthModal({ isOpen, onClose }) {
               ) : (
                 /* ── Login form ── */
                 <form onSubmit={handleLogin} className="space-y-4">
-                  <p className="text-xs leading-relaxed text-muted">
-                    Enter your administrator credentials to access alert dispatching, detection verification, and system controls.
-                  </p>
+                  {message ? (
+                    <div className="flex items-start gap-2.5 rounded-xl border border-accent/30 bg-accent/10 p-3 text-xs text-accent-deep">
+                      <Lock size={14} className="mt-0.5 shrink-0 text-accent-deep" />
+                      <div>
+                        <p className="font-semibold text-accent-deep uppercase tracking-wider text-[10px]">
+                          Admin Protected Action
+                        </p>
+                        <p className="mt-0.5 text-muted leading-relaxed">{message}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs leading-relaxed text-muted">
+                      Enter your administrator credentials to access alert dispatching, detection verification, and system controls.
+                    </p>
+                  )}
 
                   <AnimatePresence mode="wait">
                     {error && (

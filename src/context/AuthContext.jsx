@@ -4,11 +4,14 @@
  */
 import { createContext, useContext, useState, useCallback } from "react";
 import { isAuthenticated, logout as apiLogout, getAuthToken } from "../services/api";
+import AdminAuthModal from "../components/AdminAuthModal";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(isAuthenticated);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMessage, setAuthModalMessage] = useState("");
   const [user, setUser] = useState(() => {
     // Try to restore user info from localStorage
     try {
@@ -18,6 +21,29 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+  const openLoginModal = useCallback((msg = "") => {
+    setAuthModalMessage(msg);
+    setIsAuthModalOpen(true);
+  }, []);
+
+  const closeLoginModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+    setAuthModalMessage("");
+  }, []);
+
+  const requireAdmin = useCallback((actionDescription = "", onSuccess = null) => {
+    if (isAuthenticated()) {
+      if (onSuccess) onSuccess();
+      return true;
+    }
+    openLoginModal(
+      actionDescription
+        ? `Administrator login required to ${actionDescription}.`
+        : "Administrator login required to perform this action."
+    );
+    return false;
+  }, [openLoginModal]);
 
   const login = useCallback((userData) => {
     setIsAdmin(true);
@@ -35,8 +61,25 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAdmin, user, login, logout, token: getAuthToken }}>
+    <AuthContext.Provider
+      value={{
+        isAdmin,
+        user,
+        login,
+        logout,
+        token: getAuthToken,
+        isAuthModalOpen,
+        openLoginModal,
+        closeLoginModal,
+        requireAdmin,
+      }}
+    >
       {children}
+      <AdminAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={closeLoginModal}
+        message={authModalMessage}
+      />
     </AuthContext.Provider>
   );
 }

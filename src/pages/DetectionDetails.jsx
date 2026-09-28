@@ -1,15 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, Navigation, CheckCircle2, Send, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  Navigation,
+  CheckCircle2,
+  Send,
+  ShieldCheck,
+  XCircle,
+  Lock,
+} from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import DetectionStatus from "../components/DetectionStatus";
 import ConfidenceBadge from "../components/ConfidenceBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useAuth } from "../context/AuthContext";
 import { fetchDetectionById, updateDetectionStatus, updateAlertStatus } from "../services/mockDetections";
 import { sendAlert } from "../services/mockAlerts";
 
 export default function DetectionDetails() {
   const { id } = useParams();
+  const { isAdmin, requireAdmin } = useAuth();
   const [detection, setDetection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -34,6 +46,7 @@ export default function DetectionDetails() {
   }
 
   async function handleVerify() {
+    if (!requireAdmin("verify suspected illegal dumping detections")) return;
     setBusy(true);
     const updated = await updateDetectionStatus(id, "Suspected Illegal");
     setDetection(updated);
@@ -41,7 +54,17 @@ export default function DetectionDetails() {
     notify("Detection verified as Suspected Illegal Dumping.");
   }
 
+  async function handleReject() {
+    if (!requireAdmin("reject false positive detections")) return;
+    setBusy(true);
+    const updated = await updateDetectionStatus(id, "Rejected");
+    setDetection(updated);
+    setBusy(false);
+    notify("Detection marked as Rejected.");
+  }
+
   async function handleSendAlert() {
+    if (!requireAdmin("dispatch alerts to municipal authorities")) return;
     setBusy(true);
     try {
       await sendAlert(id);
@@ -57,6 +80,7 @@ export default function DetectionDetails() {
   }
 
   async function handleResolve() {
+    if (!requireAdmin("change incident lifecycle status to Resolved")) return;
     setBusy(true);
     const updated = await updateDetectionStatus(id, "Resolved");
     setDetection(updated);
@@ -138,15 +162,52 @@ export default function DetectionDetails() {
 
         <div className="space-y-6">
           <div className="card p-5">
-            <p className="mb-4 font-medium text-ink">Actions</p>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="font-medium text-ink">Actions</p>
+              {isAdmin ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-semibold text-accent-deep">
+                  <ShieldCheck size={11} /> Admin Session
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full bg-paper2 px-2 py-0.5 text-[10px] font-medium text-muted">
+                  <Lock size={10} /> Admin Only
+                </span>
+              )}
+            </div>
+
+            {!isAdmin && (
+              <div className="mb-3 rounded-lg border border-line bg-paper/60 p-2.5 text-[11px] text-muted">
+                <span className="font-semibold text-ink">Public Incident View:</span> You can view all coordinates, images, and telemetry freely. Verification, alerts, and status changes require Admin sign-in.
+              </div>
+            )}
+
             <div className="flex flex-col gap-2.5">
-              <button onClick={handleVerify} disabled={busy || d.status !== "Pending Review"} className="btn-outline w-full justify-center disabled:opacity-40">
+              <button
+                onClick={handleVerify}
+                disabled={busy || (isAdmin && d.status !== "Pending Review")}
+                className="btn-outline w-full justify-center disabled:opacity-40"
+              >
                 <ShieldCheck size={15} /> Verify Detection
               </button>
-              <button onClick={handleSendAlert} disabled={busy || d.alertStatus === "Sent"} className="btn-accent w-full justify-center disabled:opacity-40">
+              <button
+                onClick={handleReject}
+                disabled={busy || (isAdmin && d.status === "Rejected")}
+                className="btn-outline w-full justify-center text-muted hover:text-danger hover:border-danger/30 disabled:opacity-40"
+              >
+                <XCircle size={15} /> Reject Detection
+              </button>
+              <button
+                onClick={handleSendAlert}
+                disabled={busy || (isAdmin && d.alertStatus === "Sent")}
+                className="btn-accent w-full justify-center disabled:opacity-40"
+              >
                 <Send size={15} /> {d.alertStatus === "Sent" ? "Alert Sent" : "Send Alert"}
               </button>
-              <button onClick={handleResolve} disabled={busy || d.status === "Resolved"} className="btn-primary w-full justify-center disabled:opacity-40">
+              <button
+                onClick={handleResolve}
+                disabled={busy || (isAdmin && d.status === "Resolved")}
+                className="btn-primary w-full justify-center disabled:opacity-40"
+              >
                 <CheckCircle2 size={15} /> Mark Resolved
               </button>
             </div>

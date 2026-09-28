@@ -16,10 +16,8 @@ router.get("/", getDetections);
 router.get("/map", getMapDetections);
 router.get("/:id", getDetectionById);
 
-// Status update (allowed with optionalAuth or public demo)
-router.patch("/:id/status", optionalAuth, updateDetectionStatus);
-
-// Admin actions
+// Status update and verification (Admin only)
+router.patch("/:id/status", requireAdmin, updateDetectionStatus);
 router.post("/:id/verify", requireAdmin, verifyDetection);
 router.delete("/:id", requireAdmin, deleteDetection);
 

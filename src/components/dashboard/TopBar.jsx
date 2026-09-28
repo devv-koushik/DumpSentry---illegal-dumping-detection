@@ -14,7 +14,6 @@ import {
   Settings,
   ShieldCheck,
 } from "lucide-react";
-import AdminAuthModal from "../AdminAuthModal";
 import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
@@ -29,11 +28,14 @@ const NAV_ITEMS = [
 export default function TopBar({ onOpenUpload }) {
   const location = useLocation();
   const [notifCount] = useState(4);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, openLoginModal, requireAdmin } = useAuth();
+
+  function handleUploadClick() {
+    if (!requireAdmin("upload drone captures and run AI vision detection")) return;
+    if (onOpenUpload) onOpenUpload();
+  }
 
   return (
-    <>
     <motion.header
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -94,23 +96,13 @@ export default function TopBar({ onOpenUpload }) {
       {/* Right — Status & Upload CTA */}
       <div className="flex items-center gap-3">
         {/* Upload Drone Capture Button */}
-        {onOpenUpload ? (
-          <button
-            onClick={onOpenUpload}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-white text-[10px] font-semibold tracking-wide uppercase shadow-sm hover:bg-accent-deep transition-all"
-          >
-            <Upload size={12} />
-            Upload Image
-          </button>
-        ) : (
-          <Link
-            to="/dashboard/upload"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-white text-[10px] font-semibold tracking-wide uppercase shadow-sm hover:bg-accent-deep transition-all"
-          >
-            <Upload size={12} />
-            Upload Image
-          </Link>
-        )}
+        <button
+          onClick={handleUploadClick}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-white text-[10px] font-semibold tracking-wide uppercase shadow-sm hover:bg-accent-deep transition-all"
+        >
+          <Upload size={12} />
+          Upload Image
+        </button>
 
         <div className="hidden lg:flex items-center gap-3 ml-1">
           <span className="flex items-center gap-1.5 text-[9px] tracking-wider text-success uppercase">
@@ -139,7 +131,7 @@ export default function TopBar({ onOpenUpload }) {
 
         {/* Admin avatar / login button */}
         <button
-          onClick={() => setAuthModalOpen(true)}
+          onClick={() => openLoginModal()}
           title={isAdmin ? `Signed in as ${user?.name || "Admin"}` : "Sign in as Admin"}
           className={`flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold transition-all ${
             isAdmin
@@ -158,12 +150,5 @@ export default function TopBar({ onOpenUpload }) {
         </button>
       </div>
     </motion.header>
-
-    {/* Admin Auth Modal */}
-    <AdminAuthModal
-      isOpen={authModalOpen}
-      onClose={() => setAuthModalOpen(false)}
-    />
-  </>  
   );
 }

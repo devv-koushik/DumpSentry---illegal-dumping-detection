@@ -1,7 +1,7 @@
 import { Router } from "express";
 import upload from "../middleware/upload.js";
 import { analyzeImage } from "../controllers/analysisController.js";
-import { optionalAuth } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -16,6 +16,6 @@ const flexibleUpload = (req, res, next) => {
   });
 };
 
-router.post("/analyze", optionalAuth, flexibleUpload, analyzeImage);
+router.post("/analyze", requireAdmin, flexibleUpload, analyzeImage);
 
 export default router;

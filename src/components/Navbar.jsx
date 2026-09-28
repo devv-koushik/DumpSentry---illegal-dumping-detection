@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Menu, Search, Bell, ChevronDown, ShieldCheck, User } from "lucide-react";
-import AdminAuthModal from "./AdminAuthModal";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar({ onMenuClick }) {
   const [notifOpen, setNotifOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, openLoginModal } = useAuth();
 
   return (
     <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-line bg-paper/90 px-5 py-3.5 backdrop-blur">
@@ -51,7 +49,7 @@ export default function Navbar({ onMenuClick }) {
         </div>
 
         <button
-          onClick={() => setAuthModalOpen(true)}
+          onClick={() => openLoginModal()}
           className="flex items-center gap-2 rounded-pill border border-ink/10 bg-white py-1.5 pl-1.5 pr-3 text-sm hover:border-ink/30 transition-all cursor-pointer"
           title="Click to manage Admin Authentication"
         >
@@ -68,11 +66,6 @@ export default function Navbar({ onMenuClick }) {
           <ChevronDown size={14} className="text-muted" />
         </button>
       </div>
-
-      <AdminAuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-      />
     </header>
   );
 }

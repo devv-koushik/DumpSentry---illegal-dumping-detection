@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
 import { analyzeImage, ANALYSIS_STAGES } from "../../services/mockAI";
+import { useAuth } from "../../context/AuthContext";
 
 export default function UploadModal({ isOpen, onClose, onAddDetection }) {
+  const { isAdmin, requireAdmin } = useAuth();
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
@@ -13,6 +15,7 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
   if (!isOpen) return null;
 
   function handleFileChange(e) {
+    if (!requireAdmin("upload drone captures and run AI vision detection")) return;
     const selected = e.target.files?.[0];
     if (selected) {
       setFile(selected);
@@ -24,6 +27,7 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
 
   function handleDrop(e) {
     e.preventDefault();
+    if (!requireAdmin("upload drone captures and run AI vision detection")) return;
     const dropped = e.dataTransfer.files?.[0];
     if (dropped) {
       setFile(dropped);
@@ -34,6 +38,7 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
   }
 
   async function handleRunAnalysis() {
+    if (!requireAdmin("run the YOLOv11 AI detection pipeline")) return;
     if (!file) return;
     setAnalyzing(true);
     setResult(null);

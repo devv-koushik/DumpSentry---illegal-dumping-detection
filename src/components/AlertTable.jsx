@@ -1,4 +1,6 @@
+import { Lock } from "lucide-react";
 import EmptyState from "./EmptyState";
+import { useAuth } from "../context/AuthContext";
 
 const STATUS_STYLE = {
   Sent: "bg-success/10 text-success",
@@ -12,6 +14,8 @@ function formatDate(ts) {
 }
 
 export default function AlertTable({ alerts, onSend, sendingId }) {
+  const { isAdmin } = useAuth();
+
   if (!alerts?.length) {
     return <EmptyState title="No alerts yet" description="Alerts will appear here once detections are routed to an authority." />;
   }
@@ -54,8 +58,10 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
                     <button
                       onClick={() => onSend?.(a)}
                       disabled={sendingId === a.detectionId}
-                      className="text-xs font-medium text-accent-deep hover:underline disabled:opacity-50"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline disabled:opacity-50"
+                      title={isAdmin ? "Dispatch alert" : "Admin login required to send alert"}
                     >
+                      {!isAdmin && <Lock size={11} className="text-muted" />}
                       {sendingId === a.detectionId ? "Sending…" : "Send Alert"}
                     </button>
                   ) : (

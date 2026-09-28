@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { User, Bell, ShieldCheck, Cpu, SlidersHorizontal } from "lucide-react";
 import PageHeader from "../components/PageHeader";
+import AdminGuard from "../components/AdminGuard";
 import { AUTHORITIES } from "../data/authorities";
 
 const TABS = [
@@ -15,33 +16,39 @@ export default function Settings() {
   const [tab, setTab] = useState("profile");
 
   return (
-    <div>
-      <PageHeader title="Settings" description="System configuration, AI detection thresholds, and authority contact routing." />
+    <AdminGuard
+      action="manage municipal authorities, geospatial routing rules, and system configurations"
+      title="System Settings & Authority Configuration"
+      description="Only authenticated administrators can modify authority contact routing, AI detection thresholds, notifications, and system preferences."
+    >
+      <div>
+        <PageHeader title="Settings" description="System configuration, AI detection thresholds, and authority contact routing." />
 
-      <div className="grid gap-6 lg:grid-cols-[220px,1fr]">
-        <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible" aria-label="Settings sections">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`flex flex-shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium transition-colors ${
-                tab === t.key ? "bg-ink text-white" : "text-muted hover:bg-ink/5 hover:text-ink"
-              }`}
-            >
-              <t.icon size={15} /> {t.label}
-            </button>
-          ))}
-        </nav>
+        <div className="grid gap-6 lg:grid-cols-[220px,1fr]">
+          <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible" aria-label="Settings sections">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`flex flex-shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2.5 text-left text-sm font-medium transition-colors ${
+                  tab === t.key ? "bg-ink text-white" : "text-muted hover:bg-ink/5 hover:text-ink"
+                }`}
+              >
+                <t.icon size={15} /> {t.label}
+              </button>
+            ))}
+          </nav>
 
-        <div className="card p-6">
-          {tab === "profile" && <Profile />}
-          {tab === "notifications" && <Notifications />}
-          {tab === "authority" && <AuthorityConfig />}
-          {tab === "ai" && <AIConfig />}
-          {tab === "system" && <SystemPrefs />}
+          <div className="card p-6">
+            {tab === "profile" && <Profile />}
+            {tab === "notifications" && <Notifications />}
+            {tab === "authority" && <AuthorityConfig />}
+            {tab === "ai" && <AIConfig />}
+            {tab === "system" && <SystemPrefs />}
+          </div>
         </div>
       </div>
-    </div>
+    </AdminGuard>
   );
 }
 

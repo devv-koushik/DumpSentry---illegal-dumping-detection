@@ -46,13 +46,22 @@ export default function CommandCenter() {
   );
 
   const handleModalAction = useCallback((action, id) => {
-    console.log(`Action: ${action} on ${id}`);
     if (action === "resolve") {
       setDetections((prev) =>
         prev.map((d) => (d.id === id ? { ...d, status: "Resolved" } : d))
       );
       setModalDetection(null);
       setSelectedDetection(null);
+    } else if (action === "verify") {
+      setDetections((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, status: "Suspected Illegal" } : d))
+      );
+      setModalDetection(null);
+    } else if (action === "reject") {
+      setDetections((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, status: "Rejected" } : d))
+      );
+      setModalDetection(null);
     }
   }, []);
 
