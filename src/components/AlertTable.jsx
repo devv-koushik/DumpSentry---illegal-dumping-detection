@@ -1,4 +1,3 @@
-import { Lock } from "lucide-react";
 import EmptyState from "./EmptyState";
 import { useAuth } from "../context/AuthContext";
 
@@ -33,7 +32,7 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
               <th className="px-5 py-3 font-medium">Email</th>
               <th className="px-5 py-3 font-medium">Status</th>
               <th className="px-5 py-3 font-medium">Date</th>
-              <th className="px-5 py-3 font-medium" />
+              {isAdmin && <th className="px-5 py-3 font-medium text-right">Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -53,21 +52,22 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
                   </span>
                 </td>
                 <td className="px-5 py-3 text-muted">{formatDate(a.date)}</td>
-                <td className="px-5 py-3 text-right">
-                  {a.status === "Pending" || a.status === "Failed" ? (
-                    <button
-                      onClick={() => onSend?.(a)}
-                      disabled={sendingId === a.detectionId}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline disabled:opacity-50"
-                      title={isAdmin ? "Dispatch alert" : "Admin login required to send alert"}
-                    >
-                      {!isAdmin && <Lock size={11} className="text-muted" />}
-                      {sendingId === a.detectionId ? "Sending…" : "Send Alert"}
-                    </button>
-                  ) : (
-                    <span className="text-xs text-muted">—</span>
-                  )}
-                </td>
+                {isAdmin && (
+                  <td className="px-5 py-3 text-right">
+                    {a.status === "Pending" || a.status === "Failed" ? (
+                      <button
+                        onClick={() => onSend?.(a)}
+                        disabled={sendingId === a.detectionId}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline disabled:opacity-50"
+                        title="Dispatch alert"
+                      >
+                        {sendingId === a.detectionId ? "Sending…" : "Send Alert"}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-muted">—</span>
+                    )}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

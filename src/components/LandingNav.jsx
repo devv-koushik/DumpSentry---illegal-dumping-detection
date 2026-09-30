@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, AlertTriangle } from "lucide-react";
 import { useLenis } from "../context/LenisContext";
+import { useAuth } from "../context/AuthContext";
+import ReportProblemModal from "./ReportProblemModal";
 
 const LINKS = [
   { href: "#how-it-works", label: "How It Works" },
@@ -12,7 +14,9 @@ const LINKS = [
 
 export default function LandingNav() {
   const [open, setOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const lenisContext = useLenis();
+  const { isAdmin } = useAuth();
 
   const handleNavClick = (e, href) => {
     e.preventDefault();
@@ -58,9 +62,19 @@ export default function LandingNav() {
           ))}
         </nav>
 
-        <Link to="/dashboard" className="btn-primary ml-auto hidden !py-2 text-xs md:ml-0 md:inline-flex">
-          Open Dashboard <ArrowRight size={14} />
-        </Link>
+        <div className="ml-auto hidden items-center gap-3 md:flex">
+          {!isAdmin && (
+            <button
+              onClick={() => setReportOpen(true)}
+              className="flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent-deep hover:bg-accent hover:text-white transition-all uppercase tracking-wider"
+            >
+              Report Problem
+            </button>
+          )}
+          <Link to="/dashboard" className="btn-primary !py-2 text-xs">
+            Open Dashboard <ArrowRight size={14} />
+          </Link>
+        </div>
 
         <button className="ml-auto text-ink md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -80,12 +94,28 @@ export default function LandingNav() {
                 {l.label}
               </a>
             ))}
+            {!isAdmin && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setReportOpen(true);
+                }}
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-2.5 text-xs font-semibold text-accent-deep hover:bg-accent hover:text-white transition-all uppercase tracking-wider mt-1"
+              >
+                <AlertTriangle size={14} /> Report Problem
+              </button>
+            )}
             <Link to="/dashboard" className="btn-primary mt-2 justify-center">
               Open Dashboard <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       )}
+
+      <ReportProblemModal
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
+      />
     </header>
   );
 }

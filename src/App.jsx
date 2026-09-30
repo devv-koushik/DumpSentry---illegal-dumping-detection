@@ -10,6 +10,7 @@ import MapPage from "./pages/MapPage";
 import Alerts from "./pages/Alerts";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import PublicReports from "./pages/PublicReports";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="upload" element={<UploadAnalyze />} />
             <Route path="map" element={<MapPage />} />
             <Route path="alerts" element={<Alerts />} />
+            <Route path="reports" element={<PublicReports />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="settings" element={<Settings />} />
           </Route>

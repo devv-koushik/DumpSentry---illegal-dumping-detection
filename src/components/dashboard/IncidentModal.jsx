@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, MapPin, Layers, BarChart3, Building2, Send,
-  CheckCircle2, XCircle, Eye, ShieldAlert, Radio, Plane, ScanSearch, Lock,
+  CheckCircle2, XCircle, Eye, ShieldAlert, Radio, Plane, ScanSearch,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function IncidentModal({ detection, onClose, onAction }) {
-  const { isAdmin, requireAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   if (!detection) return null;
 
   const timestamp = new Date(detection.timestamp);
@@ -127,43 +127,49 @@ export default function IncidentModal({ detection, onClose, onAction }) {
           </div>
 
           {/* Actions */}
-          <div className="sticky bottom-0 flex flex-wrap items-center gap-2 px-5 py-3 bg-white/95 backdrop-blur-xl border-t border-line">
-            <button
-              onClick={() => {
-                if (!requireAdmin("verify dumping detections")) return;
-                onAction?.("verify", detection.id);
-              }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent/15 border border-accent/20 text-accent-deep text-[10px] font-semibold tracking-wider uppercase hover:bg-accent/25 transition-colors"
-            >
-              {!isAdmin ? <Lock size={10} className="text-muted" /> : <Eye size={11} />} Verify
-            </button>
-            <button
-              onClick={() => {
-                if (!requireAdmin("dispatch alert notifications to authorities")) return;
-                onAction?.("alert", detection.id);
-              }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-paper2 border border-line text-ink text-[10px] font-medium tracking-wider uppercase hover:border-accent/30 transition-colors"
-            >
-              {!isAdmin ? <Lock size={10} className="text-muted" /> : <Send size={11} />} Send Alert
-            </button>
-            <button
-              onClick={() => {
-                if (!requireAdmin("reject false detections")) return;
-                onAction?.("reject", detection.id);
-              }}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-paper2 border border-line text-muted text-[10px] font-medium tracking-wider uppercase hover:border-danger/30 hover:text-danger transition-colors"
-            >
-              {!isAdmin ? <Lock size={10} className="text-muted" /> : <XCircle size={11} />} Reject
-            </button>
-            <button
-              onClick={() => {
-                if (!requireAdmin("change incident lifecycle status to Resolved")) return;
-                onAction?.("resolve", detection.id);
-              }}
-              className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-lg bg-success/15 border border-success/20 text-success text-[10px] font-semibold tracking-wider uppercase hover:bg-success/25 transition-colors"
-            >
-              {!isAdmin ? <Lock size={10} className="text-muted" /> : <CheckCircle2 size={11} />} Mark Resolved
-            </button>
+          <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-2 px-5 py-3 bg-white/95 backdrop-blur-xl border-t border-line">
+            {isAdmin ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => onAction?.("verify", detection.id)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent/15 border border-accent/20 text-accent-deep text-[10px] font-semibold tracking-wider uppercase hover:bg-accent/25 transition-colors"
+                  >
+                    <Eye size={11} /> Verify
+                  </button>
+                  <button
+                    onClick={() => onAction?.("alert", detection.id)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-paper2 border border-line text-ink text-[10px] font-medium tracking-wider uppercase hover:border-accent/30 transition-colors"
+                  >
+                    <Send size={11} /> Send Alert
+                  </button>
+                  <button
+                    onClick={() => onAction?.("reject", detection.id)}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-paper2 border border-line text-muted text-[10px] font-medium tracking-wider uppercase hover:border-danger/30 hover:text-danger transition-colors"
+                  >
+                    <XCircle size={11} /> Reject
+                  </button>
+                </div>
+                <button
+                  onClick={() => onAction?.("resolve", detection.id)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-success/15 border border-success/20 text-success text-[10px] font-semibold tracking-wider uppercase hover:bg-success/25 transition-colors"
+                >
+                  <CheckCircle2 size={11} /> Mark Resolved
+                </button>
+              </>
+            ) : (
+              <div className="w-full flex items-center justify-between">
+                <span className="text-[11px] text-muted">
+                  Public telemetry record & incident log
+                </span>
+                <button
+                  onClick={onClose}
+                  className="rounded-lg border border-line px-4 py-1.5 text-xs font-medium text-muted hover:bg-paper hover:text-ink transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>

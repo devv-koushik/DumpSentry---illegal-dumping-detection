@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck, Lock } from "lucide-react";
+import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck } from "lucide-react";
 import { analyzeImage, ANALYSIS_STAGES } from "../../services/mockAI";
 import { useAuth } from "../../context/AuthContext";
 
@@ -12,7 +12,7 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
   const [stageIndex, setStageIndex] = useState(-1);
   const [result, setResult] = useState(null);
 
-  if (!isOpen) return null;
+  if (!isOpen || !isAdmin) return null;
 
   function handleFileChange(e) {
     if (!requireAdmin("upload drone captures and run AI vision detection")) return;

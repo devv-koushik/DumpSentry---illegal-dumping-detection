@@ -10,11 +10,13 @@ import {
   ShieldCheck,
   XCircle,
   Lock,
+  AlertTriangle,
 } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import DetectionStatus from "../components/DetectionStatus";
 import ConfidenceBadge from "../components/ConfidenceBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
+import ReportProblemModal from "../components/ReportProblemModal";
 import { useAuth } from "../context/AuthContext";
 import { fetchDetectionById, updateDetectionStatus, updateAlertStatus } from "../services/mockDetections";
 import { sendAlert } from "../services/mockAlerts";
@@ -26,6 +28,7 @@ export default function DetectionDetails() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
@@ -175,42 +178,51 @@ export default function DetectionDetails() {
               )}
             </div>
 
-            {!isAdmin && (
-              <div className="mb-3 rounded-lg border border-line bg-paper/60 p-2.5 text-[11px] text-muted">
-                <span className="font-semibold text-ink">Public Incident View:</span> You can view all coordinates, images, and telemetry freely. Verification, alerts, and status changes require Admin sign-in.
+            {isAdmin ? (
+              <div className="flex flex-col gap-2.5">
+                <button
+                  onClick={handleVerify}
+                  disabled={busy || d.status !== "Pending Review"}
+                  className="btn-outline w-full justify-center disabled:opacity-40"
+                >
+                  <ShieldCheck size={15} /> Verify Detection
+                </button>
+                <button
+                  onClick={handleReject}
+                  disabled={busy || d.status === "Rejected"}
+                  className="btn-outline w-full justify-center text-muted hover:text-danger hover:border-danger/30 disabled:opacity-40"
+                >
+                  <XCircle size={15} /> Reject Detection
+                </button>
+                <button
+                  onClick={handleSendAlert}
+                  disabled={busy || d.alertStatus === "Sent"}
+                  className="btn-accent w-full justify-center disabled:opacity-40"
+                >
+                  <Send size={15} /> {d.alertStatus === "Sent" ? "Alert Sent" : "Send Alert"}
+                </button>
+                <button
+                  onClick={handleResolve}
+                  disabled={busy || d.status === "Resolved"}
+                  className="btn-primary w-full justify-center disabled:opacity-40"
+                >
+                  <CheckCircle2 size={15} /> Mark Resolved
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <button
+                  onClick={() => setIsReportOpen(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-accent-deep transition-all uppercase tracking-wider"
+                >
+                  <AlertTriangle size={14} />
+                  Report Problem at this Site
+                </button>
+                <p className="text-center text-[10px] text-muted">
+                  Notice illegal dumping worsening or newly dumped waste? File an instant citizen report for drone patrol priority.
+                </p>
               </div>
             )}
-
-            <div className="flex flex-col gap-2.5">
-              <button
-                onClick={handleVerify}
-                disabled={busy || (isAdmin && d.status !== "Pending Review")}
-                className="btn-outline w-full justify-center disabled:opacity-40"
-              >
-                <ShieldCheck size={15} /> Verify Detection
-              </button>
-              <button
-                onClick={handleReject}
-                disabled={busy || (isAdmin && d.status === "Rejected")}
-                className="btn-outline w-full justify-center text-muted hover:text-danger hover:border-danger/30 disabled:opacity-40"
-              >
-                <XCircle size={15} /> Reject Detection
-              </button>
-              <button
-                onClick={handleSendAlert}
-                disabled={busy || (isAdmin && d.alertStatus === "Sent")}
-                className="btn-accent w-full justify-center disabled:opacity-40"
-              >
-                <Send size={15} /> {d.alertStatus === "Sent" ? "Alert Sent" : "Send Alert"}
-              </button>
-              <button
-                onClick={handleResolve}
-                disabled={busy || (isAdmin && d.status === "Resolved")}
-                className="btn-primary w-full justify-center disabled:opacity-40"
-              >
-                <CheckCircle2 size={15} /> Mark Resolved
-              </button>
-            </div>
           </div>
 
           <div className="card p-5">
@@ -225,6 +237,11 @@ export default function DetectionDetails() {
           </div>
         </div>
       </div>
+
+      <ReportProblemModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+      />
     </div>
   );
 }

@@ -16,10 +16,14 @@ import {
   Globe,
   Mail,
   MessageCircle,
+  AlertTriangle,
 } from "lucide-react";
 import LandingNav from "../components/LandingNav";
+import ReportProblemModal from "../components/ReportProblemModal";
 import { OVERVIEW_STATS } from "../data/detections";
 import { useLenis } from "../context/LenisContext";
+import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -47,6 +51,8 @@ const AUTHORITY_ROWS = [
 
 export default function Landing() {
   const lenisContext = useLenis();
+  const { isAdmin } = useAuth();
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleScrollTo = (e, href) => {
     e.preventDefault();
@@ -108,6 +114,15 @@ export default function Landing() {
             <Link to="/dashboard" className="btn-accent">
               Open Dashboard <ArrowRight size={16} />
             </Link>
+            {!isAdmin && (
+              <button
+                onClick={() => setIsReportOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/10 px-5 py-3 text-sm font-semibold text-accent-deep hover:bg-accent hover:text-white transition-all shadow-sm"
+              >
+                <AlertTriangle size={16} />
+                Report a Problem
+              </button>
+            )}
             <a href="#how-it-works" onClick={(e) => handleScrollTo(e, "#how-it-works")} className="btn-outline">
               How it works
             </a>
@@ -369,9 +384,20 @@ export default function Landing() {
               authority-routing workflow — no setup required.
             </p>
           </div>
-          <Link to="/dashboard" className="btn-accent flex-shrink-0">
-            Open Dashboard <ArrowRight size={16} />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 flex-shrink-0">
+            {!isAdmin && (
+              <button
+                onClick={() => setIsReportOpen(true)}
+                className="flex items-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 px-5 py-3 text-sm font-semibold text-accent-deep hover:bg-accent hover:text-white transition-all shadow-sm"
+              >
+                <AlertTriangle size={15} />
+                Report a Problem
+              </button>
+            )}
+            <Link to="/dashboard" className="btn-accent">
+              Open Dashboard <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -395,6 +421,11 @@ export default function Landing() {
                 <a href="#how-it-works" onClick={(e) => handleScrollTo(e, "#how-it-works")} className="text-ink/75 hover:text-ink">How it works</a>
                 <a href="#detection" onClick={(e) => handleScrollTo(e, "#detection")} className="text-ink/75 hover:text-ink">AI detection</a>
                 <Link to="/dashboard" className="text-ink/75 hover:text-ink">Dashboard</Link>
+                {!isAdmin && (
+                  <button onClick={() => setIsReportOpen(true)} className="text-left text-ink/75 hover:text-ink">
+                    Report a Problem
+                  </button>
+                )}
               </div>
             </div>
             <div>
@@ -411,6 +442,12 @@ export default function Landing() {
           © {new Date().getFullYear()} DumpSentry. Demo product — mock data only.
         </div>
       </footer>
+
+      {/* Public Citizen Report Modal */}
+      <ReportProblemModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+      />
     </div>
   );
 }

@@ -11,12 +11,11 @@ import {
   BarChart3,
   Building2,
   Bell,
-  Lock,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AIAnalysisPanel({ detection, onClose, onAction }) {
-  const { isAdmin, requireAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   if (!detection) return null;
 
   const riskLevel =
@@ -130,26 +129,22 @@ export default function AIAnalysisPanel({ detection, onClose, onAction }) {
           >
             <Eye size={11} /> Review Detection
           </button>
-          <div className="flex gap-1.5">
-            <button
-              onClick={() => {
-                if (!requireAdmin("dispatch alert notifications to authorities")) return;
-                onAction?.("alert", detection.id);
-              }}
-              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-paper2 border border-line text-ink text-[9px] font-medium uppercase tracking-wider hover:border-accent/30 transition-colors"
-            >
-              {!isAdmin ? <Lock size={9} className="text-muted" /> : <Send size={9} />} Send Alert
-            </button>
-            <button
-              onClick={() => {
-                if (!requireAdmin("change incident lifecycle status to Resolved")) return;
-                onAction?.("resolve", detection.id);
-              }}
-              className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-paper2 border border-line text-ink text-[9px] font-medium uppercase tracking-wider hover:border-success/30 transition-colors"
-            >
-              {!isAdmin ? <Lock size={9} className="text-muted" /> : <CheckCircle2 size={9} />} Resolve
-            </button>
-          </div>
+          {isAdmin && (
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => onAction?.("alert", detection.id)}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-paper2 border border-line text-ink text-[9px] font-medium uppercase tracking-wider hover:border-accent/30 transition-colors"
+              >
+                <Send size={9} /> Send Alert
+              </button>
+              <button
+                onClick={() => onAction?.("resolve", detection.id)}
+                className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-paper2 border border-line text-ink text-[9px] font-medium uppercase tracking-wider hover:border-success/30 transition-colors"
+              >
+                <CheckCircle2 size={9} /> Resolve
+              </button>
+            </div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>
