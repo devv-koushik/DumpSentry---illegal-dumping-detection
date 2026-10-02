@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import { DRONE, FLIGHT_PATH } from "../../data/drone";
+import { findWardForCoordinates } from "../../services/wardService";
 
 // ── Custom marker icons ──
 
@@ -90,6 +91,14 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
                 </div>
                 <p className="text-[10px] font-medium text-cmd-text">{d.wasteType}</p>
                 <p className="text-[9px] text-cmd-muted">{d.context} · {d.location.split(",")[0]}</p>
+                {(() => {
+                  const ward = findWardForCoordinates(d.latitude, d.longitude);
+                  return ward ? (
+                    <p className="mt-1 text-[9px] font-mono text-accent truncate">
+                      {ward.wardNumber}: {ward.name}
+                    </p>
+                  ) : null;
+                })()}
                 <p className={`mt-1 text-[9px] font-semibold ${
                   d.status === "Suspected Illegal" ? "text-danger"
                     : d.status === "Resolved" ? "text-success"

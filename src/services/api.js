@@ -31,7 +31,7 @@ export function isAuthenticated() {
 
 // ─── HTTP Request Helper ─────────────────────────────────────────────────────
 
-async function request(endpoint, options = {}) {
+export async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
   const token = getAuthToken();
 
@@ -222,6 +222,13 @@ export async function fetchAuthorities() {
 export async function createAuthority(data) {
   return request("/authorities", {
     method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateAuthority(id, data) {
+  return request(`/authorities/${id}`, {
+    method: "PUT",
     body: JSON.stringify(data),
   });
 }

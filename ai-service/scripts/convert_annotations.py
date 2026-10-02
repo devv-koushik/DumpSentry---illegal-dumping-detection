@@ -1,132 +1,457 @@
-"""
-Convert COCO annotations (e.g. TACO annotations.json) to YOLO label format (.txt).
-YOLO format: <class_id> <x_center> <y_center> <width> <height> (normalized 0.0 - 1.0)
-"""
-
-import os
 import json
+import random
+import shutil
 from pathlib import Path
-from typing import Dict
+from collections import defaultdict, Counter
 
-DATASET_ROOT = Path(__file__).resolve().parent.parent / "dataset"
-RAW_TACO = DATASET_ROOT / "raw" / "taco"
-PROCESSED_LABELS = DATASET_ROOT / "processed" / "labels"
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Mapping from TACO supercategories / categories to DumpSentry 10 classes
-CLASS_MAPPING: Dict[str, int] = {
-    "bottle": 0,          # plastic
-    "cup": 0,             # plastic
-    "plastic bag": 0,     # plastic
-    "film": 0,            # plastic
-    "polypropylene": 0,   # plastic
-    "plastic": 0,         # plastic
-    "carton": 1,          # cardboard_paper
-    "paper": 1,           # cardboard_paper
-    "cardboard": 1,       # cardboard_paper
-    "box": 1,             # cardboard_paper
-    "can": 2,             # metal
-    "foil": 2,            # metal
-    "scrap metal": 2,     # metal
-    "glass bottle": 3,    # glass
-    "broken glass": 3,    # glass
-    "glass": 3,           # glass
-    "food waste": 4,      # organic_waste
-    "organic": 4,         # organic_waste
-    "battery": 5,         # electronic_waste
-    "electronic": 5,      # electronic_waste
-    "wire": 5,            # electronic_waste
-    "syringe": 6,         # biomedical_waste
-    "medical": 6,         # biomedical_waste
-    "mask": 6,            # biomedical_waste
-    "brick": 7,           # construction_debris
-    "concrete": 7,        # construction_debris
-    "wood": 7,            # construction_debris
-    "tire": 8,            # automotive_parts
-    "tyre": 8,            # automotive_parts
-    "chemical": 9,        # mixed_hazardous
-    "paint": 9,           # mixed_hazardous
+RAW_DIR = BASE_DIR / "dataset" / "raw" / "dronewaste"
+OUTPUT_DIR = BASE_DIR / "dataset" / "processed" / "dronewaste_yolo"
+
+JSON_FILE = RAW_DIR / "dronewaste_v1.0.json"
+IMAGE_DIR = RAW_DIR / "images"
+
+RANDOM_SEED = 42
+
+CLASS_NAMES = [
+    "construction_waste",
+    "appliances",
+    "electronic_waste",
+    "furniture",
+    "metal_waste",
+    "plastic_waste",
+    "wood_waste",
+    "vehicle_waste",
+    "tyre_waste",
+    "paper_waste",
+    "asbestos",
+    "textile_waste",
+    "mixed_waste",
+]
+
+CATEGORY_MAPPING = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 1,
+    6: 2,
+    7: 3,
+    8: 4,
+    9: 5,
+    10: 6,
+    11: 6,
+    12: 4,
+    13: 5,
+    14: 7,
+    15: 8,
+    16: 9,
+    17: 4,
+    18: 10,
+    19: 11,
+    20: 12,
 }
 
-def coco_to_yolo(coco_json_path: Path):
-    if not coco_json_path.exists():
-        print(f"Annotation file not found at: {coco_json_path}")
-        print("Run `python scripts/download_datasets.py` first.")
-        return
+TRAIN_RATIO = 0.70
+VAL_RATIO = 0.20
+TEST_RATIO = 0.10
 
-    with open(coco_json_path, "r", encoding="utf-8") as f:
-        coco = json.load(f)
 
-    PROCESSED_LABELS.mkdir(parents=True, exist_ok=True)
+def convert_bbox_to_yolo(bbox, image_width, image_height):
 
-    # Map category id to DumpSentry class id
-    cat_id_to_class_id = {}
-    for cat in coco.get("categories", []):
-        cat_name = cat["name"].lower()
-        supercategory = cat.get("supercategory", "").lower()
-        assigned_class = 0 # default plastic
+    x, y, width, height = bbox
 
-        for key, cls_idx in CLASS_MAPPING.items():
-            if key in cat_name or key in supercategory:
-                assigned_class = cls_idx
-                break
-        cat_id_to_class_id[cat["id"]] = assigned_class
+    if width <= 0 or height <= 0:
+        return None
 
-    # Map image id to image metadata
-    images = {img["id"]: img for img in coco.get("images", [])}
+    x = max(0, x)
+    y = max(0, y)
 
-    # Group annotations by image
-    img_annotations = {}
-    for ann in coco.get("annotations", []):
-        img_id = ann["image_id"]
-        if img_id not in img_annotations:
-            img_annotations[img_id] = []
-        img_annotations[img_id].append(ann)
+    width = min(width, image_width - x)
+    height = min(height, image_height - y)
 
-    print(f"Converting annotations for {len(images)} images...")
-    converted_count = 0
+    if width <= 0 or height <= 0:
+        return None
 
-    for img_id, anns in img_annotations.items():
-        if img_id not in images:
+    center_x = (x + width / 2) / image_width
+    center_y = (y + height / 2) / image_height
+
+    width /= image_width
+    height /= image_height
+
+    return (
+        max(0, min(center_x, 1)),
+        max(0, min(center_y, 1)),
+        max(0, min(width, 1)),
+        max(0, min(height, 1)),
+    )
+
+
+def reset_output_directory():
+
+    if OUTPUT_DIR.exists():
+        print("Removing previous processed dataset...")
+        shutil.rmtree(OUTPUT_DIR)
+
+    for split in ["train", "val", "test"]:
+        (OUTPUT_DIR / "images" / split).mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+        (OUTPUT_DIR / "labels" / split).mkdir(
+            parents=True,
+            exist_ok=True
+        )
+
+
+def load_data():
+
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    print(f"Images in JSON: {len(data['images'])}")
+    print(f"Annotations in JSON: {len(data['annotations'])}")
+
+    return data
+
+
+def build_annotations(data):
+
+    annotation_index = defaultdict(list)
+
+    for annotation in data["annotations"]:
+        annotation_index[annotation["image_id"]].append(annotation)
+
+    return annotation_index
+
+
+def get_image_classes(image_id, annotation_index):
+
+    classes = set()
+
+    for annotation in annotation_index[image_id]:
+
+        category_id = annotation["category_id"]
+
+        if category_id in CATEGORY_MAPPING:
+            classes.add(
+                CATEGORY_MAPPING[category_id]
+            )
+
+    return classes
+
+
+def create_splits(images, annotation_index):
+
+    random.seed(RANDOM_SEED)
+
+    # Only keep images with at least one usable annotation
+    usable_images = []
+
+    for image in images:
+
+        image_path = IMAGE_DIR / image["file_name"]
+
+        if not image_path.exists():
             continue
-        img = images[img_id]
-        img_w = float(img["width"])
-        img_h = float(img["height"])
-        if img_w <= 0 or img_h <= 0:
-            continue
 
-        file_stem = Path(img["file_name"]).stem
-        label_file = PROCESSED_LABELS / f"{file_stem}.txt"
+        classes = get_image_classes(
+            image["id"],
+            annotation_index
+        )
 
-        lines = []
-        for ann in anns:
-            cat_id = ann["category_id"]
-            class_id = cat_id_to_class_id.get(cat_id, 0)
+        if classes:
+            usable_images.append(
+                (image, classes)
+            )
 
-            # COCO bbox: [x_min, y_min, width, height]
-            x_min, y_min, w, h = ann["bbox"]
-            if w <= 0 or h <= 0:
+    print()
+    print(f"Usable annotated images: {len(usable_images)}")
+
+    # Shuffle
+    random.shuffle(usable_images)
+
+    # Sort rare-class images first.
+    # This prevents rare classes from accidentally ending up
+    # entirely inside one split.
+    class_frequency = Counter()
+
+    for _, classes in usable_images:
+        for class_id in classes:
+            class_frequency[class_id] += 1
+
+    usable_images.sort(
+        key=lambda item: min(
+            class_frequency[c]
+            for c in item[1]
+        )
+    )
+
+    total = len(usable_images)
+
+    train_target = int(total * TRAIN_RATIO)
+    val_target = int(total * VAL_RATIO)
+
+    splits = {
+        "train": [],
+        "val": [],
+        "test": [],
+    }
+
+    # Track class presence in each split
+    split_classes = {
+        "train": Counter(),
+        "val": Counter(),
+        "test": Counter(),
+    }
+
+    # First pass: distribute rare classes
+    for image, classes in usable_images:
+
+        # Determine which split currently needs these classes most
+        candidates = []
+
+        for split_name, target in [
+            ("train", train_target),
+            ("val", val_target),
+            ("test", total - train_target - val_target),
+        ]:
+
+            if len(splits[split_name]) >= target:
                 continue
 
-            x_center = (x_min + w / 2.0) / img_w
-            y_center = (y_min + h / 2.0) / img_h
-            w_norm = w / img_w
-            h_norm = h / img_h
+            missing = sum(
+                1
+                for class_id in classes
+                if split_classes[split_name][class_id] == 0
+            )
 
-            # Clip within [0, 1]
-            x_center = max(0.0, min(1.0, x_center))
-            y_center = max(0.0, min(1.0, y_center))
-            w_norm = max(0.0, min(1.0, w_norm))
-            h_norm = max(0.0, min(1.0, h_norm))
+            candidates.append(
+                (missing, random.random(), split_name)
+            )
 
-            lines.append(f"{class_id} {x_center:.6f} {y_center:.6f} {w_norm:.6f} {h_norm:.6f}")
+        if not candidates:
+            continue
 
-        if lines:
-            with open(label_file, "w", encoding="utf-8") as out:
-                out.write("\n".join(lines) + "\n")
-            converted_count += 1
+        candidates.sort(
+            key=lambda x: (-x[0], x[1])
+        )
 
-    print(f"Successfully generated {converted_count} YOLO annotation files in: {PROCESSED_LABELS}")
+        selected_split = candidates[0][2]
+
+        splits[selected_split].append(image)
+
+        for class_id in classes:
+            split_classes[selected_split][class_id] += 1
+
+    # If anything somehow remains, fill by size
+    assigned_ids = {
+        image["id"]
+        for split in splits.values()
+        for image in split
+    }
+
+    remaining = [
+        image
+        for image, _ in usable_images
+        if image["id"] not in assigned_ids
+    ]
+
+    for image in remaining:
+
+        if len(splits["train"]) < train_target:
+            split = "train"
+        elif len(splits["val"]) < val_target:
+            split = "val"
+        else:
+            split = "test"
+
+        splits[split].append(image)
+
+    return splits
+
+
+def process_split(
+    split_name,
+    images,
+    annotation_index
+):
+
+    print()
+    print("=" * 50)
+    print(f"Processing {split_name.upper()}")
+    print("=" * 50)
+
+    image_count = 0
+    annotation_count = 0
+
+    class_counter = Counter()
+
+    for image_info in images:
+
+        image_id = image_info["id"]
+        file_name = image_info["file_name"]
+
+        source_image = IMAGE_DIR / file_name
+
+        if not source_image.exists():
+            continue
+
+        yolo_lines = []
+
+        for annotation in annotation_index[image_id]:
+
+            category_id = annotation["category_id"]
+
+            if category_id not in CATEGORY_MAPPING:
+                continue
+
+            class_id = CATEGORY_MAPPING[category_id]
+
+            converted = convert_bbox_to_yolo(
+                annotation["bbox"],
+                image_info["width"],
+                image_info["height"]
+            )
+
+            if converted is None:
+                continue
+
+            cx, cy, w, h = converted
+
+            yolo_lines.append(
+                f"{class_id} "
+                f"{cx:.6f} "
+                f"{cy:.6f} "
+                f"{w:.6f} "
+                f"{h:.6f}"
+            )
+
+            class_counter[class_id] += 1
+            annotation_count += 1
+
+        if not yolo_lines:
+            continue
+
+        destination_image = (
+            OUTPUT_DIR
+            / "images"
+            / split_name
+            / Path(file_name).name
+        )
+
+        destination_label = (
+            OUTPUT_DIR
+            / "labels"
+            / split_name
+            / Path(file_name).with_suffix(".txt").name
+        )
+
+        shutil.copy2(
+            source_image,
+            destination_image
+        )
+
+        with open(
+            destination_label,
+            "w",
+            encoding="utf-8"
+        ) as f:
+            f.write("\n".join(yolo_lines))
+
+        image_count += 1
+
+    print(f"Images: {image_count}")
+    print(f"Annotations: {annotation_count}")
+
+    print()
+    print("Class distribution:")
+
+    for class_id, class_name in enumerate(CLASS_NAMES):
+        print(
+            f"{class_id:2d} - "
+            f"{class_name:25s} "
+            f"{class_counter[class_id]}"
+        )
+
+
+def create_yaml():
+
+    yaml_file = OUTPUT_DIR / "data.yaml"
+
+    with open(
+        yaml_file,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        f.write(
+            f"path: {OUTPUT_DIR.as_posix()}\n"
+        )
+
+        f.write("train: images/train\n")
+        f.write("val: images/val\n")
+        f.write("test: images/test\n\n")
+
+        f.write(
+            f"nc: {len(CLASS_NAMES)}\n"
+        )
+
+        f.write("names:\n")
+
+        for index, name in enumerate(CLASS_NAMES):
+            f.write(
+                f"  {index}: {name}\n"
+            )
+
+    print()
+    print(f"Created: {yaml_file}")
+
+
+def main():
+
+    print("=" * 60)
+    print("DumpSentry Dataset Preparation")
+    print("=" * 60)
+
+    reset_output_directory()
+
+    data = load_data()
+
+    annotation_index = build_annotations(data)
+
+    splits = create_splits(
+        data["images"],
+        annotation_index
+    )
+
+    print()
+    print("FINAL IMAGE SPLIT")
+    print("------------------")
+
+    for split_name in ["train", "val", "test"]:
+        print(
+            f"{split_name}: "
+            f"{len(splits[split_name])}"
+        )
+
+    for split_name in ["train", "val", "test"]:
+
+        process_split(
+            split_name,
+            splits[split_name],
+            annotation_index
+        )
+
+    create_yaml()
+
+    print()
+    print("=" * 60)
+    print("DATASET PREPARATION COMPLETE")
+    print("=" * 60)
+
 
 if __name__ == "__main__":
-    taco_json = RAW_TACO / "annotations.json"
-    coco_to_yolo(taco_json)
+    main()

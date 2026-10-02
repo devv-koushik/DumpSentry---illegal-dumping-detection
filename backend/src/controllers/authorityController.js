@@ -2,7 +2,18 @@ import Authority from "../models/Authority.js";
 
 export async function getAuthorities(req, res, next) {
   try {
-    const authorities = await Authority.find().sort({ name: 1 });
+    const filter = {};
+    if (req.query.zone) {
+      filter.zone = req.query.zone;
+    }
+    if (req.query.borough) {
+      filter.borough = req.query.borough;
+    }
+    if (req.query.type) {
+      filter.type = req.query.type;
+    }
+
+    const authorities = await Authority.find(filter).sort({ wardNumber: 1, name: 1 });
     res.json(authorities);
   } catch (err) {
     next(err);
