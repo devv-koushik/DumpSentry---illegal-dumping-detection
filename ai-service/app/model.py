@@ -1,9 +1,9 @@
-import os
 import io
 import time
 import base64
 import logging
-from typing import Tuple, List, Dict, Any
+from pathlib import Path
+from typing import Tuple, List, Dict, Any, Optional
 import numpy as np
 from PIL import Image
 
@@ -24,168 +24,150 @@ except ImportError:
 
 logger = logging.getLogger("dumpsentry-ai")
 
-# 10 target classes
-TARGET_CLASSES = [
-    "plastic",
-    "cardboard_paper",
-    "metal",
-    "glass",
-    "organic_waste",
-    "electronic_waste",
-    "biomedical_waste",
-    "construction_debris",
-    "automotive_parts",
-    "mixed_hazardous",
-]
+AI_SERVICE_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_MODEL_PATH = AI_SERVICE_ROOT / "models" / "best.pt"
 
-# Distinct colors for drawing bounding boxes (BGR)
+# Distinct bounding box colors (BGR format for OpenCV) for the 13 YOLO waste classes
 CLASS_COLORS = {
-    "plastic": (255, 105, 65),          # Blueish
-    "cardboard_paper": (71, 148, 205),  # Brownish
-    "metal": (169, 169, 169),           # Gray
-    "glass": (238, 130, 238),           # Violet
-    "organic_waste": (34, 139, 34),     # Forest Green
-    "electronic_waste": (0, 165, 255),  # Orange
-    "biomedical_waste": (0, 0, 220),    # Red
-    "construction_debris": (128, 128, 0), # Olive
-    "automotive_parts": (205, 90, 106), # Purple
-    "mixed_hazardous": (0, 0, 139),     # Dark Red
+    "construction_waste": (128, 128, 0),    # Olive
+    "appliances": (200, 130, 50),           # Steel blue
+    "electronic_waste": (0, 165, 255),      # Orange
+    "furniture": (180, 105, 255),           # Violet
+    "metal_waste": (169, 169, 169),         # Gray
+    "plastic_waste": (255, 105, 65),        # Blue
+    "wood_waste": (42, 42, 165),            # Brown
+    "vehicle_waste": (205, 90, 106),        # Purple
+    "tyre_waste": (50, 50, 50),             # Dark Gray
+    "paper_waste": (71, 148, 205),          # Cardboard
+    "asbestos": (0, 0, 220),                # Red
+    "textile_waste": (147, 20, 255),        # Magenta
+    "mixed_waste": (0, 0, 139),             # Dark Red
 }
 
+
 class WasteDetector:
-    def __init__(self, model_path: str = "models/best.pt", fallback_model: str = "yolo11n.pt"):
-        self.model_path = model_path
-        self.fallback_model = fallback_model
+    def __init__(self, model_path: Optional[str] = None):
         self.model = None
         self.device = "cuda" if (torch and torch.cuda.is_available()) else "cpu"
-        self.loaded_model_name = "none"
+        self.class_names: Dict[int, str] = {}
+        self.model_path = self._resolve_model_path(model_path)
+        self.loaded_model_name = str(self.model_path)
         self._load_model()
+
+    def _resolve_model_path(self, model_path: Optional[str]) -> Path:
+        if model_path:
+            p = Path(model_path)
+            if p.is_file():
+                return p.resolve()
+            p_rel = (AI_SERVICE_ROOT / model_path).resolve()
+            if p_rel.is_file():
+                return p_rel
+            raise FileNotFoundError(
+                f"Specified model path not found: {model_path}. Expected path: {p_rel}"
+            )
+
+        if DEFAULT_MODEL_PATH.is_file():
+            return DEFAULT_MODEL_PATH.resolve()
+
+        raise FileNotFoundError(
+            f"Trained YOLO model not found at {DEFAULT_MODEL_PATH}. "
+            "Please ensure ai-service/models/best.pt exists."
+        )
 
     def _load_model(self):
         if YOLO is None:
-            logger.warning("ultralytics library not installed. Running in mock fallback mode.")
-            return
+            raise RuntimeError(
+                "The 'ultralytics' library is not installed in the environment."
+            )
 
-        # 1. Try custom fine-tuned weights first
-        if os.path.exists(self.model_path):
-            try:
-                logger.info(f"Loading custom fine-tuned model from {self.model_path}...")
-                self.model = YOLO(self.model_path)
-                self.loaded_model_name = self.model_path
-                return
-            except Exception as e:
-                logger.warning(f"Could not load custom weights ({e}), trying fallback...")
-
-        # 2. Try fallback pre-trained YOLO
+        logger.info(f"Loading trained YOLO model from {self.model_path}...")
         try:
-            logger.info(f"Loading baseline model {self.fallback_model}...")
-            self.model = YOLO(self.fallback_model)
-            self.loaded_model_name = self.fallback_model
+            self.model = YOLO(str(self.model_path))
+            self.class_names = dict(self.model.names)
+            logger.info(
+                f"Successfully loaded YOLO model with {len(self.class_names)} classes: {self.class_names}"
+            )
         except Exception as e:
-            logger.warning(f"Could not load fallback model ({e}). Mock detection will be used.")
             self.model = None
-            self.loaded_model_name = "mock_detector"
+            raise RuntimeError(
+                f"Failed to load YOLO model from {self.model_path}: {e}"
+            ) from e
 
-    def predict(self, image_bytes: bytes, conf_threshold: float = 0.35) -> Tuple[List[Dict[str, Any]], str, float]:
+    def predict(
+        self, image_bytes: bytes, conf_threshold: float = 0.25
+    ) -> Tuple[List[Dict[str, Any]], Optional[str], float]:
+        """
+        Runs real YOLO inference on input image bytes using the trained weights.
+        Never fabricates detections. Raises an exception if inference fails.
+        """
+        if self.model is None:
+            raise RuntimeError("YOLO model is not initialized. Cannot run inference.")
+
         start_time = time.time()
 
-        # Open image
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        img_np = np.array(image)
-        img_h, img_w = img_np.shape[:2]
+        # Decode image to BGR numpy array (standard OpenCV format expected by Ultralytics YOLO)
+        img_bgr = None
+        if cv2 is not None:
+            np_buf = np.frombuffer(image_bytes, np.uint8)
+            img_bgr = cv2.imdecode(np_buf, cv2.IMREAD_COLOR)
 
-        detections = []
-
-        if self.model is not None:
+        if img_bgr is None:
             try:
-                results = self.model.predict(
-                    source=img_np,
-                    conf=conf_threshold,
-                    device=self.device,
-                    verbose=False
-                )
-
-                if len(results) > 0:
-                    r = results[0]
-                    boxes = r.boxes
-                    for box in boxes:
-                        cls_id = int(box.cls[0].item())
-                        confidence = float(box.conf[0].item())
-
-                        # Map class ID
-                        if hasattr(r, "names") and cls_id in r.names:
-                            raw_name = r.names[cls_id]
-                            class_name = self._map_to_target_class(raw_name)
-                        elif cls_id < len(TARGET_CLASSES):
-                            class_name = TARGET_CLASSES[cls_id]
-                        else:
-                            class_name = "plastic"
-
-                        # Bounding box xyxy to xywh
-                        xyxy = box.xyxy[0].tolist()
-                        x1, y1, x2, y2 = map(int, xyxy)
-                        w = max(1, x2 - x1)
-                        h = max(1, y2 - y1)
-
-                        detections.append({
-                            "class": class_name,
-                            "confidence": round(confidence, 2),
-                            "bbox": {"x": x1, "y": y1, "width": w, "height": h}
-                        })
+                pil_image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+                img_rgb = np.array(pil_image)
+                img_bgr = img_rgb[:, :, ::-1].copy()  # RGB to BGR
             except Exception as e:
-                logger.error(f"Inference error: {e}. Falling back to heuristic/sample detections.")
-                detections = self._heuristic_detection(img_w, img_h)
-        else:
-            detections = self._heuristic_detection(img_w, img_h)
+                raise ValueError(f"Failed to decode image: {e}") from e
 
-        # Draw annotations
-        annotated_b64 = self._annotate_image(img_np, detections)
+        # Run inference
+        try:
+            results = self.model.predict(
+                source=img_bgr,
+                conf=conf_threshold,
+                device=self.device,
+                verbose=False,
+            )
+        except Exception as e:
+            logger.error(f"Inference error with model {self.model_path}: {e}")
+            raise RuntimeError(f"YOLO inference failed: {e}") from e
+
+        detections: List[Dict[str, Any]] = []
+
+        if len(results) > 0:
+            r = results[0]
+            boxes = r.boxes
+            names_dict = r.names if hasattr(r, "names") and r.names else self.class_names
+
+            for box in boxes:
+                cls_id = int(box.cls[0].item())
+                confidence = float(box.conf[0].item())
+
+                # Use actual class name from the model
+                class_name = names_dict.get(cls_id, f"class_{cls_id}")
+
+                # Bounding box xyxy to xywh
+                xyxy = box.xyxy[0].tolist()
+                x1, y1, x2, y2 = map(int, xyxy)
+                w = max(1, x2 - x1)
+                h = max(1, y2 - y1)
+
+                detections.append({
+                    "class": class_name,
+                    "confidence": round(confidence, 2),
+                    "bbox": {"x": x1, "y": y1, "width": w, "height": h},
+                })
+
+        # Draw annotations on image
+        annotated_b64 = self._annotate_image(img_bgr, detections)
         inference_time_ms = round((time.time() - start_time) * 1000, 2)
 
         return detections, annotated_b64, inference_time_ms
 
-    def _map_to_target_class(self, raw_name: str) -> str:
-        s = raw_name.lower().replace(" ", "_")
-        for tc in TARGET_CLASSES:
-            if tc in s or s in tc:
-                return tc
-        if "bottle" in s or "cup" in s or "bag" in s:
-            return "plastic"
-        if "box" in s or "paper" in s:
-            return "cardboard_paper"
-        if "can" in s:
-            return "metal"
-        return "plastic"
-
-    def _heuristic_detection(self, w: int, h: int) -> List[Dict[str, Any]]:
-        """Provides realistic bounding boxes when model weights are not locally initialized."""
-        return [
-            {
-                "class": "plastic",
-                "confidence": 0.92,
-                "bbox": {
-                    "x": int(w * 0.22),
-                    "y": int(h * 0.35),
-                    "width": int(w * 0.28),
-                    "height": int(h * 0.25)
-                }
-            },
-            {
-                "class": "biomedical_waste",
-                "confidence": 0.88,
-                "bbox": {
-                    "x": int(w * 0.58),
-                    "y": int(h * 0.40),
-                    "width": int(w * 0.22),
-                    "height": int(h * 0.20)
-                }
-            }
-        ]
-
-    def _annotate_image(self, img_np: np.array, detections: List[Dict[str, Any]]) -> str:
-        # Convert RGB to BGR for OpenCV
+    def _annotate_image(
+        self, img_bgr: np.ndarray, detections: List[Dict[str, Any]]
+    ) -> Optional[str]:
         if cv2 is not None:
-            canvas = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
+            canvas = img_bgr.copy()
             for det in detections:
                 bbox = det["bbox"]
                 cls_name = det["class"]
@@ -198,18 +180,19 @@ class WasteDetector:
                 cv2.rectangle(canvas, (x, y), (x + w, y + h), color, 3)
 
                 # Draw label banner
-                label = f"{cls_name.upper()} {int(conf * 100)}%"
+                display_name = cls_name.replace("_", " ").upper()
+                label = f"{display_name} {int(conf * 100)}%"
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 scale = 0.6
                 thickness = 2
-                (lbl_w, lbl_h), baseline = cv2.getTextSize(label, font, scale, thickness)
+                (lbl_w, lbl_h), _ = cv2.getTextSize(label, font, scale, thickness)
 
                 cv2.rectangle(
                     canvas,
                     (x, max(0, y - lbl_h - 10)),
                     (x + lbl_w + 10, max(0, y)),
                     color,
-                    -1
+                    -1,
                 )
                 cv2.putText(
                     canvas,
@@ -219,7 +202,7 @@ class WasteDetector:
                     scale,
                     (255, 255, 255),
                     thickness,
-                    cv2.LINE_AA
+                    cv2.LINE_AA,
                 )
 
             # Encode to JPEG
@@ -228,7 +211,8 @@ class WasteDetector:
                 return base64.b64encode(encoded_img.tobytes()).decode("utf-8")
 
         # Fallback using PIL
-        pil_img = Image.fromarray(img_np)
+        img_rgb = img_bgr[:, :, ::-1]
+        pil_img = Image.fromarray(img_rgb)
         buffer = io.BytesIO()
         pil_img.save(buffer, format="JPEG")
         return base64.b64encode(buffer.getvalue()).decode("utf-8")

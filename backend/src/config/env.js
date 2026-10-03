@@ -1,4 +1,23 @@
-import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load .env from backend folder or root
+const possiblePaths = [
+  path.resolve(process.cwd(), ".env"),
+  path.resolve(process.cwd(), "backend/.env"),
+  path.resolve(__dirname, "../../.env"),
+  path.resolve(__dirname, "../../../.env"),
+];
+
+for (const envPath of possiblePaths) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  }
+}
 
 /** Validated environment configuration. */
 const env = {
@@ -21,15 +40,19 @@ const env = {
   // AI Service
   aiServiceUrl: process.env.AI_SERVICE_URL || "http://127.0.0.1:8000",
 
-  // SMTP
+  // SMTP Email (Real SMTP credentials loaded strictly from environment)
   smtp: {
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    host: process.env.SMTP_HOST || "smtp.ethereal.email",
     port: parseInt(process.env.SMTP_PORT || "587", 10),
     secure: process.env.SMTP_SECURE === "true",
     user: process.env.SMTP_USER || "",
     pass: process.env.SMTP_PASS || "",
-    from: process.env.SMTP_FROM || "DumpSentry Alerts <alerts@dumpsentry.ai>",
+    from: process.env.SMTP_FROM || `"DumpSentry Alerts" <alerts@dumpsentry.ai>`,
   },
+
+  // Controlled Test Recipient
+  alertTestRecipient:
+    process.env.ALERT_TEST_RECIPIENT || process.env.CONTROLLED_TEST_RECIPIENT || "controlled-test@dumpsentry.ai",
 
   // Frontend
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",

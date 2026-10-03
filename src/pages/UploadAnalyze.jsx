@@ -5,8 +5,7 @@ import UploadZone from "../components/UploadZone";
 import AIAnalysisProgress from "../components/AIAnalysisProgress";
 import DetectionStatus from "../components/DetectionStatus";
 import ConfidenceBadge from "../components/ConfidenceBadge";
-import AdminGuard from "../components/AdminGuard";
-import { analyzeImage, ANALYSIS_STAGES } from "../services/mockAI";
+import { analyzeImage, ANALYSIS_STAGES } from "../services/api";
 
 export default function UploadAnalyze() {
   const [file, setFile] = useState(null);
@@ -14,20 +13,34 @@ export default function UploadAnalyze() {
   const [stageIndex, setStageIndex] = useState(-1);
   const [result, setResult] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   function handleFile(f) {
     setFile(f);
     setPreviewUrl(URL.createObjectURL(f));
     setResult(null);
     setStageIndex(-1);
+    setErrorMsg("");
   }
 
   async function handleAnalyze() {
     setAnalyzing(true);
     setResult(null);
-    const res = await analyzeImage(file, (i) => setStageIndex(i));
-    setResult(res);
-    setAnalyzing(false);
+    setErrorMsg("");
+    try {
+      const coords =
+        latitude.trim() && longitude.trim()
+          ? { latitude: latitude.trim(), longitude: longitude.trim() }
+          : null;
+      const res = await analyzeImage(file, (i) => setStageIndex(i), coords);
+      setResult(res);
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to analyze image. Please ensure services are running.");
+    } finally {
+      setAnalyzing(false);
+    }
   }
 
   function handleReset() {
@@ -36,16 +49,17 @@ export default function UploadAnalyze() {
     setResult(null);
     setStageIndex(-1);
     setAnalyzing(false);
+    setLatitude("");
+    setLongitude("");
+    setErrorMsg("");
   }
 
   return (
-    <AdminGuard
-      action="upload aerial imagery and run the YOLOv11 AI detection pipeline"
-      title="Drone Upload & AI Vision Pipeline"
-      description="Only authenticated administrators can manually upload high-resolution aerial imagery and execute automated waste classification and routing."
-    >
-      <div>
-        <PageHeader title="Analyze New Drone Image" description="Upload a drone capture to run it through the YOLOv11 AI detection pipeline with geospatial authority routing." />
+    <div>
+      <PageHeader
+        title="Analyze New Drone Image"
+        description="Upload a drone capture to run it through the YOLOv11 AI detection pipeline with geospatial authority routing."
+      />
 
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
@@ -54,16 +68,45 @@ export default function UploadAnalyze() {
             ) : (
               <div className="card overflow-hidden">
                 <div className="relative">
-                  <img src={previewUrl} alt="Uploaded preview" className="h-80 w-full object-cover sm:h-[420px]" />
-                  {result?.wasteDetected &&
-                    result.boundingBoxes.map((b, i) => (
-                      <div
-                        key={i}
-                        className="pointer-events-none absolute rounded-md border-2 border-accent"
-                        style={{ left: `${b.x}%`, top: `${b.y}%`, width: `${b.w}%`, height: `${b.h}%` }}
-                      />
-                    ))}
+                  <img
+                    src={result?.annotatedImageUrl || previewUrl}
+                    alt="Uploaded preview"
+                    className="h-80 w-full object-cover sm:h-[420px]"
+                  />
                 </div>
+
+                {/* Optional GPS Telemetry for laptop testing */}
+                {!result && !analyzing && (
+                  <div className="border-t border-line bg-paper/60 px-5 py-3">
+                    <p className="text-[11px] font-medium text-ink flex items-center gap-1.5 mb-2">
+                      <MapPin size={12} className="text-accent" />
+                      Optional GPS Coordinates (for Environmental Context & Authority Routing):
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 max-w-sm">
+                      <input
+                        type="text"
+                        placeholder="Latitude (e.g. 22.5354)"
+                        value={latitude}
+                        onChange={(e) => setLatitude(e.target.value)}
+                        className="rounded-lg border border-line bg-white px-3 py-1.5 text-xs text-ink outline-none focus:border-accent"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Longitude (e.g. 88.3616)"
+                        value={longitude}
+                        onChange={(e) => setLongitude(e.target.value)}
+                        className="rounded-lg border border-line bg-white px-3 py-1.5 text-xs text-ink outline-none focus:border-accent"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <div className="border-t border-danger/20 bg-danger/10 px-5 py-2.5 text-xs text-danger">
+                    {errorMsg}
+                  </div>
+                )}
+
                 <div className="flex flex-wrap items-center justify-between gap-3 p-5">
                   <p className="text-sm text-muted">{file?.name}</p>
                   <div className="flex gap-2">
@@ -84,15 +127,39 @@ export default function UploadAnalyze() {
               <div className="card mt-6 p-6">
                 <p className="mb-5 font-medium text-ink">AI Result</p>
                 {!result.wasteDetected ? (
-                  <p className="text-sm text-muted">No waste detected in this image. Nothing to route.</p>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted">No waste detected by YOLO vision model. Incident marked as Clean.</p>
+                    <dl className="grid grid-cols-2 gap-y-5 text-sm sm:grid-cols-3">
+                      <Field label="Garbage Detected" value="No" />
+                      <Field label="Status" value={<DetectionStatus status={result.status || "Clean"} />} />
+                      <Field label="Context" value={result.context} />
+                    </dl>
+                  </div>
                 ) : (
                   <dl className="grid grid-cols-2 gap-y-5 text-sm sm:grid-cols-3">
-                    <Field label="Garbage Detected" value="Yes" />
-                    <Field label="Waste Type" value={result.wasteType} />
-                    <Field label="Context" value={result.context} />
+                    <Field label="Incident ID" value={result.detectionId || result.id || "Recorded"} />
+                    <Field label="Waste Classes" value={result.wasteType} />
                     <Field label="Confidence" value={<ConfidenceBadge value={result.confidence} />} />
-                    <Field label="Status" value={<DetectionStatus status={result.status} />} />
+                    <Field label="Environmental Context" value={result.context} />
+                    <Field label="Incident Status" value={<DetectionStatus status={result.status} />} />
                     <Field label="Responsible Authority" value={result.authority} />
+                    <Field label="Location" value={result.location || "Location Unavailable"} />
+                    <Field
+                      label="GPS Coordinates"
+                      value={
+                        result.latitude != null && result.longitude != null
+                          ? `${Number(result.latitude).toFixed(4)}, ${Number(result.longitude).toFixed(4)}`
+                          : "Location Unavailable"
+                      }
+                    />
+                    <Field
+                      label="Nearby Places"
+                      value={
+                        result.nearbyPlaces?.length > 0
+                          ? result.nearbyPlaces.map((p) => `${p.name} (${p.distance}m)`).join(", ")
+                          : "None detected within 300m"
+                      }
+                    />
                   </dl>
                 )}
               </div>
@@ -114,9 +181,8 @@ export default function UploadAnalyze() {
               </div>
             )}
           </div>
-        </div>
       </div>
-    </AdminGuard>
+    </div>
   );
 }
 

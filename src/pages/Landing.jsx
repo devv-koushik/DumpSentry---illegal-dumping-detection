@@ -20,10 +20,11 @@ import {
 } from "lucide-react";
 import LandingNav from "../components/LandingNav";
 import ReportProblemModal from "../components/ReportProblemModal";
-import { OVERVIEW_STATS } from "../data/detections";
 import { useLenis } from "../context/LenisContext";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { OVERVIEW_STATS as DEFAULT_STATS } from "../data/detections";
+import { fetchOverviewStats } from "../services/api";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -53,6 +54,24 @@ export default function Landing() {
   const lenisContext = useLenis();
   const { isAdmin } = useAuth();
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [stats, setStats] = useState(DEFAULT_STATS);
+
+  useEffect(() => {
+    fetchOverviewStats()
+      .then((data) => {
+        if (data && typeof data === "object") {
+          setStats({
+            total: data.total ?? data.totalDetections ?? DEFAULT_STATS.total,
+            suspectedIllegal: data.suspectedIllegal ?? DEFAULT_STATS.suspectedIllegal,
+            pendingReview: data.pendingReview ?? DEFAULT_STATS.pendingReview,
+            resolved: data.resolved ?? DEFAULT_STATS.resolved,
+          });
+        }
+      })
+      .catch(() => {
+        // Fallback to default stats if API is unavailable
+      });
+  }, []);
 
   const handleScrollTo = (e, href) => {
     e.preventDefault();
@@ -136,7 +155,7 @@ export default function Landing() {
             className="mt-12 flex flex-wrap gap-x-10 gap-y-4 border-t border-line pt-6"
           >
             <div>
-              <dt className="font-mono text-2xl font-semibold">{OVERVIEW_STATS.total}+</dt>
+              <dt className="font-mono text-2xl font-semibold">{stats.total}+</dt>
               <dd className="text-xs text-muted">Dumps detected</dd>
             </div>
             <div>
@@ -359,10 +378,10 @@ export default function Landing() {
           </motion.p>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { label: "Total Detections", value: OVERVIEW_STATS.total, icon: ScanSearch },
-              { label: "Suspected Illegal", value: OVERVIEW_STATS.suspectedIllegal, icon: ShieldAlert },
-              { label: "Pending Review", value: OVERVIEW_STATS.pendingReview, icon: Layers },
-              { label: "Resolved", value: OVERVIEW_STATS.resolved, icon: MapPin },
+              { label: "Total Detections", value: stats.total, icon: ScanSearch },
+              { label: "Suspected Illegal", value: stats.suspectedIllegal, icon: ShieldAlert },
+              { label: "Pending Review", value: stats.pendingReview, icon: Layers },
+              { label: "Resolved", value: stats.resolved, icon: MapPin },
             ].map((s, i) => (
               <motion.div key={s.label} variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}>
                 <s.icon size={20} className="text-accent" />
@@ -439,7 +458,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="border-t border-line py-5 text-center text-xs text-muted">
-          © {new Date().getFullYear()} DumpSentry. Demo product — mock data only.
+          © {new Date().getFullYear()} DumpSentry. Aerial AI & Geospatial Authority Routing Platform.
         </div>
       </footer>
 

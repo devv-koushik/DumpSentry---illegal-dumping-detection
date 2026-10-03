@@ -15,9 +15,7 @@ import {
 } from "recharts";
 import PageHeader from "../components/PageHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { TREND_DATA, CATEGORY_DATA, STATUS_DISTRIBUTION, CONTEXT_DISTRIBUTION } from "../data/detections";
-import { fetchAlerts } from "../services/mockAlerts";
-import { fetchAnalytics } from "../services/api";
+import { fetchAlerts, fetchAnalytics } from "../services/api";
 
 const COLORS = ["#e2a33b", "#16241d", "#3f8a5c", "#c94b3f", "#5c665d", "#8a9584"];
 
@@ -25,24 +23,24 @@ export default function Analytics() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState({
-    trend: TREND_DATA,
-    categoryData: CATEGORY_DATA,
-    statusDistribution: STATUS_DISTRIBUTION,
-    contextDistribution: CONTEXT_DISTRIBUTION,
+    trend: [],
+    categoryData: [],
+    statusDistribution: [],
+    contextDistribution: [],
   });
 
   useEffect(() => {
     Promise.all([
-      fetchAlerts(),
+      fetchAlerts().catch(() => []),
       fetchAnalytics().catch(() => null),
     ]).then(([alertsRes, liveAnalytics]) => {
-      setAlerts(alertsRes || []);
-      if (liveAnalytics && liveAnalytics.trend) {
+      setAlerts(Array.isArray(alertsRes) ? alertsRes : []);
+      if (liveAnalytics) {
         setAnalyticsData({
-          trend: liveAnalytics.trend || TREND_DATA,
-          categoryData: liveAnalytics.categoryData || CATEGORY_DATA,
-          statusDistribution: liveAnalytics.statusDistribution || STATUS_DISTRIBUTION,
-          contextDistribution: liveAnalytics.contextDistribution || CONTEXT_DISTRIBUTION,
+          trend: Array.isArray(liveAnalytics.trend) ? liveAnalytics.trend : [],
+          categoryData: Array.isArray(liveAnalytics.categoryData) ? liveAnalytics.categoryData : [],
+          statusDistribution: Array.isArray(liveAnalytics.statusDistribution) ? liveAnalytics.statusDistribution : [],
+          contextDistribution: Array.isArray(liveAnalytics.contextDistribution) ? liveAnalytics.contextDistribution : [],
         });
       }
       setLoading(false);
@@ -63,7 +61,11 @@ export default function Analytics() {
       <PageHeader title="Analytics" description="Detection and alert trends across all monitored zones." />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <ChartCard title="Detection Trend">
+        <ChartCard
+          title="Detection Trend"
+          empty={analyticsData.trend.length === 0}
+          emptyMessage="No detection trend data recorded yet in the past 7 days."
+        >
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={analyticsData.trend}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
@@ -75,7 +77,11 @@ export default function Analytics() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Waste Categories">
+        <ChartCard
+          title="Waste Categories"
+          empty={analyticsData.categoryData.length === 0}
+          emptyMessage="No waste categories identified in the database yet."
+        >
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie data={analyticsData.categoryData} dataKey="value" nameKey="name" innerRadius={54} outerRadius={90} paddingAngle={2}>
@@ -88,7 +94,11 @@ export default function Analytics() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Incident Status">
+        <ChartCard
+          title="Incident Status"
+          empty={analyticsData.statusDistribution.length === 0}
+          emptyMessage="No incident status breakdown recorded yet."
+        >
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.statusDistribution}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
@@ -100,7 +110,11 @@ export default function Analytics() {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Context Distribution">
+        <ChartCard
+          title="Context Distribution"
+          empty={analyticsData.contextDistribution.length === 0}
+          emptyMessage="No environmental context distribution data available yet."
+        >
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.contextDistribution} layout="vertical" margin={{ left: 24 }}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" horizontal={false} />
@@ -133,11 +147,17 @@ export default function Analytics() {
   );
 }
 
-function ChartCard({ title, children }) {
+function ChartCard({ title, children, empty = false, emptyMessage = "No surveillance data available" }) {
   return (
     <div className="card p-5">
       <p className="mb-4 font-medium text-ink">{title}</p>
-      {children}
+      {empty ? (
+        <div className="flex h-[260px] items-center justify-center text-xs text-muted">
+          {emptyMessage}
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }

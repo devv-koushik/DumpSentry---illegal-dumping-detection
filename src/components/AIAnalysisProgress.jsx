@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { ANALYSIS_STAGES } from "../services/mockAI";
+import { ANALYSIS_STAGES } from "../services/api";
 
 export default function AIAnalysisProgress({ activeIndex }) {
   return (

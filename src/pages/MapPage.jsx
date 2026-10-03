@@ -6,7 +6,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import WardSelectionWizard from "../components/WardSelectionWizard";
 import WardAuthorityCard from "../components/WardAuthorityCard";
 import EditWardAuthorityModal from "../components/EditWardAuthorityModal";
-import { fetchDetections } from "../services/mockDetections";
+import { fetchDetections } from "../services/api";
 import {
   getStoredWards,
   getLandmarks,
@@ -44,12 +44,17 @@ export default function MapPage() {
   const [filterToWard, setFilterToWard] = useState(false);
   const [showAllBoundaries, setShowAllBoundaries] = useState(true);
 
-  // Load detections
+  // Load detections from real backend
   useEffect(() => {
-    fetchDetections().then((d) => {
-      setAllDetections(d);
-      setLoading(false);
-    });
+    fetchDetections()
+      .then((d) => {
+        setAllDetections(Array.isArray(d) ? d : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setAllDetections([]);
+        setLoading(false);
+      });
   }, []);
 
   // Subscribe to changes in stored wards
@@ -128,9 +133,9 @@ export default function MapPage() {
       const matchesStatus = statusFilter === "All" || d.status === statusFilter;
       const matchesQuery =
         !textQuery ||
-        d.location.toLowerCase().includes(textQuery.toLowerCase()) ||
-        d.wasteType.toLowerCase().includes(textQuery.toLowerCase()) ||
-        d.id.toLowerCase().includes(textQuery.toLowerCase());
+        (d.location || "").toLowerCase().includes(textQuery.toLowerCase()) ||
+        (d.wasteType || "").toLowerCase().includes(textQuery.toLowerCase()) ||
+        (d.id || "").toLowerCase().includes(textQuery.toLowerCase());
       return matchesStatus && matchesQuery;
     });
   }, [allDetections, statusFilter, textQuery]);
@@ -139,7 +144,11 @@ export default function MapPage() {
   const wardDetectionsCount = useMemo(() => {
     if (!selectedWard || !selectedWard.boundary) return 0;
     return allDetections.filter((d) =>
-      isPointInPolygon([d.latitude, d.longitude], selectedWard.boundary)
+      d.latitude != null &&
+      d.longitude != null &&
+      !isNaN(Number(d.latitude)) &&
+      !isNaN(Number(d.longitude)) &&
+      isPointInPolygon([Number(d.latitude), Number(d.longitude)], selectedWard.boundary)
     ).length;
   }, [allDetections, selectedWard]);
 

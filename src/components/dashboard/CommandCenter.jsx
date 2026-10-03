@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { DETECTIONS as INITIAL_DETECTIONS } from "../../data/detections";
-import { fetchDetections } from "../../services/mockDetections";
+import { fetchDetections, updateDetectionStatus } from "../../services/api";
 import TopBar from "./TopBar";
 import CenterMap from "./CenterMap";
 import FloatingStats from "./FloatingStats";
@@ -12,15 +11,17 @@ import IncidentModal from "./IncidentModal";
 import UploadModal from "./UploadModal";
 
 export default function CommandCenter() {
-  const [detections, setDetections] = useState(INITIAL_DETECTIONS);
+  const [detections, setDetections] = useState([]);
 
-  // Load live detections from API (falls back to mock if offline)
+  // Load live detections from real backend API
   useEffect(() => {
-    fetchDetections({ limit: 100 }).then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        setDetections(data);
-      }
-    }).catch(() => {});
+    fetchDetections({ limit: 100 })
+      .then((data) => {
+        setDetections(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        setDetections([]);
+      });
   }, []);
   const [selectedDetection, setSelectedDetection] = useState(null);
   const [modalDetection, setModalDetection] = useState(null);
@@ -45,27 +46,29 @@ export default function CommandCenter() {
     [detections]
   );
 
-  const handleModalAction = useCallback((action, id) => {
-    if (action === "resolve") {
+  const handleModalAction = useCallback(async (action, id) => {
+    let newStatus = null;
+    if (action === "resolve") newStatus = "Resolved";
+    else if (action === "verify") newStatus = "Suspected Illegal";
+    else if (action === "reject") newStatus = "Rejected";
+
+    if (newStatus) {
       setDetections((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, status: "Resolved" } : d))
+        prev.map((d) => (d.id === id ? { ...d, status: newStatus } : d))
       );
-      setModalDetection(null);
-      setSelectedDetection(null);
-    } else if (action === "verify") {
-      setDetections((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, status: "Suspected Illegal" } : d))
-      );
-      setModalDetection(null);
-    } else if (action === "reject") {
-      setDetections((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, status: "Rejected" } : d))
-      );
-      setModalDetection(null);
+      try {
+        await updateDetectionStatus(id, newStatus);
+      } catch (err) {
+        console.error("Failed to update detection status in backend:", err);
+      }
     }
+
+    setModalDetection(null);
+    if (action === "resolve") setSelectedDetection(null);
   }, []);
 
   const handleAddDetection = useCallback((newDet) => {
+    if (!newDet) return;
     setDetections((prev) => [newDet, ...prev]);
     setSelectedDetection(newDet);
     setIsUploadOpen(false);

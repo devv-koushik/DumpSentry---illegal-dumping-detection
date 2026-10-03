@@ -4,7 +4,7 @@ import { ShieldCheck, ExternalLink } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import AlertTable from "../components/AlertTable";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { fetchAlerts, sendAlert } from "../services/mockAlerts";
+import { fetchAlerts, sendAlert } from "../services/api";
 import { AUTHORITIES } from "../data/authorities";
 import { useAuth } from "../context/AuthContext";
 
@@ -16,10 +16,15 @@ export default function Alerts() {
   const { isAdmin, requireAdmin } = useAuth();
 
   useEffect(() => {
-    fetchAlerts().then((a) => {
-      setAlerts(a);
-      setLoading(false);
-    });
+    fetchAlerts()
+      .then((a) => {
+        setAlerts(Array.isArray(a) ? a : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setAlerts([]);
+        setLoading(false);
+      });
   }, []);
 
   async function handleSend(alert) {
@@ -31,8 +36,8 @@ export default function Alerts() {
     } catch {
       setToast(`Failed to notify ${alert.authority}. It can be retried.`);
     }
-    const updated = await fetchAlerts();
-    setAlerts(updated);
+    const updated = await fetchAlerts().catch(() => []);
+    setAlerts(Array.isArray(updated) ? updated : []);
     setSendingId(null);
     setTimeout(() => setToast(""), 3000);
   }

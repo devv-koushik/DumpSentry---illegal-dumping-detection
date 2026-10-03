@@ -85,7 +85,53 @@ export function logout() {
   removeAuthToken();
 }
 
+export function getImageUrl(path) {
+  if (!path) return "";
+  if (
+    path.startsWith("http://") ||
+    path.startsWith("https://") ||
+    path.startsWith("blob:") ||
+    path.startsWith("data:")
+  ) {
+    return path;
+  }
+  const backendBase = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+  return `${backendBase}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
+export const ANALYSIS_STAGES = [
+  "Uploading Drone Image",
+  "Running YOLOv11 Computer Vision",
+  "Querying Geospatial Context",
+  "Evaluating Municipal Rules",
+  "Assigning Responsible Authority",
+  "Complete",
+];
+
 // ─── Detections API ──────────────────────────────────────────────────────────
+
+function sanitizeDetection(d) {
+  if (!d) return null;
+  return {
+    ...d,
+    id: d.id || d.detectionId || d._id,
+    image: getImageUrl(d.image || d.annotatedImageUrl || d.originalImageUrl),
+    originalImageUrl: getImageUrl(d.originalImageUrl),
+    annotatedImageUrl: getImageUrl(d.annotatedImageUrl),
+    wasteTypes: Array.isArray(d.wasteTypes) ? d.wasteTypes : [],
+    wasteType: d.wasteType || (Array.isArray(d.wasteTypes) && d.wasteTypes.length > 0 ? d.wasteTypes.join(", ") : "No Waste Detected"),
+    confidence: typeof d.confidence === "number"
+      ? d.confidence
+      : Math.round((d.overallConfidence || 0) > 1 ? d.overallConfidence : (d.overallConfidence || 0) * 100),
+    context: d.context || "Unclassified Area",
+    location: d.location || "Location Unavailable",
+    authority: d.authority || d.authorityName || "Pending Assignment",
+    status: d.status || "Pending Review",
+    alertStatus: d.alertStatus || "Not Sent",
+    nearbyPlaces: Array.isArray(d.nearbyPlaces) ? d.nearbyPlaces : [],
+    detections: Array.isArray(d.detections) ? d.detections : [],
+  };
+}
 
 export async function fetchDetections(filters = {}) {
   const params = new URLSearchParams();
@@ -98,29 +144,35 @@ export async function fetchDetections(filters = {}) {
 
   const queryString = params.toString() ? `?${params.toString()}` : "";
   const response = await request(`/detections${queryString}`);
-  return response.data || response;
+  const list = Array.isArray(response) ? response : (response.data || []);
+  return list.map(sanitizeDetection);
 }
 
 export async function fetchDetectionById(id) {
-  return request(`/detections/${id}`);
+  const d = await request(`/detections/${id}`);
+  return sanitizeDetection(d);
 }
 
 export async function fetchMapDetections() {
-  return request("/detections/map");
+  const response = await request("/detections/map");
+  const list = Array.isArray(response) ? response : (response.data || []);
+  return list.map(sanitizeDetection);
 }
 
 export async function updateDetectionStatus(id, status) {
-  return request(`/detections/${id}/status`, {
+  const updated = await request(`/detections/${id}/status`, {
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
+  return sanitizeDetection(updated);
 }
 
 export async function updateAlertStatus(id, alertStatus) {
-  return request(`/detections/${id}/status`, {
+  const updated = await request(`/detections/${id}/status`, {
     method: "PATCH",
     body: JSON.stringify({ alertStatus }),
   });
+  return sanitizeDetection(updated);
 }
 
 export async function verifyDetection(id, verified, notes = "") {
@@ -139,52 +191,60 @@ export async function deleteDetection(id) {
 // ─── Image Analysis (AI + Geospatial + Rules) ────────────────────────────────
 
 export async function analyzeImage(file, onProgress = () => {}, coords = null) {
-  const STAGES = [
-    "Uploading Drone Image",
-    "Running YOLOv11 Computer Vision",
-    "Querying Geospatial Context",
-    "Evaluating Municipal Rules",
-    "Assigning Responsible Authority",
-    "Complete",
-  ];
-
   for (let i = 0; i < 3; i++) {
-    onProgress(i, STAGES[i]);
-    await new Promise((r) => setTimeout(r, 300));
+    onProgress(i, ANALYSIS_STAGES[i]);
+    await new Promise((r) => setTimeout(r, 200));
   }
 
   const formData = new FormData();
   formData.append("image", file);
-  if (coords?.latitude) formData.append("latitude", coords.latitude);
-  if (coords?.longitude) formData.append("longitude", coords.longitude);
+  if (coords?.latitude != null && coords?.latitude !== "") formData.append("latitude", coords.latitude);
+  if (coords?.longitude != null && coords?.longitude !== "") formData.append("longitude", coords.longitude);
   if (coords?.droneId) formData.append("droneId", coords.droneId);
 
-  onProgress(3, STAGES[3]);
+  onProgress(3, ANALYSIS_STAGES[3]);
   const result = await request("/analysis/analyze", {
     method: "POST",
     body: formData,
   });
 
-  onProgress(4, STAGES[4]);
-  await new Promise((r) => setTimeout(r, 200));
-  onProgress(5, STAGES[5]);
+  onProgress(4, ANALYSIS_STAGES[4]);
+  await new Promise((r) => setTimeout(r, 150));
+  onProgress(5, ANALYSIS_STAGES[5]);
 
-  const det = result.detection;
+  const det = result.detection || {};
+  const wasteDetected = Boolean(result.ai?.wasteDetected);
+  const rawBoxes = det.detections || result.ai?.detections || [];
+
   return {
-    wasteDetected: result.ai?.wasteDetected ?? true,
-    wasteType: det.wasteType || det.wasteTypes?.[0] || "Plastic",
-    context: det.context || "Monitored Area",
-    confidence: Math.round((det.confidence || det.overallConfidence || 0.85) * (det.confidence > 1 ? 1 : 100)),
-    status: det.status || "Suspected Illegal",
-    boundingBoxes: (det.detections || []).map((d) => ({
-      x: d.bbox?.x || 20,
-      y: d.bbox?.y || 25,
-      w: d.bbox?.width || 50,
-      h: d.bbox?.height || 45,
+    detectionId: det.detectionId || det.id,
+    id: det.detectionId || det.id,
+    wasteDetected,
+    wasteTypes: det.wasteTypes || result.ai?.classes || [],
+    wasteType: det.wasteType || (Array.isArray(det.wasteTypes) && det.wasteTypes.length > 0 ? det.wasteTypes.join(", ") : (wasteDetected ? "Detected Waste" : "No Waste Detected")),
+    context: det.context || result.geospatial?.contextLabel || "Unclassified Area",
+    contextType: det.contextType || result.geospatial?.contextType || "OTHER_UNKNOWN",
+    confidence: typeof det.confidence === "number"
+      ? det.confidence
+      : Math.round((det.overallConfidence || result.ai?.maxConfidence || 0) * 100),
+    status: det.status || (wasteDetected ? "Pending Review" : "Clean"),
+    boundingBoxes: rawBoxes.map((d) => ({
+      class: d.class,
+      confidence: Math.round((d.confidence || 0) * 100),
+      x: d.bbox?.x ?? 0,
+      y: d.bbox?.y ?? 0,
+      w: d.bbox?.width ?? 0,
+      h: d.bbox?.height ?? 0,
     })),
-    authority: det.authority || det.authorityName || "City Municipal Corporation",
-    authorityEmail: result.ruleEngine?.authority?.email || "solidwaste@citycorp.gov.in",
-    location: det.location,
+    authority: det.authority || det.authorityName || result.ruleEngine?.authority?.name || "Pending Assignment",
+    authorityEmail: result.ruleEngine?.authority?.email || "",
+    location: det.location || result.geospatial?.location || "Location Unavailable",
+    latitude: det.latitude ?? result.geospatial?.latitude ?? null,
+    longitude: det.longitude ?? result.geospatial?.longitude ?? null,
+    nearbyPlaces: det.nearbyPlaces || result.geospatial?.nearbyPlaces || [],
+    image: getImageUrl(det.annotatedImageUrl || det.originalImageUrl || det.image),
+    originalImageUrl: getImageUrl(det.originalImageUrl),
+    annotatedImageUrl: getImageUrl(det.annotatedImageUrl),
     analyzedAt: det.timestamp || new Date().toISOString(),
     rawResult: result,
   };

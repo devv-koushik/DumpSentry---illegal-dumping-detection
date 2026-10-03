@@ -13,12 +13,11 @@ export async function getOverviewStats(req, res, next) {
       Detection.countDocuments({ status: "Resolved" }),
     ]);
 
-    // Fallback counts if DB is brand new so dashboard displays realistic sample metrics
     res.json({
-      total: total || 142,
-      suspectedIllegal: suspectedIllegal || 38,
-      pendingReview: pendingReview || 12,
-      resolved: resolved || 92,
+      total,
+      suspectedIllegal,
+      pendingReview,
+      resolved,
     });
   } catch (err) {
     next(err);
@@ -34,36 +33,11 @@ export async function getAnalytics(req, res, next) {
     const totalDetections = await Detection.countDocuments();
 
     if (totalDetections === 0) {
-      // Return representative default analytics if no detections exist yet
       return res.json({
-        trend: [
-          { day: "Mon", detections: 14 },
-          { day: "Tue", detections: 22 },
-          { day: "Wed", detections: 18 },
-          { day: "Thu", detections: 29 },
-          { day: "Fri", detections: 35 },
-          { day: "Sat", detections: 41 },
-          { day: "Sun", detections: 28 },
-        ],
-        categoryData: [
-          { name: "Plastic", value: 42 },
-          { name: "Biomedical", value: 18 },
-          { name: "Construction Debris", value: 24 },
-          { name: "Electronic / E-Waste", value: 9 },
-          { name: "Organic / Other", value: 15 },
-        ],
-        contextDistribution: [
-          { name: "Near Hospital", value: 32 },
-          { name: "Near School", value: 24 },
-          { name: "Roadside", value: 28 },
-          { name: "Water Body", value: 16 },
-        ],
-        statusDistribution: [
-          { name: "Suspected Illegal", value: 38 },
-          { name: "Pending Review", value: 12 },
-          { name: "Verified", value: 45 },
-          { name: "Resolved", value: 47 },
-        ],
+        trend: [],
+        categoryData: [],
+        contextDistribution: [],
+        statusDistribution: [],
       });
     }
 
@@ -103,20 +77,10 @@ export async function getAnalytics(req, res, next) {
     ]);
 
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const trend = trendAgg.length > 0
-      ? trendAgg.map((t) => ({
-          day: days[new Date(t._id).getDay()],
-          detections: t.count,
-        }))
-      : [
-          { day: "Mon", detections: 8 },
-          { day: "Tue", detections: 15 },
-          { day: "Wed", detections: 12 },
-          { day: "Thu", detections: 18 },
-          { day: "Fri", detections: 24 },
-          { day: "Sat", detections: 30 },
-          { day: "Sun", detections: 21 },
-        ];
+    const trend = trendAgg.map((t) => ({
+      day: days[new Date(t._id).getDay()],
+      detections: t.count,
+    }));
 
     res.json({
       trend,

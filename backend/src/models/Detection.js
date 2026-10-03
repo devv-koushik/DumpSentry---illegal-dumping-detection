@@ -45,9 +45,10 @@ const detectionSchema = new mongoose.Schema(
     droneId: { type: String, default: null },
 
     // ─── Location ───
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-    location: { type: String, default: "" }, // reverse-geocoded address
+    latitude: { type: Number, default: null },
+    longitude: { type: Number, default: null },
+    location: { type: String, default: "Location Unavailable" }, // reverse-geocoded address or unavailable
+    gpsAvailable: { type: Boolean, default: false },
 
     // ─── Timestamp ───
     timestamp: { type: Date, default: Date.now },

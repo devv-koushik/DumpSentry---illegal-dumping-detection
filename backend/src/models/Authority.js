@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { AUTHORITY_TYPES } from "../config/constants.js";
 
 const authoritySchema = new mongoose.Schema(
   {
@@ -6,8 +7,8 @@ const authoritySchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["HOSPITAL", "CLINIC", "SCHOOL", "COLLEGE", "UNIVERSITY", "PWD", "MUNICIPAL", "CIVIC", "WARD", "OTHER"],
-      default: "WARD",
+      enum: AUTHORITY_TYPES,
+      default: "MUNICIPAL",
     },
     email: { type: String, required: true, trim: true, lowercase: true },
     phone: { type: String, default: "" },

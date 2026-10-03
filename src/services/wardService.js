@@ -203,7 +203,9 @@ export function resetWardsToDefaults() {
  * Ray-casting algorithm to test if [lat, lng] is inside a polygon boundary
  */
 export function isPointInPolygon(point, polygon) {
+  if (!point || !polygon || !Array.isArray(point) || !Array.isArray(polygon)) return false;
   const [lat, lng] = point;
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return false;
   let inside = false;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i][0];
@@ -222,6 +224,7 @@ export function isPointInPolygon(point, polygon) {
  * Detect which ward a given GPS coordinate belongs to
  */
 export function findWardForCoordinates(lat, lng, wards = getStoredWards()) {
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return null;
   for (const ward of wards) {
     if (ward.boundary && isPointInPolygon([lat, lng], ward.boundary)) {
       return ward;

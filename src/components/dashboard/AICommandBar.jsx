@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Send, Sparkles, Loader2 } from "lucide-react";
-import { askDumpSentryAI, QUICK_CHIPS } from "../../services/mockCommandAI";
+import { askDumpSentryAI, QUICK_CHIPS } from "../../services/commandAI";
 
 export default function AICommandBar() {
   const [query, setQuery] = useState("");

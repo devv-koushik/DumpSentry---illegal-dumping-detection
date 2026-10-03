@@ -88,11 +88,19 @@ export default function MapView({
 }) {
   // Determine which detections to display
   const visibleDetections = useMemo(() => {
+    const valid = (detections || []).filter(
+      (d) =>
+        d &&
+        d.latitude != null &&
+        d.longitude != null &&
+        !isNaN(Number(d.latitude)) &&
+        !isNaN(Number(d.longitude))
+    );
     if (!filterToWard || !selectedWard || !selectedWard.boundary) {
-      return detections;
+      return valid;
     }
-    return detections.filter((d) =>
-      isPointInPolygon([d.latitude, d.longitude], selectedWard.boundary)
+    return valid.filter((d) =>
+      isPointInPolygon([Number(d.latitude), Number(d.longitude)], selectedWard.boundary)
     );
   }, [detections, filterToWard, selectedWard]);
 
@@ -259,7 +267,7 @@ export default function MapView({
         {visibleDetections.map((d) => (
           <CircleMarker
             key={d.id}
-            center={[d.latitude, d.longitude]}
+            center={[Number(d.latitude), Number(d.longitude)]}
             radius={9}
             pathOptions={{
               color: "#fff",

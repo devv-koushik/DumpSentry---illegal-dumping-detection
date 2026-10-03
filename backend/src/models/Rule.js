@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { AUTHORITY_TYPES } from "../config/constants.js";
 
 const ruleSchema = new mongoose.Schema(
   {
@@ -7,12 +8,21 @@ const ruleSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: [
+        "HEALTHCARE",
+        "ROADSIDE",
+        "EDUCATIONAL",
+        "WATER_BODY",
+        "ENVIRONMENTAL_PROTECTED",
+        "INDUSTRIAL",
+        "RESIDENTIAL",
+        "COMMERCIAL",
+        "TRANSPORT",
+        "PUBLIC_AREA",
+        "AGRICULTURAL",
+        "OTHER_UNKNOWN",
+        // Backward-compatibility aliases
         "MEDICAL_FACILITY",
         "EDUCATIONAL_INSTITUTION",
-        "ROADSIDE",
-        "PUBLIC_AREA",
-        "RESIDENTIAL",
-        "WATER_BODY",
         "OTHER",
       ],
     },
@@ -22,7 +32,8 @@ const ruleSchema = new mongoose.Schema(
     authorityType: {
       type: String,
       required: true,
-      enum: ["HOSPITAL", "CLINIC", "SCHOOL", "COLLEGE", "UNIVERSITY", "PWD", "MUNICIPAL", "CIVIC", "OTHER"],
+      enum: AUTHORITY_TYPES,
+      default: "MUNICIPAL",
     },
     incidentTemplate: {
       type: String,

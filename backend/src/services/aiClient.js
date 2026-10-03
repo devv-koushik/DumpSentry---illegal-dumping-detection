@@ -13,11 +13,11 @@ import env from "../config/env.js";
  *   annotatedImageBase64: string | null
  * }>}
  */
-export async function runInference(imagePath) {
+export async function runInference(imagePath, confidence = 0.25) {
   const form = new FormData();
   form.append("file", fs.createReadStream(imagePath));
 
-  const url = `${env.aiServiceUrl}/predict`;
+  const url = `${env.aiServiceUrl}/predict?confidence=${confidence}`;
 
   let response;
   try {
@@ -41,7 +41,9 @@ export async function runInference(imagePath) {
   const data = await response.json();
 
   return {
+    success: data.success ?? true,
     wasteDetected: data.waste_detected ?? data.wasteDetected ?? false,
+    totalDetections: data.total_detections ?? (data.detections || []).length,
     detections: (data.detections || []).map((d) => ({
       class: d.class || d.label || "unknown",
       confidence: Math.round((d.confidence ?? d.score ?? 0) * 100) / 100,
@@ -53,6 +55,7 @@ export async function runInference(imagePath) {
       },
     })),
     annotatedImageBase64: data.annotated_image_base64 ?? data.annotatedImageBase64 ?? null,
+    inferenceTimeMs: data.inference_time_ms ?? null,
   };
 }
 

@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { OVERVIEW_STATS } from "../../data/detections";
 import { fetchOverviewStats } from "../../services/api";
 import { ScanSearch, AlertTriangle, Clock, CheckCircle2 } from "lucide-react";
 
 export default function FloatingStats() {
-  const [stats, setStats] = useState(OVERVIEW_STATS);
+  const [stats, setStats] = useState({
+    total: 0,
+    suspectedIllegal: 0,
+    pendingReview: 0,
+    resolved: 0,
+  });
 
   useEffect(() => {
     fetchOverviewStats()

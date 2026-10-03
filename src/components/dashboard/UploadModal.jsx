@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck } from "lucide-react";
-import { analyzeImage, ANALYSIS_STAGES } from "../../services/mockAI";
+import { analyzeImage, ANALYSIS_STAGES } from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 
 export default function UploadModal({ isOpen, onClose, onAddDetection }) {
@@ -11,64 +11,73 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [stageIndex, setStageIndex] = useState(-1);
   const [result, setResult] = useState(null);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  if (!isOpen || !isAdmin) return null;
+  if (!isOpen) return null;
 
   function handleFileChange(e) {
-    if (!requireAdmin("upload drone captures and run AI vision detection")) return;
     const selected = e.target.files?.[0];
     if (selected) {
       setFile(selected);
       setPreviewUrl(URL.createObjectURL(selected));
       setResult(null);
       setStageIndex(-1);
+      setErrorMsg("");
     }
   }
 
   function handleDrop(e) {
     e.preventDefault();
-    if (!requireAdmin("upload drone captures and run AI vision detection")) return;
     const dropped = e.dataTransfer.files?.[0];
     if (dropped) {
       setFile(dropped);
       setPreviewUrl(URL.createObjectURL(dropped));
       setResult(null);
       setStageIndex(-1);
+      setErrorMsg("");
     }
   }
 
   async function handleRunAnalysis() {
-    if (!requireAdmin("run the YOLOv11 AI detection pipeline")) return;
     if (!file) return;
     setAnalyzing(true);
     setResult(null);
+    setErrorMsg("");
 
-    const res = await analyzeImage(file, (idx) => setStageIndex(idx));
-    setResult(res);
-    setAnalyzing(false);
+    try {
+      const coords =
+        latitude.trim() && longitude.trim()
+          ? { latitude: latitude.trim(), longitude: longitude.trim() }
+          : null;
 
-    // If waste detected, optionally add to live dashboard map
-    if (res.wasteDetected && onAddDetection) {
-      onAddDetection({
-        id: `DET-${Math.floor(100 + Math.random() * 900)}`,
-        latitude: 22.565 + (Math.random() - 0.5) * 0.04,
-        longitude: 88.385 + (Math.random() - 0.5) * 0.04,
-        timestamp: "Just now",
-        status: res.status,
-        confidence: res.confidence,
-        wasteType: res.wasteType,
-        context: res.context,
-        location: "Captured Location, Kolkata",
-        authority: res.authority,
-        estVolume: "3.5 m³",
-        riskLevel: res.status === "Suspected Illegal" ? "High" : "Medium",
-        image: previewUrl,
-        aiAnalysis: {
-          boxes: res.boundingBoxes || [{ x: 20, y: 25, w: 55, h: 50 }],
-          environmentalRisk: "High risk to nearby drainage.",
-          recommendedAction: `Dispatched alert to ${res.authority}`,
-        },
-      });
+      const res = await analyzeImage(file, (idx) => setStageIndex(idx), coords);
+      setResult(res);
+
+      // Add real detection record to live dashboard
+      if (onAddDetection) {
+        onAddDetection({
+          id: res.id || res.detectionId,
+          detectionId: res.detectionId || res.id,
+          latitude: res.latitude ?? null,
+          longitude: res.longitude ?? null,
+          timestamp: res.analyzedAt || new Date().toISOString(),
+          status: res.status,
+          confidence: res.confidence,
+          wasteType: res.wasteType,
+          wasteTypes: res.wasteTypes,
+          context: res.context,
+          location: res.location,
+          authority: res.authority,
+          image: res.annotatedImageUrl || res.image || previewUrl,
+          nearbyPlaces: res.nearbyPlaces || [],
+        });
+      }
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to run AI detection pipeline.");
+    } finally {
+      setAnalyzing(false);
     }
   }
 
@@ -78,6 +87,9 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
     setResult(null);
     setStageIndex(-1);
     setAnalyzing(false);
+    setLatitude("");
+    setLongitude("");
+    setErrorMsg("");
   }
 
   return (
@@ -140,28 +152,43 @@ export default function UploadModal({ isOpen, onClose, onAddDetection }) {
               <div className="space-y-4">
                 <div className="relative h-64 w-full overflow-hidden rounded-xl bg-paper border border-line">
                   <img
-                    src={previewUrl}
+                    src={result?.annotatedImageUrl || previewUrl}
                     alt="Drone capture preview"
                     className="h-full w-full object-cover"
                   />
-                  {result?.wasteDetected &&
-                    result.boundingBoxes?.map((box, i) => (
-                      <div
-                        key={i}
-                        className="pointer-events-none absolute rounded border-2 border-accent bg-accent/20 animate-pulse"
-                        style={{
-                          left: `${box.x}%`,
-                          top: `${box.y}%`,
-                          width: `${box.w}%`,
-                          height: `${box.h}%`,
-                        }}
-                      >
-                        <span className="absolute -top-5 left-0 rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">
-                          {result.wasteType} ({result.confidence}%)
-                        </span>
-                      </div>
-                    ))}
                 </div>
+
+                {/* Optional GPS Telemetry */}
+                {!result && !analyzing && (
+                  <div className="rounded-xl border border-line bg-paper/60 p-3 space-y-1.5">
+                    <span className="text-[11px] font-medium text-ink flex items-center gap-1.5">
+                      <MapPin size={12} className="text-accent" />
+                      Optional Coordinates (Environmental Context):
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        placeholder="Latitude (e.g. 22.5851)"
+                        value={latitude}
+                        onChange={(e) => setLatitude(e.target.value)}
+                        className="rounded-lg border border-line bg-white px-2.5 py-1 text-xs text-ink outline-none focus:border-accent"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Longitude (e.g. 88.4203)"
+                        value={longitude}
+                        onChange={(e) => setLongitude(e.target.value)}
+                        className="rounded-lg border border-line bg-white px-2.5 py-1 text-xs text-ink outline-none focus:border-accent"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <div className="rounded-xl border border-danger/20 bg-danger/10 p-3 text-xs text-danger">
+                    {errorMsg}
+                  </div>
+                )}
 
                 {/* Status / Actions bar */}
                 <div className="flex items-center justify-between">

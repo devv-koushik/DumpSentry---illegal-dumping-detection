@@ -34,7 +34,13 @@ const DRONE_ICON = createDivIcon("#5ba4c9", 14, true);
 function FlyToDetection({ detection }) {
   const map = useMap();
   useEffect(() => {
-    if (detection) {
+    if (
+      detection &&
+      detection.latitude != null &&
+      detection.longitude != null &&
+      !isNaN(detection.latitude) &&
+      !isNaN(detection.longitude)
+    ) {
       map.flyTo([detection.latitude, detection.longitude], 14, { duration: 1.2 });
     }
   }, [detection, map]);
@@ -56,6 +62,17 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
     return result;
   }, [detections, filters]);
 
+  // Valid detections that have real GPS coordinates for Leaflet marker rendering
+  const mappedDetections = useMemo(() => {
+    return filteredDetections.filter(
+      (d) =>
+        d.latitude != null &&
+        d.longitude != null &&
+        !isNaN(Number(d.latitude)) &&
+        !isNaN(Number(d.longitude))
+    );
+  }, [filteredDetections]);
+
   const center = [22.5600, 88.3900];
 
   return (
@@ -75,11 +92,11 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
 
         <FlyToDetection detection={selectedDetection} />
 
-        {/* Detection markers */}
-        {filteredDetections.map((d) => (
+        {/* Detection markers (only valid coordinates) */}
+        {mappedDetections.map((d) => (
           <Marker
             key={d.id}
-            position={[d.latitude, d.longitude]}
+            position={[Number(d.latitude), Number(d.longitude)]}
             icon={MARKER_ICONS[d.status] || MARKER_ICONS["Pending Review"]}
             eventHandlers={{ click: () => onSelectDetection(d) }}
           >
@@ -90,20 +107,29 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
                   <span className="text-[9px] font-mono text-cmd-muted">{d.confidence}%</span>
                 </div>
                 <p className="text-[10px] font-medium text-cmd-text">{d.wasteType}</p>
-                <p className="text-[9px] text-cmd-muted">{d.context} · {d.location.split(",")[0]}</p>
+                <p className="text-[9px] text-cmd-muted">
+                  {d.context || "Unclassified"} · {(d.location || "Unknown Location").split(",")[0]}
+                </p>
                 {(() => {
-                  const ward = findWardForCoordinates(d.latitude, d.longitude);
+                  const ward =
+                    d.latitude != null && d.longitude != null
+                      ? findWardForCoordinates(Number(d.latitude), Number(d.longitude))
+                      : null;
                   return ward ? (
                     <p className="mt-1 text-[9px] font-mono text-accent truncate">
                       {ward.wardNumber}: {ward.name}
                     </p>
                   ) : null;
                 })()}
-                <p className={`mt-1 text-[9px] font-semibold ${
-                  d.status === "Suspected Illegal" ? "text-danger"
-                    : d.status === "Resolved" ? "text-success"
-                    : "text-warning"
-                }`}>
+                <p
+                  className={`mt-1 text-[9px] font-semibold ${
+                    d.status === "Suspected Illegal"
+                      ? "text-danger"
+                      : d.status === "Resolved"
+                      ? "text-success"
+                      : "text-warning"
+                  }`}
+                >
                   {d.status}
                 </p>
               </div>
@@ -146,7 +172,8 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
       </MapContainer>
 
       {/* Map overlay gradient at edges — soft cream fade */}
-      <div className="pointer-events-none absolute inset-0 z-[1]"
+      <div
+        className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background: `
             radial-gradient(ellipse at center, transparent 60%, rgba(239,242,234,0.4) 100%),

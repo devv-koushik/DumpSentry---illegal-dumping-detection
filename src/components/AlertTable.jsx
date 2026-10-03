@@ -58,11 +58,25 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
                       <button
                         onClick={() => onSend?.(a)}
                         disabled={sendingId === a.detectionId}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline disabled:opacity-50"
-                        title="Dispatch alert"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-accent-deep hover:underline disabled:opacity-50"
+                        title={a.status === "Failed" ? "Retry failed email dispatch" : "Dispatch alert"}
                       >
-                        {sendingId === a.detectionId ? "Sending…" : "Send Alert"}
+                        {sendingId === a.detectionId
+                          ? "Sending…"
+                          : a.status === "Failed"
+                          ? "Retry"
+                          : "Send Alert"}
                       </button>
+                    ) : a.previewUrl ? (
+                      <a
+                        href={a.previewUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline"
+                        title="View dispatched email in Ethereal"
+                      >
+                        View Email ↗
+                      </a>
                     ) : (
                       <span className="text-xs text-muted">—</span>
                     )}

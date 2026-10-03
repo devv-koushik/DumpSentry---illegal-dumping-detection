@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SmoothScroll from "./components/SmoothScroll";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
 import CommandCenterLayout from "./layouts/CommandCenterLayout";
 import Dashboard from "./pages/Dashboard";
@@ -14,26 +15,26 @@ import PublicReports from "./pages/PublicReports";
 
 export default function App() {
   return (
-    <SmoothScroll>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<CommandCenterLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="detections" element={<Detections />} />
-            <Route path="detections/:id" element={<DetectionDetails />} />
-            <Route path="upload" element={<UploadAnalyze />} />
-            <Route path="map" element={<MapPage />} />
-            <Route path="alerts" element={<Alerts />} />
-            <Route path="reports" element={<PublicReports />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
-          <Route path="*" element={<Landing />} />
-        </Routes>
-      </BrowserRouter>
-    </SmoothScroll>
+    <ErrorBoundary>
+      <SmoothScroll>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/dashboard" element={<CommandCenterLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="detections" element={<Detections />} />
+              <Route path="detections/:id" element={<DetectionDetails />} />
+              <Route path="upload" element={<UploadAnalyze />} />
+              <Route path="map" element={<MapPage />} />
+              <Route path="alerts" element={<Alerts />} />
+              <Route path="reports" element={<PublicReports />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+            <Route path="*" element={<Landing />} />
+          </Routes>
+        </BrowserRouter>
+      </SmoothScroll>
+    </ErrorBoundary>
   );
 }
-
-

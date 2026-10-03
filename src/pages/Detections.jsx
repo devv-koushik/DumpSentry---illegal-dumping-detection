@@ -5,8 +5,46 @@ import DetectionCard from "../components/DetectionCard";
 import DetectionTable from "../components/DetectionTable";
 import LoadingSpinner from "../components/LoadingSpinner";
 import EmptyState from "../components/EmptyState";
-import { fetchDetections } from "../services/mockDetections";
-import { WASTE_TYPES, CONTEXTS, STATUSES } from "../data/detections";
+import { fetchDetections } from "../services/api";
+
+const REAL_YOLO_CLASSES = [
+  "construction_waste",
+  "appliances",
+  "electronic_waste",
+  "furniture",
+  "metal_waste",
+  "plastic_waste",
+  "wood_waste",
+  "vehicle_waste",
+  "tyre_waste",
+  "paper_waste",
+  "asbestos",
+  "textile_waste",
+  "mixed_waste",
+];
+
+const REAL_CONTEXTS = [
+  "HEALTHCARE",
+  "ROADSIDE",
+  "EDUCATIONAL",
+  "WATER_BODY",
+  "ENVIRONMENTAL_PROTECTED",
+  "INDUSTRIAL",
+  "RESIDENTIAL",
+  "COMMERCIAL",
+  "TRANSPORT",
+  "PUBLIC_AREA",
+  "AGRICULTURAL",
+  "OTHER_UNKNOWN",
+];
+
+const REAL_STATUSES = [
+  "Suspected Illegal",
+  "Pending Review",
+  "Verified",
+  "Rejected",
+  "Resolved",
+];
 
 export default function Detections() {
   const [all, setAll] = useState([]);
@@ -18,20 +56,38 @@ export default function Detections() {
   const [view, setView] = useState("grid");
 
   useEffect(() => {
-    fetchDetections().then((d) => {
-      setAll(d);
-      setLoading(false);
-    });
+    fetchDetections()
+      .then((d) => {
+        setAll(Array.isArray(d) ? d : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setAll([]);
+        setLoading(false);
+      });
   }, []);
 
   const filtered = useMemo(() => {
     return all.filter((d) => {
       const q = query.toLowerCase();
       const matchesQuery =
-        !q || d.id.toLowerCase().includes(q) || d.location.toLowerCase().includes(q);
+        !q ||
+        (d.id && d.id.toLowerCase().includes(q)) ||
+        (d.location && d.location.toLowerCase().includes(q)) ||
+        (d.wasteType && d.wasteType.toLowerCase().includes(q));
+
       const matchesStatus = status === "All" || d.status === status;
-      const matchesContext = context === "All" || d.context === context;
-      const matchesWaste = wasteType === "All" || d.wasteType === wasteType;
+
+      const matchesContext =
+        context === "All" ||
+        (d.contextType && d.contextType === context) ||
+        (d.context && d.context.toLowerCase().includes(context.toLowerCase().replace(/_/g, " ")));
+
+      const matchesWaste =
+        wasteType === "All" ||
+        (Array.isArray(d.wasteTypes) && d.wasteTypes.includes(wasteType)) ||
+        (d.wasteType && d.wasteType.toLowerCase().includes(wasteType.toLowerCase().replace(/_/g, " ")));
+
       return matchesQuery && matchesStatus && matchesContext && matchesWaste;
     });
   }, [all, query, status, context, wasteType]);
@@ -51,9 +107,9 @@ export default function Detections() {
           />
         </div>
 
-        <Select label="Status" value={status} onChange={setStatus} options={["All", ...STATUSES]} />
-        <Select label="Context" value={context} onChange={setContext} options={["All", ...CONTEXTS]} />
-        <Select label="Waste Type" value={wasteType} onChange={setWasteType} options={["All", ...WASTE_TYPES]} />
+        <Select label="Status" value={status} onChange={setStatus} options={["All", ...REAL_STATUSES]} />
+        <Select label="Context" value={context} onChange={setContext} options={["All", ...REAL_CONTEXTS]} />
+        <Select label="Waste Type" value={wasteType} onChange={setWasteType} options={["All", ...REAL_YOLO_CLASSES]} />
 
         <div className="ml-auto flex items-center gap-1 rounded-pill border border-ink/10 bg-white p-1">
           <button
@@ -75,8 +131,16 @@ export default function Detections() {
 
       {loading ? (
         <LoadingSpinner label="Loading detections…" />
+      ) : all.length === 0 ? (
+        <EmptyState
+          title="No detections recorded"
+          description="No aerial detections have been logged yet. Upload drone imagery to start analyzing waste."
+        />
       ) : filtered.length === 0 ? (
-        <EmptyState title="No detections match your filters" description="Try clearing a filter or searching a different term." />
+        <EmptyState
+          title="No detections match your filters"
+          description="Try clearing a filter or searching a different term."
+        />
       ) : view === "grid" ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((d, i) => (

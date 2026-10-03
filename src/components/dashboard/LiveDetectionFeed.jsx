@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Activity } from "lucide-react";
 
 export default function LiveDetectionFeed({ detections, selectedId, onSelect }) {
-  const recent = detections.slice(0, 8);
+  const recent = (detections || []).slice(0, 8);
 
   const statusDot = (status) => {
     if (status === "Suspected Illegal") return "bg-danger";
@@ -46,8 +46,10 @@ export default function LiveDetectionFeed({ detections, selectedId, onSelect }) 
                 <span className="text-[10px] font-mono font-medium text-ink">{d.id}</span>
                 <span className="text-[9px] font-mono text-accent-deep">{d.confidence}%</span>
               </div>
-              <p className="text-[9px] text-muted truncate">{d.wasteType}</p>
-              <p className="text-[8px] text-muted/70 truncate">{d.context} · {d.location.split(",")[0]}</p>
+              <p className="text-[9px] text-muted truncate">{d.wasteType || "General Waste"}</p>
+              <p className="text-[8px] text-muted/70 truncate">
+                {d.context || "Unclassified"} · {(d.location || "Location Unavailable").split(",")[0]}
+              </p>
             </div>
           </motion.button>
         ))}

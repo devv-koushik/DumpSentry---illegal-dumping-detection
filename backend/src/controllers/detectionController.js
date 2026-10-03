@@ -14,8 +14,12 @@ export function formatDetection(doc) {
     image: d.annotatedImageUrl || d.originalImageUrl,
     wasteType: Array.isArray(d.wasteTypes) && d.wasteTypes.length > 0
       ? d.wasteTypes.join(", ")
-      : "General Waste",
-    confidence: d.overallConfidence || 0,
+      : "No Waste Detected",
+    confidence: Math.round(
+      (d.overallConfidence || 0) > 1
+        ? d.overallConfidence
+        : (d.overallConfidence || 0) * 100
+    ),
     authority: d.authorityName || "Pending Assignment",
   };
 }
