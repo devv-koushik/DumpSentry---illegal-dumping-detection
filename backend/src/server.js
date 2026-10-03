@@ -3,6 +3,7 @@ import { connectDB } from "./config/db.js";
 import { seedInitialData } from "./services/seed.js";
 import env from "./config/env.js";
 
+// DumpSentry backend server entry point (connected to MongoDB Atlas)
 async function startServer() {
   const server = app.listen(env.port, () => {
     console.log(`=======================================================`);
