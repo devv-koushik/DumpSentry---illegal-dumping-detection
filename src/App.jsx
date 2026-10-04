@@ -1,19 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SmoothScroll from "./components/SmoothScroll";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Landing from "./pages/Landing";
-import CommandCenterLayout from "./layouts/CommandCenterLayout";
-import Dashboard from "./pages/Dashboard";
-import Detections from "./pages/Detections";
-import DetectionDetails from "./pages/DetectionDetails";
-import UploadAnalyze from "./pages/UploadAnalyze";
-import MapPage from "./pages/MapPage";
-import Alerts from "./pages/Alerts";
-import Analytics from "./pages/Analytics";
-import Settings from "./pages/Settings";
-import PublicReports from "./pages/PublicReports";
 import { fetchAllWards } from "./services/wardService";
+import LoadingSpinner from "./components/LoadingSpinner";
+
+const CommandCenterLayout = lazy(() => import("./layouts/CommandCenterLayout"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Detections = lazy(() => import("./pages/Detections"));
+const DetectionDetails = lazy(() => import("./pages/DetectionDetails"));
+const UploadAnalyze = lazy(() => import("./pages/UploadAnalyze"));
+const MapPage = lazy(() => import("./pages/MapPage"));
+const Alerts = lazy(() => import("./pages/Alerts"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Settings = lazy(() => import("./pages/Settings"));
+const PublicReports = lazy(() => import("./pages/PublicReports"));
 
 export default function App() {
   useEffect(() => {
@@ -26,7 +28,11 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/dashboard" element={<CommandCenterLayout />}>
+            <Route path="/dashboard" element={
+              <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-paper"><LoadingSpinner label="Loading Dashboard..." /></div>}>
+                <CommandCenterLayout />
+              </Suspense>
+            }>
               <Route index element={<Dashboard />} />
               <Route path="detections" element={<Detections />} />
               <Route path="detections/:id" element={<DetectionDetails />} />

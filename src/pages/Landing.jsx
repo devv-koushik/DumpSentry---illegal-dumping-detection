@@ -116,7 +116,7 @@ export default function Landing() {
             className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl"
           >
             Spotting Illegal{" "}
-            <span className="relative inline-block overflow-hidden rounded-2xl bg-[url('/dumpinf_landing.png')] bg-cover bg-center px-3.5 py-1 text-white shadow-md border border-white/20 align-middle">
+            <span className="relative inline-block overflow-hidden rounded-2xl bg-[url('/dumpinf_landing.webp')] bg-cover bg-center px-3.5 py-1 text-white shadow-md border border-white/20 align-middle">
               <span className="absolute inset-0 bg-black/40 backdrop-blur-[0.5px]" />
               <span className="relative z-10">Dumping,</span>
             </span>
@@ -183,7 +183,7 @@ export default function Landing() {
         >
           {/* Base image from public folder */}
           <img
-            src="/dumpinf_landing.png"
+            src="/dumpinf_landing.webp"
             alt="Drone Surveillance Illegal Dumping Detection"
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
