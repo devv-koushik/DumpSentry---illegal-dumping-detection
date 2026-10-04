@@ -1,8 +1,7 @@
 import fetch from "node-fetch";
 import {
   CONTEXT_TYPES,
-  CONTEXT_LABELS,
-  DEFAULT_CONTEXT_PRIORITY,
+  CONTEXT_LABELS
 } from "../config/constants.js";
 
 // ─── Service Configuration ────────────────────────────────────────────────
@@ -170,7 +169,7 @@ export async function findNearbyPlaces(lat, lon, searchRadius = 300) {
         elements = data.elements || [];
         break;
       }
-    } catch (err) {
+    } catch {
       // Try next mirror
     }
   }

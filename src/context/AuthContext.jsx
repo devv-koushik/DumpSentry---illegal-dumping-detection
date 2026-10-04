@@ -22,6 +22,13 @@ export function AuthProvider({ children }) {
     }
   });
 
+  const logout = useCallback(() => {
+    apiLogout();
+    setIsAdmin(false);
+    setUser(null);
+    localStorage.removeItem("dumpsentry_user");
+  }, []);
+
   // Verify token validity on load
   useEffect(() => {
     if (isAdmin) {
@@ -36,7 +43,7 @@ export function AuthProvider({ children }) {
           logout();
         });
     }
-  }, []);
+  }, [isAdmin, logout]);
 
   const openLoginModal = useCallback((msg = "") => {
     setAuthModalMessage(msg);
@@ -69,12 +76,7 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    apiLogout();
-    setIsAdmin(false);
-    setUser(null);
-    localStorage.removeItem("dumpsentry_user");
-  }, []);
+
 
   return (
     <AuthContext.Provider

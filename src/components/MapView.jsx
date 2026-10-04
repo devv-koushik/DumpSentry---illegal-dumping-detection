@@ -48,7 +48,7 @@ function MapCameraController({ selectedWard, selectedLandmark, center, zoom }) {
 /**
  * Landmark pulse icon
  */
-function createLandmarkIcon(name) {
+function createLandmarkIcon() {
   return L.divIcon({
     className: "landmark-custom-icon",
     iconSize: [32, 32],
@@ -221,7 +221,7 @@ export default function MapView({
               <Marker
                 key={lm.id || lm.name}
                 position={[lm.lat, lm.lng]}
-                icon={createLandmarkIcon(lm.name)}
+                icon={createLandmarkIcon()}
                 eventHandlers={{
                   click: () => onSelectLandmark(lm),
                 }}
@@ -251,7 +251,7 @@ export default function MapView({
           (!selectedWard || !selectedWard.landmarks?.some((l) => l.name === selectedLandmark.name)) && (
             <Marker
               position={[selectedLandmark.lat, selectedLandmark.lng]}
-              icon={createLandmarkIcon(selectedLandmark.name)}
+              icon={createLandmarkIcon()}
             >
               <Popup>
                 <div className="min-w-[180px] font-sans">

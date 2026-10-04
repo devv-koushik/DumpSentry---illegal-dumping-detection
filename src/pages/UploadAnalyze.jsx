@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { RotateCcw, MapPin, Cpu, Camera } from "lucide-react";
+import { RotateCcw, MapPin, Camera } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import UploadZone from "../components/UploadZone";
 import AIAnalysisProgress from "../components/AIAnalysisProgress";

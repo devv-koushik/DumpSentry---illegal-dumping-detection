@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Lock, Mail, CheckCircle, AlertCircle, X, ShieldAlert,
-  Eye, EyeOff, LogOut, Cpu, Shield, Wifi,
+  Eye, EyeOff, LogOut, Shield,
 } from "lucide-react";
 import { login as apiLogin } from "../services/api";
 import { useAuth } from "../context/AuthContext";

@@ -2,10 +2,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload, X, RotateCcw, Sparkles, MapPin, AlertTriangle, ShieldCheck } from "lucide-react";
 import { analyzeImage, ANALYSIS_STAGES } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
 
 export default function UploadModal({ isOpen, onClose, onAddDetection }) {
-  const { isAdmin, requireAdmin } = useAuth();
+
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [analyzing, setAnalyzing] = useState(false);

@@ -2,11 +2,7 @@ import fs from "fs";
 import path from "path";
 import Detection from "../models/Detection.js";
 import { runInference } from "../services/aiClient.js";
-import {
-  reverseGeocode,
-  findNearbyPlaces,
-  detectEnvironmentalContext,
-} from "../services/geospatial.js";
+import { detectEnvironmentalContext } from "../services/geospatial.js";
 import { evaluateRules } from "../services/ruleEngine.js";
 import { formatDetection } from "./detectionController.js";
 import { dispatchAlertForDetection } from "./alertController.js";

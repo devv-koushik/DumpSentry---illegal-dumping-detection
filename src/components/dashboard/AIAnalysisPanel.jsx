@@ -9,10 +9,9 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
 
 export default function AIAnalysisPanel({ detection, onClose, onAction }) {
-  const { isAdmin } = useAuth();
+
   if (!detection) return null;
 
   const conf = Number(detection.confidence) || 0;

@@ -2,7 +2,7 @@ import Alert from "../models/Alert.js";
 import Detection from "../models/Detection.js";
 import Authority from "../models/Authority.js";
 import { getAuthorityForContext } from "../services/ruleEngine.js";
-import { sendAlertEmail, isPlaceholderEmail } from "../services/email.js";
+import { sendAlertEmail } from "../services/email.js";
 
 /**
  * Format alert for frontend consumption and API responses

@@ -64,7 +64,7 @@ export async function verifyMagicBytes(req, res, next) {
     }
 
     next();
-  } catch (err) {
+  } catch {
     fs.unlink(file.path, () => {});
     return res.status(500).json({ error: "Failed to read file for security verification." });
   }
