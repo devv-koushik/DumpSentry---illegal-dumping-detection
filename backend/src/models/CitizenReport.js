@@ -7,7 +7,7 @@ const citizenReportSchema = new mongoose.Schema(
     context: { type: String },
     location: { type: String, required: true },
     landmark: { type: String },
-    description: { type: String, required: true },
+    description: { type: String },
     reporterName: { type: String },
     reporterContact: { type: String },
     imagePreview: { type: String },

@@ -100,13 +100,19 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
         : "Municipal SWM & PWD",
     };
 
-    await savePublicReport(newReport);
-    setReportId(generatedId);
-    setSubmitting(false);
-    setSubmitted(true);
+    try {
+      await savePublicReport(newReport);
+      setReportId(generatedId);
+      setSubmitting(false);
+      setSubmitted(true);
 
-    if (onSubmitted) {
-      onSubmitted(newReport);
+      if (onSubmitted) {
+        onSubmitted(newReport);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit report. Please try again.");
+      setSubmitting(false);
     }
   }
 
