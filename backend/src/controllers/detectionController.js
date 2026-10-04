@@ -25,32 +25,42 @@ export function formatDetection(doc) {
 }
 
 /**
+ * Helper to escape regex special characters
+ */
+function escapeRegex(string) {
+  return String(string).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * GET /api/detections
  * Supports query params: status, context, search, page, limit
  */
 export async function getDetections(req, res, next) {
   try {
-    const { status, context, search, page = 1, limit = 50 } = req.query;
+    const { status, context, search, page = "1", limit = "50" } = req.query;
     const filter = {};
 
-    if (status && status !== "All") {
+    // Prevent NoSQL object injection by forcing string types
+    if (status && typeof status === "string" && status !== "All") {
       filter.status = status;
     }
-    if (context && context !== "All") {
-      filter.context = { $regex: context, $options: "i" };
+    if (context && typeof context === "string" && context !== "All") {
+      filter.context = { $regex: escapeRegex(context), $options: "i" };
     }
-    if (search) {
+    if (search && typeof search === "string") {
+      const safeSearch = escapeRegex(search);
       filter.$or = [
-        { detectionId: { $regex: search, $options: "i" } },
-        { location: { $regex: search, $options: "i" } },
-        { wasteTypes: { $regex: search, $options: "i" } },
-        { context: { $regex: search, $options: "i" } },
-        { authorityName: { $regex: search, $options: "i" } },
+        { detectionId: { $regex: safeSearch, $options: "i" } },
+        { location: { $regex: safeSearch, $options: "i" } },
+        { wasteTypes: { $regex: safeSearch, $options: "i" } },
+        { context: { $regex: safeSearch, $options: "i" } },
+        { authorityName: { $regex: safeSearch, $options: "i" } },
       ];
     }
 
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
+    
     const total = await Detection.countDocuments(filter);
 
     const detections = await Detection.find(filter)

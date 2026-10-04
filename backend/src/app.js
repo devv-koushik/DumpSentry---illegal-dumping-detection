@@ -7,6 +7,7 @@ import fs from "fs";
 import routes from "./routes/index.js";
 import errorHandler from "./middleware/errorHandler.js";
 import env from "./config/env.js";
+import { globalLimiter } from "./middleware/rateLimit.js";
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(
 // CORS support
 app.use(
   cors({
-    origin: "*",
+    origin: env.isDev ? "*" : env.frontendUrl,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -46,8 +47,8 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Static uploads serving
 app.use("/uploads", express.static(uploadsDir));
 
-// API routes
-app.use("/api", routes);
+// API routes with global rate limiting
+app.use("/api", globalLimiter, routes);
 
 // 404 catch-all
 app.use((req, res) => {
