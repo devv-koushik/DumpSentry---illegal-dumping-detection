@@ -65,4 +65,25 @@ const env = {
   rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || "100", 10),
 };
 
+if (env.nodeEnv === "production") {
+  const missing = [];
+  if (env.jwtSecret === "dev-secret-change-me" || !process.env.JWT_SECRET) {
+    missing.push("JWT_SECRET (must not be default)");
+  }
+  if (env.adminEmail === "admin@dumpsentry.ai" && !process.env.ADMIN_EMAIL) {
+    missing.push("ADMIN_EMAIL (must not be default)");
+  }
+  if (env.adminPassword === "Admin@123456" && !process.env.ADMIN_PASSWORD) {
+    missing.push("ADMIN_PASSWORD (must not be default)");
+  }
+  
+  if (missing.length > 0) {
+    console.error(`\n[FATAL] Unsafe default credentials detected in PRODUCTION environment!`);
+    console.error(`You MUST set the following environment variables to real, secure values:`);
+    missing.forEach(m => console.error(` - ${m}`));
+    console.error(`\nServer refusing to start for security reasons.\n`);
+    process.exit(1);
+  }
+}
+
 export default env;

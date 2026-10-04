@@ -4,7 +4,7 @@ import {
   analyzeImage,
   getEnvironmentalContext,
 } from "../controllers/analysisController.js";
-import { optionalAuth } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -19,8 +19,8 @@ const flexibleUpload = (req, res, next) => {
   });
 };
 
-// Image analysis with YOLO and geospatial context detection (allows optional authentication)
-router.post("/analyze", optionalAuth, flexibleUpload, analyzeImage);
+// Image analysis with YOLO and geospatial context detection (requires authentication)
+router.post("/analyze", requireAdmin, flexibleUpload, analyzeImage);
 
 // Standalone environmental context detection endpoint (independent of YOLO)
 router.get("/context", getEnvironmentalContext);

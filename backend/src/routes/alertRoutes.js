@@ -5,7 +5,7 @@ import {
   sendAlert,
   retryAlert,
 } from "../controllers/alertController.js";
-import { optionalAuth } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -14,9 +14,9 @@ router.get("/", getAlerts);
 router.get("/:id", getAlertById);
 
 // Dispatch alert notification
-router.post("/:detectionId/send", optionalAuth, sendAlert);
+router.post("/:detectionId/send", requireAdmin, sendAlert);
 
 // Retry alert notification
-router.post("/:detectionId/retry", optionalAuth, retryAlert);
+router.post("/:detectionId/retry", requireAdmin, retryAlert);
 
 export default router;

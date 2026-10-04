@@ -2,8 +2,8 @@
  * DumpSentry Global Auth Context
  * Tracks admin authentication state across the entire app.
  */
-import { createContext, useContext, useState, useCallback } from "react";
-import { isAuthenticated, logout as apiLogout, getAuthToken } from "../services/api";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { isAuthenticated, logout as apiLogout, getAuthToken, getMe } from "../services/api";
 import AdminAuthModal from "../components/AdminAuthModal";
 
 const AuthContext = createContext(null);
@@ -21,6 +21,22 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+  // Verify token validity on load
+  useEffect(() => {
+    if (isAdmin) {
+      getMe()
+        .then((userData) => {
+          if (userData && userData.email) {
+            setUser(userData);
+          }
+        })
+        .catch(() => {
+          console.warn("Auth token invalid or expired. Logging out.");
+          logout();
+        });
+    }
+  }, []);
 
   const openLoginModal = useCallback((msg = "") => {
     setAuthModalMessage(msg);

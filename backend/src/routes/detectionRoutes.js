@@ -7,7 +7,7 @@ import {
   verifyDetection,
   deleteDetection,
 } from "../controllers/detectionController.js";
-import { optionalAuth, requireAdmin } from "../middleware/auth.js";
+import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -16,9 +16,9 @@ router.get("/", getDetections);
 router.get("/map", getMapDetections);
 router.get("/:id", getDetectionById);
 
-// Status update and verification (allows optional authentication)
-router.patch("/:id/status", optionalAuth, updateDetectionStatus);
-router.post("/:id/verify", optionalAuth, verifyDetection);
+// Status update and verification (requires authentication)
+router.patch("/:id/status", requireAdmin, updateDetectionStatus);
+router.post("/:id/verify", requireAdmin, verifyDetection);
 
 // Delete endpoint strictly protected
 router.delete("/:id", requireAdmin, deleteDetection);
