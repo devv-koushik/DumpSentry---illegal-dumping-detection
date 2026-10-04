@@ -6,20 +6,23 @@ This document describes the datasets used to train the DumpSentry computer visio
 
 ## 1. Target Waste Classes
 
-The model classifies waste into **10 standard classes**:
+The model classifies waste into **13 standard classes**:
 
 | ID | Class Name | Description | Common Aerial Visual Signatures |
 |---|---|---|---|
-| **0** | `plastic` | Bottles, single-use bags, tarps, packaging film | High specular reflectivity, wrinkled textures, varied bright colors |
-| **1** | `cardboard_paper` | Corrugated boxes, packaging cartons, newspapers | Flat planar shapes, matte brown/tan or printed paper sheets |
-| **2** | `metal` | Scrap metal, tin cans, drums, sheet metal | Metallic sheen, rust oxidation, cylindrical or corrugated patterns |
-| **3** | `glass` | Bottles, broken glass shards, panes | Transparency, sharp edges, distinct sunlight refractions |
-| **4** | `organic_waste` | Decomposing organic matter, yard clippings, agricultural dump | Dark brown/green coloration, irregular clumping |
-| **5** | `electronic_waste` | Circuit boards, monitors, appliances, wiring bundles | Geometric circuit board edges, entangled cabling, dark plastic casings |
-| **6** | `biomedical_waste` | Syringes, red bags, PPE masks, discarded medical kits | Yellow/red biohazard bags, recognizable mask shapes |
-| **7** | `construction_debris` | Broken concrete, masonry rubble, bricks, wood pallets | Fragmented rectangular/irregular blocks, dust haloes |
-| **8** | `automotive_parts` | Discarded vehicle tires, bumpers, engine blocks | Toroidal tire shapes, black rubber rims, grease stains |
-| **9** | `mixed_hazardous` | Chemical cans, paint buckets, unidentified toxic drums | Warning labeling, bright chemical stains on soil |
+| **0** | `construction_waste` | Broken concrete, masonry rubble, bricks | Fragmented blocks, dust haloes, pale gray/red tones |
+| **1** | `appliances` | Discarded white goods, refrigerators, washing machines | Large rectangular metallic or white boxes |
+| **2** | `electronic_waste` | Circuit boards, monitors, wiring bundles | Geometric edges, dark plastic casings, cables |
+| **3** | `furniture` | Broken chairs, sofas, mattresses | Large irregular fabric/wood shapes, distinctive springing |
+| **4** | `metal_waste` | Scrap metal, tin cans, sheet metal | Metallic sheen, rust oxidation, cylindrical shapes |
+| **5** | `plastic_waste` | Bottles, single-use bags, tarps, packaging | High specular reflectivity, varied bright colors |
+| **6** | `wood_waste` | Discarded lumber, broken pallets, timber | Brown linear planks, splintered edges |
+| **7** | `vehicle_waste` | Discarded car parts, bumpers, chassis | Curved metal, reflective auto paint |
+| **8** | `tyre_waste` | Discarded vehicle tires | Toroidal black rubber shapes, circular rims |
+| **9** | `paper_waste` | Corrugated boxes, cartons, newspapers | Flat planar shapes, matte brown/tan or printed |
+| **10** | `asbestos` | Hazardous roofing sheets, insulation | Corrugated gray profiles, dull matte surface |
+| **11** | `textile_waste` | Clothing, fabric scraps, rags | Clumped colored fabrics, matte folded textures |
+| **12** | `mixed_waste` | Unidentified or heavily intermingled garbage | Chaotic textures, overlapping materials |
 
 ---
 

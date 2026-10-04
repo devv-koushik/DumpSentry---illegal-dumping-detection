@@ -38,7 +38,7 @@ DumpSentry operates as a distributed 3-tier microservice architecture:
 ```
 
 ### Core Responsibilities
-* **AI Computer Vision:** Answers **"WHAT GARBAGE IS PRESENT?"** Detects and classifies 10 waste categories (Plastic, Cardboard, Metal, Glass, Organic, E-Waste, Biomedical, Construction Debris, Automotive, Hazardous).
+* **AI Computer Vision:** Answers **"WHAT GARBAGE IS PRESENT?"** Detects and classifies 13 waste categories (Construction, Appliances, E-Waste, Furniture, Metal, Plastic, Wood, Vehicle, Tyre, Paper, Asbestos, Textile, Mixed).
 * **Geospatial & Rule Engine:** Determines **whether the dumping is illegal** by evaluating proximity to sensitive facilities (hospitals, schools, water bodies, public roads).
 * **Authority Dispatcher:** Routes incident evidence and coordinates to the responsible civic body (Municipal Corporation, Health Directorate, Pollution Control Board, PWD).
 

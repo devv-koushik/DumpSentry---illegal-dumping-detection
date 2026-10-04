@@ -70,7 +70,7 @@ Executes full computer-vision waste detection, Nominatim reverse geocoding, Open
     "detection": {
       "id": "DS-20260927-4821",
       "image": "/uploads/uuid.jpg",
-      "wasteType": "plastic, biomedical_waste",
+      "wasteType": "plastic_waste, textile_waste",
       "context": "medical facility",
       "confidence": 94,
       "latitude": 22.5354,
@@ -84,7 +84,7 @@ Executes full computer-vision waste detection, Nominatim reverse geocoding, Open
     "ai": {
       "wasteDetected": true,
       "detectionsCount": 2,
-      "classes": ["plastic", "biomedical_waste"],
+      "classes": ["plastic_waste", "textile_waste"],
       "maxConfidence": 0.94
     },
     "geospatial": {

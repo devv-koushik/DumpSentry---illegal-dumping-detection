@@ -53,7 +53,7 @@ DumpSentry is an automated, AI-powered aerial drone surveillance system designed
 
 ### 1. Separation of Responsibilities
 * **What the AI does:** Answers **"WHAT GARBAGE IS PRESENT?"**
-  - Classifies materials into 10 target classes (Plastic, Cardboard, Metal, Glass, Organic, E-Waste, Biomedical, Construction Debris, Automotive, Hazardous).
+  - Classifies materials into 13 target classes (Construction, Appliances, E-Waste, Furniture, Metal, Plastic, Wood, Vehicle, Tyre, Paper, Asbestos, Textile, Mixed).
   - Draws exact bounding boxes and confidence scores.
   - Generates annotated visual evidence.
 * **What the AI does NOT do:** The AI does **NOT** judge whether dumping is illegal.

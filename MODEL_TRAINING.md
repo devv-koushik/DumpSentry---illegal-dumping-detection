@@ -29,18 +29,21 @@ train: train/images
 val: val/images
 test: test/images
 
-nc: 10
+nc: 13
 names:
-  0: plastic
-  1: cardboard_paper
-  2: metal
-  3: glass
-  4: organic_waste
-  5: electronic_waste
-  6: biomedical_waste
-  7: construction_debris
-  8: automotive_parts
-  9: mixed_hazardous
+  0: construction_waste
+  1: appliances
+  2: electronic_waste
+  3: furniture
+  4: metal_waste
+  5: plastic_waste
+  6: wood_waste
+  7: vehicle_waste
+  8: tyre_waste
+  9: paper_waste
+  10: asbestos
+  11: textile_waste
+  12: mixed_waste
 ```
 
 ---
