@@ -3,23 +3,28 @@ import path from "path";
 import { randomUUID } from "crypto";
 import env from "../config/env.js";
 
-const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/tiff"];
+const ALLOWED_MIMES = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/tiff": ".tiff"
+};
 
 const storage = multer.diskStorage({
   destination(_req, _file, cb) {
     cb(null, path.resolve("uploads"));
   },
   filename(_req, file, cb) {
-    const ext = path.extname(file.originalname) || ".jpg";
+    const ext = ALLOWED_MIMES[file.mimetype] || ".bin";
     cb(null, `${randomUUID()}${ext}`);
   },
 });
 
 function fileFilter(_req, file, cb) {
-  if (ALLOWED_MIMES.includes(file.mimetype)) {
+  if (ALLOWED_MIMES[file.mimetype]) {
     cb(null, true);
   } else {
-    cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed: ${ALLOWED_MIMES.join(", ")}`));
+    cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed: ${Object.keys(ALLOWED_MIMES).join(", ")}`));
   }
 }
 
