@@ -23,8 +23,14 @@ import ReportProblemModal from "../components/ReportProblemModal";
 import { useLenis } from "../context/LenisContext";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
-import { OVERVIEW_STATS as DEFAULT_STATS } from "../data/detections";
 import { fetchOverviewStats } from "../services/api";
+
+const DEFAULT_STATS = {
+  total: 0,
+  suspectedIllegal: 0,
+  pendingReview: 0,
+  resolved: 0,
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },

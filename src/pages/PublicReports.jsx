@@ -6,14 +6,16 @@ import {
   Plane,
   Search,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import PageHeader from "../components/PageHeader";
-import AdminGuard from "../components/AdminGuard";
-import { getPublicReports, updateReportStatus } from "../services/publicReports";
+import { useAuth } from "../context/AuthContext";
+import { getPublicReports, updateReportStatus, deleteReport } from "../services/publicReports";
 
 const STATUS_TABS = ["All", "Pending Review", "Drone Dispatched", "Resolved"];
 
 export default function PublicReports() {
+  const { isAdmin } = useAuth();
   const [reports, setReports] = useState(() => getPublicReports());
   const [filterStatus, setFilterStatus] = useState("All");
   const [search, setSearch] = useState("");
@@ -40,6 +42,19 @@ export default function PublicReports() {
     setTimeout(() => setToast(""), 3000);
   }
 
+  function handleDelete(e, id) {
+    e.stopPropagation();
+    if (confirm("Are you sure you want to delete this report?")) {
+      const updated = deleteReport(id);
+      setReports(updated);
+      if (selectedReport?.id === id) {
+        setSelectedReport(null);
+      }
+      setToast(`Report #${id} deleted.`);
+      setTimeout(() => setToast(""), 3000);
+    }
+  }
+
   const filtered = reports.filter((r) => {
     const matchesStatus = filterStatus === "All" || r.status === filterStatus;
     const q = search.toLowerCase();
@@ -53,11 +68,6 @@ export default function PublicReports() {
   });
 
   return (
-    <AdminGuard
-      action="review citizen problem reports and dispatch verification drones"
-      title="Citizen Reports Control Desk"
-      description="Only municipal administrators and command operators can review public dumping grievances and schedule verification drone patrols."
-    >
       <div className="space-y-6">
         <PageHeader
           title="Citizen Problem Reports"
@@ -84,11 +94,10 @@ export default function PublicReports() {
               <button
                 key={tab}
                 onClick={() => setFilterStatus(tab)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
-                  filterStatus === tab
+                className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${filterStatus === tab
                     ? "bg-ink text-white shadow-sm"
                     : "border border-line bg-white text-muted hover:text-ink"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -128,12 +137,11 @@ export default function PublicReports() {
                 return (
                   <div
                     key={report.id}
-                    onClick={() => setSelectedReport(report)}
-                    className={`cursor-pointer rounded-2xl border p-4 transition-all bg-white hover:border-accent/40 hover:shadow-card ${
-                      isSelected
+                    onClick={() => isAdmin && setSelectedReport(report)}
+                    className={`rounded-2xl border p-4 transition-all bg-white hover:border-accent/40 ${isAdmin ? "cursor-pointer hover:shadow-card" : ""} ${isSelected
                         ? "border-accent bg-accent/[0.02] shadow-sm"
                         : "border-line"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -142,13 +150,12 @@ export default function PublicReports() {
                             {report.id}
                           </span>
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
-                              report.status === "Pending Review"
+                            className={`rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${report.status === "Pending Review"
                                 ? "bg-warning/15 text-accent-deep"
                                 : report.status === "Drone Dispatched"
-                                ? "bg-cmd-info/15 text-cmd-info"
-                                : "bg-success/15 text-success"
-                            }`}
+                                  ? "bg-cmd-info/15 text-cmd-info"
+                                  : "bg-success/15 text-success"
+                              }`}
                           >
                             {report.status}
                           </span>
@@ -185,9 +192,20 @@ export default function PublicReports() {
                           minute: "2-digit",
                         })}
                       </span>
-                      <span className="flex items-center gap-1 text-accent-deep font-sans font-semibold">
-                        Inspect <ChevronRight size={11} />
-                      </span>
+                      {isAdmin && (
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={(e) => handleDelete(e, report.id)}
+                            className="text-muted hover:text-danger p-1 rounded transition-colors"
+                            title="Delete Report"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                          <span className="flex items-center gap-1 text-accent-deep font-sans font-semibold">
+                            Inspect <ChevronRight size={11} />
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -323,6 +341,5 @@ export default function PublicReports() {
           )}
         </div>
       </div>
-    </AdminGuard>
   );
 }

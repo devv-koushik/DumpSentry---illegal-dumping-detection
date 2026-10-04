@@ -8,9 +8,9 @@ import DetectionStatus from "./DetectionStatus";
 import { isPointInPolygon } from "../services/wardService";
 
 const STATUS_COLOR = {
-  "Suspected Illegal": "#c94b3f",
-  "Pending Review": "#e2a33b",
-  Resolved: "#3f8a5c",
+  "Suspected Illegal": "#E5484D",
+  "Pending Review": "#F5A524",
+  Resolved: "#3FB950",
 };
 
 /**
@@ -57,7 +57,7 @@ function createLandmarkIcon(name) {
     html: `
       <div style="position: relative; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
         <span style="position: absolute; inset: -4px; border-radius: 50%; background: rgba(226, 163, 59, 0.35); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></span>
-        <div style="width: 30px; height: 30px; border-radius: 50%; background: #16241d; border: 2.5px solid #e2a33b; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.35); color: #e2a33b;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #10201A; border: 2.5px solid #2FCB8A; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(0,0,0,0.35); color: #2FCB8A;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="22" x2="21" y2="22"></line>
             <line x1="6" y1="18" x2="6" y2="11"></line>
@@ -138,10 +138,10 @@ export default function MapView({
                 key={ward.id}
                 positions={ward.boundary}
                 pathOptions={{
-                  color: ward.color || "#5c665d",
+                  color: ward.color || "#566A60",
                   weight: 1.5,
                   dashArray: "4, 6",
-                  fillColor: ward.color || "#5c665d",
+                  fillColor: ward.color || "#566A60",
                   fillOpacity: 0.06,
                 }}
                 eventHandlers={{
@@ -171,10 +171,10 @@ export default function MapView({
             key={`selected-${selectedWard.id}`}
             positions={selectedWard.boundary}
             pathOptions={{
-              color: selectedWard.color || "#e2a33b",
+              color: selectedWard.color || "#2FCB8A",
               weight: 4,
               dashArray: null,
-              fillColor: selectedWard.color || "#e2a33b",
+              fillColor: selectedWard.color || "#2FCB8A",
               fillOpacity: 0.22,
             }}
           >
@@ -272,7 +272,7 @@ export default function MapView({
             pathOptions={{
               color: "#fff",
               weight: 2,
-              fillColor: STATUS_COLOR[d.status] || "#5c665d",
+              fillColor: STATUS_COLOR[d.status] || "#566A60",
               fillOpacity: 0.9,
             }}
           >

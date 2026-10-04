@@ -307,7 +307,7 @@ export default function EditWardAuthorityModal({
               {/* 3. Sanitary Inspector */}
               <div className="rounded-xl border border-line bg-white p-4 space-y-3">
                 <div className="flex items-center gap-2 border-b border-line pb-2">
-                  <Shield size={15} className="text-emerald-600" />
+                  <Shield size={15} className="text-accent-deep" />
                   <h4 className="text-xs font-bold text-ink uppercase tracking-wider">
                     Chief Sanitary Inspector (CSI) / Health Officer
                   </h4>
@@ -351,9 +351,9 @@ export default function EditWardAuthorityModal({
           {activeTab === "contact" && (
             <div className="space-y-5">
               {/* Emergency Helpline Strip */}
-              <div className="rounded-xl border border-amber-300 bg-amber-50/50 p-4 space-y-3">
-                <div className="flex items-center gap-2 border-b border-amber-200 pb-2">
-                  <Phone size={15} className="text-amber-600" />
+              <div className="rounded-xl border border-warning/40 bg-warning/10 p-4 space-y-3">
+                <div className="flex items-center gap-2 border-b border-warning/30 pb-2">
+                  <Phone size={15} className="text-warning" />
                   <h4 className="text-xs font-bold text-ink uppercase tracking-wider">
                     24x7 Ward Emergency Control Room & Helplines
                   </h4>
@@ -566,7 +566,7 @@ export default function EditWardAuthorityModal({
                       <button
                         type="button"
                         onClick={() => handleRemoveLandmark(lm.id || lm.name)}
-                        className="text-muted hover:text-red-500 transition-colors p-1"
+                        className="text-muted hover:text-danger transition-colors p-1"
                         title="Remove Landmark"
                       >
                         <Trash2 size={13} />
@@ -586,7 +586,7 @@ export default function EditWardAuthorityModal({
           <div className="border-t border-line pt-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {saveSuccess && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-accent-deep">
                   <CheckCircle size={14} /> Saved successfully!
                 </span>
               )}

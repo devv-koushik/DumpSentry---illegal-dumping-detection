@@ -48,7 +48,7 @@ export default function AdminGuard({
       <div
         className="relative overflow-hidden px-8 py-8"
         style={{
-          background: "linear-gradient(135deg, #16241d 0%, #1e3328 60%, #243d2f 100%)",
+          background: "linear-gradient(135deg, #10201A 0%, #1e3328 60%, #243d2f 100%)",
         }}
       >
         <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full border border-white/5" />

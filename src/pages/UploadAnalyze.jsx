@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { RotateCcw, MapPin, Cpu } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { RotateCcw, MapPin, Cpu, Camera } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import UploadZone from "../components/UploadZone";
 import AIAnalysisProgress from "../components/AIAnalysisProgress";
@@ -16,6 +16,64 @@ export default function UploadAnalyze() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  
+  const videoRef = useRef(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  useEffect(() => {
+    if (isCapturing && videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [isCapturing, stream]);
+
+  async function startCamera() {
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      setStream(s);
+      setIsCapturing(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = s;
+      }
+    } catch (err) {
+      alert("Could not access camera: " + err.message);
+    }
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setIsCapturing(false);
+  }
+
+  function captureImage() {
+    if (videoRef.current) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(videoRef.current, 0, 0);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const f = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
+          handleFile(f);
+          stopCamera();
+
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setLatitude(position.coords.latitude.toFixed(6));
+                setLongitude(position.coords.longitude.toFixed(6));
+              },
+              (err) => console.warn("GPS fetch failed:", err)
+            );
+          }
+        }
+      }, "image/jpeg", 0.9);
+    }
+  }
 
   function handleFile(f) {
     setFile(f);
@@ -170,14 +228,72 @@ export default function UploadAnalyze() {
             {analyzing || result ? (
               <AIAnalysisProgress activeIndex={result ? ANALYSIS_STAGES.length : stageIndex} />
             ) : (
-              <div className="card p-6">
-                <p className="eyebrow mb-3">Pipeline Overview</p>
-                <ul className="space-y-3 text-sm text-muted">
-                  <li className="flex gap-2.5"><Cpu size={14} className="mt-0.5 flex-shrink-0 text-accent" /> YOLOv11 AI model detects and classifies waste types.</li>
-                  <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0 text-accent" /> GPS + OSM geospatial lookup identifies nearby facilities.</li>
-                  <li className="flex gap-2.5"><MapPin size={14} className="mt-0.5 flex-shrink-0 text-accent" /> Rule engine routes alerts to the correct authority automatically.</li>
-                  <li className="flex gap-2.5 text-xs"><MapPin size={13} className="mt-0.5 flex-shrink-0" /> All AI outputs require human verification before enforcement action.</li>
-                </ul>
+              <div className="card p-0 flex flex-col items-center overflow-hidden border-0 bg-transparent shadow-none">
+                {!isCapturing ? (
+                  <button onClick={startCamera} className="group relative w-full overflow-hidden rounded-2xl bg-ink p-8 text-center transition-all hover:shadow-xl border border-line/20">
+                    <div className="absolute inset-0 bg-gradient-to-br from-accent-deep/30 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="relative z-10 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-transform duration-500 group-hover:scale-110 shadow-lg border border-white/10">
+                      <Camera size={26} />
+                    </div>
+                    <h3 className="mt-5 text-sm font-bold text-white tracking-wide">Initialize Drone Uplink</h3>
+                    <p className="mt-2 text-[11px] text-white/60 max-w-[200px] mx-auto leading-relaxed">
+                      Connect to local camera module to simulate live aerial feed
+                    </p>
+                  </button>
+                ) : (
+                  <div className="w-full">
+                    <div className="group relative overflow-hidden rounded-2xl bg-black aspect-video shadow-2xl ring-1 ring-white/10">
+                      <video 
+                        ref={videoRef} 
+                        autoPlay 
+                        playsInline 
+                        muted 
+                        className="w-full h-full object-cover opacity-90"
+                        onLoadedMetadata={() => {
+                          if (videoRef.current) {
+                            videoRef.current.play().catch(e => console.warn(e));
+                          }
+                        }}
+                      />
+                      
+                      {/* Telemetry HUD Overlay */}
+                      <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
+                        {/* Top HUD */}
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 backdrop-blur-md border border-white/10 shadow-sm">
+                            <span className="h-2 w-2 animate-pulse rounded-full bg-danger shadow-[0_0_8px_rgba(229,72,77,0.8)]" />
+                            <span className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">Live Link</span>
+                          </div>
+                          <div className="text-right bg-black/40 px-3 py-1.5 rounded-lg backdrop-blur-md border border-white/10">
+                            <div className="text-[10px] font-mono text-white/80">REC // 4K 60FPS</div>
+                            <div className="text-[9px] font-mono text-accent mt-0.5 tracking-wider">GPS LOCK ACQUIRING</div>
+                          </div>
+                        </div>
+
+                        {/* Center Crosshairs */}
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-50">
+                          <div className="w-20 h-20 border border-white/60 rounded-full" />
+                          <div className="absolute w-[1px] h-4 bg-white/60 top-[-10px]" />
+                          <div className="absolute w-[1px] h-4 bg-white/60 bottom-[-10px]" />
+                          <div className="absolute w-4 h-[1px] bg-white/60 left-[-10px]" />
+                          <div className="absolute w-4 h-[1px] bg-white/60 right-[-10px]" />
+                          <div className="absolute w-1 h-1 bg-accent rounded-full" />
+                        </div>
+                        
+                        {/* Bottom Bar Controls (pointer events auto so buttons work) */}
+                        <div className="pointer-events-auto flex gap-3">
+                          <button onClick={stopCamera} className="rounded-xl bg-black/60 px-5 py-3 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/20 transition-colors border border-white/10 shadow-lg">
+                            Disconnect
+                          </button>
+                          <button onClick={captureImage} className="flex-1 rounded-xl bg-accent px-5 py-3 text-xs font-bold text-white shadow-[0_0_20px_rgba(47,203,138,0.5)] hover:bg-accent-deep transition-all flex items-center justify-center gap-2">
+                            <Camera size={14} />
+                            CAPTURE FRAME
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

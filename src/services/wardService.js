@@ -58,16 +58,14 @@ export function subscribeWards(callback) {
  * Fetch all wards (asynchronously for API compatibility)
  */
 export async function fetchAllWards() {
-  // Check if backend API has ward endpoint
   try {
-    const backendData = await api.fetchAuthorities();
-    // If backend returns populated wards with wardNumber
-    const hasWardData = Array.isArray(backendData) && backendData.some((a) => a.wardNumber);
-    if (hasWardData) {
+    const backendData = await api.fetchWards();
+    if (Array.isArray(backendData) && backendData.length > 0) {
+      saveWards(backendData);
       return backendData;
     }
-  } catch {
-    // Backend offline / default fallback
+  } catch (err) {
+    console.warn("Failed to fetch wards from backend, falling back to local storage.", err);
   }
 
   return getStoredWards();
@@ -132,16 +130,11 @@ export async function updateWard(id, updatedFields) {
   wards[index] = updated;
   saveWards(wards);
 
-  // Attempt backend update if ID matches backend
+  // Attempt backend update
   try {
-    if (updated._id) {
-      await api.request(`/authorities/${updated._id}`, {
-        method: "PUT",
-        body: JSON.stringify(updated),
-      });
-    }
-  } catch {
-    // Offline mode is fine
+    await api.updateWardApi(id, updated);
+  } catch (err) {
+    console.error("Failed to update ward in backend:", err);
   }
 
   return updated;

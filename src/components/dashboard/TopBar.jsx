@@ -23,8 +23,7 @@ const ALL_NAV_ITEMS = [
   { label: "Detections", path: "/dashboard/detections", icon: ScanSearch },
   { label: "Map", path: "/dashboard/map", icon: Map },
   { label: "Upload", path: "/dashboard/upload", icon: Upload, adminOnly: true },
-  { label: "Alerts", path: "/dashboard/alerts", icon: Bell },
-  { label: "Citizen Reports", path: "/dashboard/reports", icon: ClipboardList, adminOnly: true },
+  { label: "Citizen Reports", path: "/dashboard/reports", icon: ClipboardList },
   { label: "Analytics", path: "/dashboard/analytics", icon: BarChart3 },
 ];
 

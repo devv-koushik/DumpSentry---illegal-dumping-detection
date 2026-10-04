@@ -18,11 +18,13 @@ import ConfidenceBadge from "../components/ConfidenceBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ReportProblemModal from "../components/ReportProblemModal";
 import { useAuth } from "../context/AuthContext";
-import { fetchDetectionById, updateDetectionStatus, updateAlertStatus, sendAlert } from "../services/api";
+import { fetchDetectionById, updateDetectionStatus, updateAlertStatus, sendAlert, deleteDetection } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export default function DetectionDetails() {
   const { id } = useParams();
   const { isAdmin, requireAdmin } = useAuth();
+  const navigate = useNavigate();
   const [detection, setDetection] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -106,6 +108,20 @@ export default function DetectionDetails() {
     } catch (err) {
       notify(err.message || "Failed to resolve detection.");
     } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!requireAdmin("delete detections")) return;
+    if (!window.confirm("Are you sure you want to delete this detection permanently?")) return;
+    setBusy(true);
+    try {
+      await deleteDetection(id);
+      notify("Detection deleted successfully.");
+      setTimeout(() => navigate("/dashboard/detections"), 1500);
+    } catch (err) {
+      notify(err.message || "Failed to delete detection.");
       setBusy(false);
     }
   }
@@ -262,6 +278,13 @@ export default function DetectionDetails() {
                   className="btn-primary w-full justify-center disabled:opacity-40"
                 >
                   <CheckCircle2 size={15} /> Mark Resolved
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={busy}
+                  className="btn-outline w-full justify-center !border-danger/30 !text-danger hover:!bg-danger hover:!text-white disabled:opacity-40"
+                >
+                  <AlertTriangle size={15} /> Delete Detection
                 </button>
               </div>
             ) : (

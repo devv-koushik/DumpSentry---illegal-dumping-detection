@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SmoothScroll from "./components/SmoothScroll";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -12,8 +13,13 @@ import Alerts from "./pages/Alerts";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import PublicReports from "./pages/PublicReports";
+import { fetchAllWards } from "./services/wardService";
 
 export default function App() {
+  useEffect(() => {
+    fetchAllWards();
+  }, []);
+
   return (
     <ErrorBoundary>
       <SmoothScroll>

@@ -1,0 +1,1801 @@
+{
+  "ZONES": [
+    "Central Kolkata",
+    "South Kolkata",
+    "North Kolkata",
+    "East Kolkata / EM Bypass",
+    "South-West Kolkata (Behala)",
+    "Bidhannagar / Salt Lake",
+    "New Town (NKDA)"
+  ],
+  "INITIAL_WARD_AUTHORITIES": [
+    {
+      "id": "ward-63",
+      "wardNumber": "Ward 63",
+      "name": "Park Street – Camac Street",
+      "borough": "Borough VII",
+      "zone": "Central Kolkata",
+      "color": "#2FCB8A",
+      "center": [
+        22.5505,
+        88.3592
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.5562,
+          88.3512
+        ],
+        [
+          22.5558,
+          88.3665
+        ],
+        [
+          22.5448,
+          88.367
+        ],
+        [
+          22.5442,
+          88.352
+        ],
+        [
+          22.5562,
+          88.3512
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Smt. Sushmita Bhattacharya",
+          "designation": "Ward Councillor & Member, Borough VII Committee",
+          "phone": "+91 98301 24512",
+          "email": "councillor.w63@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Subrata Banerjee",
+          "department": "Solid Waste Management (SWM-I)",
+          "phone": "+91 94330 89201",
+          "email": "ee.swm.b7@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Arindam Mukherjee",
+          "designation": "Chief Sanitary Inspector & Health Officer",
+          "phone": "+91 98312 67440",
+          "email": "csi.ward63@kmchealth.org"
+        },
+        "office": {
+          "address": "12/1 Park Street (Near Allen Park), Kolkata 700016",
+          "phone": "033-2287-4590",
+          "hours": "08:00 AM – 06:00 PM (Emergency Desk 24x7)"
+        },
+        "helpline": {
+          "controlRoom": "1800-345-5620 / 033-2286-1000",
+          "whatsapp": "+91 90510 22334",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Park Circus Compactor Station & Fleet Yard",
+          "supervisor": "Sri Dilip Sardar",
+          "fleetCapacity": "10 Battery Tippers, 3 Hydraulic Compactors, 1 Drone Unit"
+        },
+        "policeLiaison": {
+          "station": "Park Street Police Station",
+          "officer": "Inspector Dipak Roy (OC)",
+          "phone": "033-2229-1100"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-63-1",
+          "name": "Park Street Cemetery",
+          "lat": 22.5489,
+          "lng": 88.3618,
+          "type": "Heritage Site"
+        },
+        {
+          "id": "lm-63-2",
+          "name": "St. Xavier's College",
+          "lat": 22.5492,
+          "lng": 88.3574,
+          "type": "Education Hub"
+        },
+        {
+          "id": "lm-63-3",
+          "name": "Camac Street Commercial Corridor",
+          "lat": 22.5475,
+          "lng": 88.3538,
+          "type": "Commercial"
+        },
+        {
+          "id": "lm-63-4",
+          "name": "Allen Park & Mother Teresa Sarani",
+          "lat": 22.5518,
+          "lng": 88.3562,
+          "type": "Public Square"
+        },
+        {
+          "id": "lm-63-5",
+          "name": "US Consulate General Area",
+          "lat": 22.5498,
+          "lng": 88.3524,
+          "type": "Diplomatic Area"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.85",
+        "population": "42,800",
+        "activeHotspots": 2,
+        "resolutionRate": 94,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-70",
+      "wardNumber": "Ward 70",
+      "name": "Bhowanipore – Elgin",
+      "borough": "Borough VIII",
+      "zone": "South Kolkata",
+      "color": "#3FB950",
+      "center": [
+        22.538,
+        88.351
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.5442,
+          88.344
+        ],
+        [
+          22.5448,
+          88.3585
+        ],
+        [
+          22.532,
+          88.358
+        ],
+        [
+          22.5315,
+          88.3445
+        ],
+        [
+          22.5442,
+          88.344
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Ashim Bose",
+          "designation": "Ward Councillor & Borough VIII Representative",
+          "phone": "+91 98302 44109",
+          "email": "councillor.w70@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Pradip Sen",
+          "department": "Solid Waste Management (Borough VIII)",
+          "phone": "+91 94331 45098",
+          "email": "ee.swm.b8@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Kalyani Ghosh",
+          "designation": "Senior Sanitary Inspector",
+          "phone": "+91 98319 88120",
+          "email": "csi.ward70@kmchealth.org"
+        },
+        "office": {
+          "address": "38 Elgin Road, Bhowanipore, Kolkata 700020",
+          "phone": "033-2475-8833",
+          "hours": "08:30 AM – 06:30 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2475-1020",
+          "whatsapp": "+91 98308 11200",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Elgin Road Compactor Hub",
+          "supervisor": "Sri Monojit Ray",
+          "fleetCapacity": "8 Battery Tippers, 2 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Bhowanipore Police Station",
+          "officer": "Inspector Amitava Chakraborty (OC)",
+          "phone": "033-2475-4300"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-70-1",
+          "name": "Forum Courtyard Mall",
+          "lat": 22.5369,
+          "lng": 88.3508,
+          "type": "Retail / Commercial"
+        },
+        {
+          "id": "lm-70-2",
+          "name": "Netaji Bhawan (Netaji Subhash C. Bose Home)",
+          "lat": 22.5358,
+          "lng": 88.3465,
+          "type": "National Heritage"
+        },
+        {
+          "id": "lm-70-3",
+          "name": "Elgin Road Commercial Zone",
+          "lat": 22.5378,
+          "lng": 88.3524,
+          "type": "Commercial"
+        },
+        {
+          "id": "lm-70-4",
+          "name": "Lala Lajpat Rai Sarani",
+          "lat": 22.5401,
+          "lng": 88.349,
+          "type": "Avenue"
+        },
+        {
+          "id": "lm-70-5",
+          "name": "Northern Park",
+          "lat": 22.5338,
+          "lng": 88.3498,
+          "type": "Recreational Park"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.72",
+        "population": "38,500",
+        "activeHotspots": 1,
+        "resolutionRate": 97,
+        "status": "Satisfactory",
+        "surveillanceDrones": 1
+      }
+    },
+    {
+      "id": "ward-71",
+      "wardNumber": "Ward 71",
+      "name": "Kalighat – Rashbehari",
+      "borough": "Borough IX",
+      "zone": "South Kolkata",
+      "color": "#E5484D",
+      "center": [
+        22.525,
+        88.347
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.5315,
+          88.341
+        ],
+        [
+          22.532,
+          88.354
+        ],
+        [
+          22.519,
+          88.353
+        ],
+        [
+          22.5185,
+          88.34
+        ],
+        [
+          22.5315,
+          88.341
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Smt. Papiya Singh",
+          "designation": "Ward Councillor",
+          "phone": "+91 98311 55670",
+          "email": "councillor.w71@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Tapas Dasgupta",
+          "department": "Solid Waste Management (Borough IX)",
+          "phone": "+91 94334 22001",
+          "email": "ee.swm.b9@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Sri Bimalendu Roy",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98305 77140",
+          "email": "csi.ward71@kmchealth.org"
+        },
+        "office": {
+          "address": "71 Kalighat Road, Near Temple Gates, Kolkata 700026",
+          "phone": "033-2464-1002",
+          "hours": "07:30 AM – 07:00 PM (Temple Zone)"
+        },
+        "helpline": {
+          "controlRoom": "033-2464-8899",
+          "whatsapp": "+91 90733 45678",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Kalighat Temple Cleaning & Compactor Station",
+          "supervisor": "Sri Sourav Mondal",
+          "fleetCapacity": "14 E-Carts, 3 Compactors, 2 High-Pressure Washers"
+        },
+        "policeLiaison": {
+          "station": "Kalighat Police Station",
+          "officer": "Inspector S. K. Hazra (OC)",
+          "phone": "033-2464-2200"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-71-1",
+          "name": "Kalighat Kali Temple",
+          "lat": 22.5204,
+          "lng": 88.3426,
+          "type": "Pilgrimage / Heritage"
+        },
+        {
+          "id": "lm-71-2",
+          "name": "Hazra Crossing & Park",
+          "lat": 22.5285,
+          "lng": 88.348,
+          "type": "Traffic Junction"
+        },
+        {
+          "id": "lm-71-3",
+          "name": "Ashutosh College Campus",
+          "lat": 22.527,
+          "lng": 88.3495,
+          "type": "College"
+        },
+        {
+          "id": "lm-71-4",
+          "name": "Harish Park",
+          "lat": 22.5302,
+          "lng": 88.3452,
+          "type": "Public Park"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.65",
+        "population": "46,100",
+        "activeHotspots": 3,
+        "resolutionRate": 89,
+        "status": "High Alert",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-85",
+      "wardNumber": "Ward 85",
+      "name": "Ballygunge – Dover Road",
+      "borough": "Borough VIII",
+      "zone": "South Kolkata",
+      "color": "#38BDF8",
+      "center": [
+        22.523,
+        88.3655
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.529,
+          88.3585
+        ],
+        [
+          22.5295,
+          88.3735
+        ],
+        [
+          22.5175,
+          88.3725
+        ],
+        [
+          22.517,
+          88.358
+        ],
+        [
+          22.529,
+          88.3585
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Debasish Kumar",
+          "designation": "Member Mayor-in-Council (Parks, Gardens & SWM Liaison)",
+          "phone": "+91 98300 12345",
+          "email": "debasish.kumar@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Aloke Karmakar",
+          "department": "Solid Waste Management (Borough VIII Central)",
+          "phone": "+91 94338 90123",
+          "email": "ee.swm.b8c@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Sudip Majumdar",
+          "designation": "Executive Health Officer & CSI",
+          "phone": "+91 98314 33201",
+          "email": "csi.ward85@kmchealth.org"
+        },
+        "office": {
+          "address": "22 Dover Terrace, Ballygunge, Kolkata 700019",
+          "phone": "033-2465-1100",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2465-2020",
+          "whatsapp": "+91 98305 99441",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Deshapriya Park Sanitation Yard",
+          "supervisor": "Sri Anjan Paul",
+          "fleetCapacity": "12 Battery Tippers, 3 Hook Loaders"
+        },
+        "policeLiaison": {
+          "station": "Ballygunge Police Station",
+          "officer": "Inspector Gautam Ghosh (OC)",
+          "phone": "033-2465-3344"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-85-1",
+          "name": "Deshapriya Park",
+          "lat": 22.5218,
+          "lng": 88.3598,
+          "type": "Public Park"
+        },
+        {
+          "id": "lm-85-2",
+          "name": "Gariahat Crossing & Shopping Area",
+          "lat": 22.5201,
+          "lng": 88.3688,
+          "type": "Commercial Center"
+        },
+        {
+          "id": "lm-85-3",
+          "name": "Dover Lane Cultural Hub",
+          "lat": 22.5235,
+          "lng": 88.3638,
+          "type": "Residential / Heritage"
+        },
+        {
+          "id": "lm-85-4",
+          "name": "Priya Cinema",
+          "lat": 22.521,
+          "lng": 88.3602,
+          "type": "Entertainment"
+        },
+        {
+          "id": "lm-85-5",
+          "name": "Tridhara Sammilani Ground",
+          "lat": 22.5242,
+          "lng": 88.3615,
+          "type": "Community Ground"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.92",
+        "population": "45,000",
+        "activeHotspots": 1,
+        "resolutionRate": 96,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-88",
+      "wardNumber": "Ward 88",
+      "name": "Southern Avenue – Lake Market",
+      "borough": "Borough VIII",
+      "zone": "South Kolkata",
+      "color": "#22c55e",
+      "center": [
+        22.511,
+        88.3555
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.517,
+          88.348
+        ],
+        [
+          22.5175,
+          88.364
+        ],
+        [
+          22.505,
+          88.363
+        ],
+        [
+          22.5045,
+          88.347
+        ],
+        [
+          22.517,
+          88.348
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Smt. Mala Roy (MP/Councillor Overseer)",
+          "designation": "Ward Councillor & Chairperson, KMC",
+          "phone": "+91 98302 99881",
+          "email": "chairperson@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Somnath Mitra",
+          "department": "Solid Waste Management & Waterbody Preservation",
+          "phone": "+91 94333 11220",
+          "email": "ee.swm.lake@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Sri Anupam Ghosh",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98317 44550",
+          "email": "csi.ward88@kmchealth.org"
+        },
+        "office": {
+          "address": "15 Southern Avenue (Near Menoka Cinema), Kolkata 700029",
+          "phone": "033-2466-4400",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2466-9900",
+          "whatsapp": "+91 98310 55667",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Lake Market Compactor Depot",
+          "supervisor": "Sri Bikash Das",
+          "fleetCapacity": "9 Battery Tippers, 2 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Lake Police Station",
+          "officer": "Inspector Subhashish Roy (OC)",
+          "phone": "033-2466-2211"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-88-1",
+          "name": "Rabindra Sarobar (The Kolkata Lakes)",
+          "lat": 22.5122,
+          "lng": 88.357,
+          "type": "Eco Sensitive Waterbody"
+        },
+        {
+          "id": "lm-88-2",
+          "name": "Lake Mall & Market Complex",
+          "lat": 22.5165,
+          "lng": 88.3505,
+          "type": "Retail / Market"
+        },
+        {
+          "id": "lm-88-3",
+          "name": "Southern Avenue Boulevard",
+          "lat": 22.5135,
+          "lng": 88.354,
+          "type": "Boulevard"
+        },
+        {
+          "id": "lm-88-4",
+          "name": "Menoka Cinema",
+          "lat": 22.5152,
+          "lng": 88.3521,
+          "type": "Cinema"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "2.10",
+        "population": "41,200",
+        "activeHotspots": 1,
+        "resolutionRate": 98,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-92",
+      "wardNumber": "Ward 92",
+      "name": "Jadavpur – Santoshpur",
+      "borough": "Borough X",
+      "zone": "South Kolkata",
+      "color": "#2FCB8A",
+      "center": [
+        22.4975,
+        88.3725
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.504,
+          88.364
+        ],
+        [
+          22.5045,
+          88.382
+        ],
+        [
+          22.491,
+          88.381
+        ],
+        [
+          22.4905,
+          88.363
+        ],
+        [
+          22.504,
+          88.364
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Abhishek Mukherjee",
+          "designation": "Ward Councillor",
+          "phone": "+91 98315 67890",
+          "email": "councillor.w92@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Kalyan Roy",
+          "department": "Solid Waste Management (Borough X)",
+          "phone": "+91 94336 78901",
+          "email": "ee.swm.b10@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Partha Sen",
+          "designation": "Executive Sanitary Inspector",
+          "phone": "+91 98308 11234",
+          "email": "csi.ward92@kmchealth.org"
+        },
+        "office": {
+          "address": "8B Jadavpur Central Road, Kolkata 700032",
+          "phone": "033-2414-5500",
+          "hours": "08:30 AM – 06:30 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2414-9988",
+          "whatsapp": "+91 98302 77889",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Santoshpur SWM Station",
+          "supervisor": "Sri Sujit Nandi",
+          "fleetCapacity": "11 Battery Tippers, 3 Compactors, 1 Shredder"
+        },
+        "policeLiaison": {
+          "station": "Jadavpur Police Station",
+          "officer": "Inspector Pulak Roy (OC)",
+          "phone": "033-2414-2222"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-92-1",
+          "name": "Jadavpur University Main Campus",
+          "lat": 22.4993,
+          "lng": 88.3714,
+          "type": "University / Education"
+        },
+        {
+          "id": "lm-92-2",
+          "name": "8B Bus Terminus & Sukanta Setu",
+          "lat": 22.4978,
+          "lng": 88.3745,
+          "type": "Transit Interchange"
+        },
+        {
+          "id": "lm-92-3",
+          "name": "Santoshpur Lake & Park",
+          "lat": 22.494,
+          "lng": 88.378,
+          "type": "Waterbody / Park"
+        },
+        {
+          "id": "lm-92-4",
+          "name": "KPC Medical College & Hospital",
+          "lat": 22.4925,
+          "lng": 88.3685,
+          "type": "Hospital / Medical"
+        },
+        {
+          "id": "lm-92-5",
+          "name": "Sulekha Crossing Commercial Hub",
+          "lat": 22.496,
+          "lng": 88.3695,
+          "type": "Commercial"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "2.35",
+        "population": "52,400",
+        "activeHotspots": 2,
+        "resolutionRate": 91,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-74",
+      "wardNumber": "Ward 74",
+      "name": "Alipore – Zoo & Heritage",
+      "borough": "Borough IX",
+      "zone": "South Kolkata",
+      "color": "#0284c7",
+      "center": [
+        22.5375,
+        88.334
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.544,
+          88.324
+        ],
+        [
+          22.5442,
+          88.344
+        ],
+        [
+          22.531,
+          88.3435
+        ],
+        [
+          22.5305,
+          88.3235
+        ],
+        [
+          22.544,
+          88.324
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Ujjal Chatterjee",
+          "designation": "Ward Councillor",
+          "phone": "+91 98304 88712",
+          "email": "councillor.w74@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Subhasish Paul",
+          "department": "Solid Waste Management (Borough IX West)",
+          "phone": "+91 94337 66543",
+          "email": "ee.swm.b9w@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Mousumi Bhattacharya",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98310 99450",
+          "email": "csi.ward74@kmchealth.org"
+        },
+        "office": {
+          "address": "2 Belvedere Road, Alipore, Kolkata 700027",
+          "phone": "033-2479-1122",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2479-5566",
+          "whatsapp": "+91 98311 00223",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Alipore Clean Green Yard",
+          "supervisor": "Sri Ramesh Halder",
+          "fleetCapacity": "8 Battery Tippers, 2 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Alipore Police Station",
+          "officer": "Inspector Prabal Dutta (OC)",
+          "phone": "033-2479-1400"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-74-1",
+          "name": "Alipore Zoological Gardens",
+          "lat": 22.535,
+          "lng": 88.332,
+          "type": "Eco Zone / Zoo"
+        },
+        {
+          "id": "lm-74-2",
+          "name": "National Library of India",
+          "lat": 22.532,
+          "lng": 88.3345,
+          "type": "National Monument"
+        },
+        {
+          "id": "lm-74-3",
+          "name": "Alipore Jail Independence Museum",
+          "lat": 22.5375,
+          "lng": 88.3305,
+          "type": "Heritage Museum"
+        },
+        {
+          "id": "lm-74-4",
+          "name": "Taj Bengal & Belvedre Area",
+          "lat": 22.5402,
+          "lng": 88.3355,
+          "type": "Hospitality"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "2.20",
+        "population": "36,000",
+        "activeHotspots": 1,
+        "resolutionRate": 98,
+        "status": "Satisfactory",
+        "surveillanceDrones": 1
+      }
+    },
+    {
+      "id": "ward-118",
+      "wardNumber": "Ward 118",
+      "name": "Behala Chowrasta – Taratala",
+      "borough": "Borough XIII",
+      "zone": "South-West Kolkata (Behala)",
+      "color": "#F5A524",
+      "center": [
+        22.505,
+        88.319
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.515,
+          88.309
+        ],
+        [
+          22.5155,
+          88.3295
+        ],
+        [
+          22.495,
+          88.3285
+        ],
+        [
+          22.4945,
+          88.308
+        ],
+        [
+          22.515,
+          88.309
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Tarak Singh",
+          "designation": "Member Mayor-in-Council (Drainage & SWM Special Task Force)",
+          "phone": "+91 98300 55443",
+          "email": "tarak.singh@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Bibhas Mukherjee",
+          "department": "Solid Waste Management (Borough XIII)",
+          "phone": "+91 94332 55667",
+          "email": "ee.swm.b13@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Sri Joydeep Chatterjee",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98309 66778",
+          "email": "csi.ward118@kmchealth.org"
+        },
+        "office": {
+          "address": "348 Diamond Harbour Road, Behala Chowrasta, Kolkata 700034",
+          "phone": "033-2398-1001",
+          "hours": "08:00 AM – 06:30 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2398-4455",
+          "whatsapp": "+91 98319 77889",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Behala Chowrasta Modern Compactor Yard",
+          "supervisor": "Sri Chandan Ghosh",
+          "fleetCapacity": "15 Battery Tippers, 4 Heavy Compactors, 2 Road Sweepers"
+        },
+        "policeLiaison": {
+          "station": "Behala Police Station",
+          "officer": "Inspector Biswajit Mukherjee (OC)",
+          "phone": "033-2398-0050"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-118-1",
+          "name": "Behala Chowrasta Metro Crossing",
+          "lat": 22.502,
+          "lng": 88.318,
+          "type": "Transit Junction"
+        },
+        {
+          "id": "lm-118-2",
+          "name": "Taratala Industrial & Flyover Junction",
+          "lat": 22.5135,
+          "lng": 88.316,
+          "type": "Industrial Hub"
+        },
+        {
+          "id": "lm-118-3",
+          "name": "Vidyasagar State General Hospital",
+          "lat": 22.498,
+          "lng": 88.315,
+          "type": "Public Hospital"
+        },
+        {
+          "id": "lm-118-4",
+          "name": "Behala Tram Depot & Bus Stand",
+          "lat": 22.5042,
+          "lng": 88.3195,
+          "type": "Transit Terminal"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "2.80",
+        "population": "64,000",
+        "activeHotspots": 2,
+        "resolutionRate": 90,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 3
+      }
+    },
+    {
+      "id": "ward-45",
+      "wardNumber": "Ward 45",
+      "name": "BBD Bagh – Dalhousie – High Court",
+      "borough": "Borough V",
+      "zone": "Central Kolkata",
+      "color": "#8b5cf6",
+      "center": [
+        22.571,
+        88.345
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.578,
+          88.337
+        ],
+        [
+          22.5785,
+          88.354
+        ],
+        [
+          22.564,
+          88.353
+        ],
+        [
+          22.5635,
+          88.336
+        ],
+        [
+          22.578,
+          88.337
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Santosh Pathak",
+          "designation": "Ward Councillor",
+          "phone": "+91 98310 11998",
+          "email": "councillor.w45@kmcgov.in",
+          "party": "Indian National Congress (INC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Amitava Sen",
+          "department": "Solid Waste Management (Borough V Central)",
+          "phone": "+91 94335 44332",
+          "email": "ee.swm.b5@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Sukanta Das",
+          "designation": "Chief Sanitary Inspector & VIP Zone Health Officer",
+          "phone": "+91 98312 33445",
+          "email": "csi.ward45@kmchealth.org"
+        },
+        "office": {
+          "address": "KMC Central Headquarters, 5 S.N. Banerjee Road, Kolkata 700013",
+          "phone": "033-2286-1000",
+          "hours": "07:30 AM – 08:00 PM (HQ Vigilance 24x7)"
+        },
+        "helpline": {
+          "controlRoom": "033-2286-1212",
+          "whatsapp": "+91 90510 12345",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Dalhousie Heritage Zone Compactor Hub",
+          "supervisor": "Sri Pradip Kundu",
+          "fleetCapacity": "12 Battery Tippers, 3 Eco-Compactors, 2 Mechanical Sweepers"
+        },
+        "policeLiaison": {
+          "station": "Hare Street Police Station",
+          "officer": "Inspector Subir Das (OC)",
+          "phone": "033-2248-2323"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-45-1",
+          "name": "Writers' Building",
+          "lat": 22.5732,
+          "lng": 88.3496,
+          "type": "Government Secretariat"
+        },
+        {
+          "id": "lm-45-2",
+          "name": "Calcutta High Court",
+          "lat": 22.5694,
+          "lng": 88.3432,
+          "type": "Judicial Landmark"
+        },
+        {
+          "id": "lm-45-3",
+          "name": "General Post Office (GPO)",
+          "lat": 22.5724,
+          "lng": 88.3475,
+          "type": "Heritage Architecture"
+        },
+        {
+          "id": "lm-45-4",
+          "name": "Eden Gardens Cricket Ground",
+          "lat": 22.5646,
+          "lng": 88.3433,
+          "type": "Sports Stadium"
+        },
+        {
+          "id": "lm-45-5",
+          "name": "Millennium Park & Hooghly Riverbank",
+          "lat": 22.5742,
+          "lng": 88.3415,
+          "type": "Riverfront Promenade"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.75",
+        "population": "28,000",
+        "activeHotspots": 1,
+        "resolutionRate": 99,
+        "status": "Satisfactory",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-48",
+      "wardNumber": "Ward 48",
+      "name": "College Street – Bowbazar",
+      "borough": "Borough V",
+      "zone": "Central Kolkata",
+      "color": "#ec4899",
+      "center": [
+        22.5715,
+        88.3635
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.5785,
+          88.354
+        ],
+        [
+          22.579,
+          88.373
+        ],
+        [
+          22.565,
+          88.372
+        ],
+        [
+          22.5645,
+          88.353
+        ],
+        [
+          22.5785,
+          88.354
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Biswarup Dey",
+          "designation": "Ward Councillor",
+          "phone": "+91 98303 66778",
+          "email": "councillor.w48@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Nirmal Ghosh",
+          "department": "Solid Waste Management (Borough V East)",
+          "phone": "+91 94339 12345",
+          "email": "ee.swm.b5e@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Dipankar Sen",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98316 77889",
+          "email": "csi.ward48@kmchealth.org"
+        },
+        "office": {
+          "address": "87 College Street, Kolkata 700073",
+          "phone": "033-2241-3322",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2241-7788",
+          "whatsapp": "+91 98309 33445",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Bowbazar SWM Depot",
+          "supervisor": "Sri Manik Sarkar",
+          "fleetCapacity": "10 Battery Tippers, 2 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Bowbazar Police Station",
+          "officer": "Inspector A. K. Sil (OC)",
+          "phone": "033-2237-4400"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-48-1",
+          "name": "College Street Boi Para (Book Market)",
+          "lat": 22.5745,
+          "lng": 88.3638,
+          "type": "Literary Hub"
+        },
+        {
+          "id": "lm-48-2",
+          "name": "University of Calcutta (Senate House)",
+          "lat": 22.574,
+          "lng": 88.3622,
+          "type": "University"
+        },
+        {
+          "id": "lm-48-3",
+          "name": "Calcutta Medical College & Hospital",
+          "lat": 22.5728,
+          "lng": 88.3605,
+          "type": "Medical College"
+        },
+        {
+          "id": "lm-48-4",
+          "name": "Presidency University",
+          "lat": 22.5755,
+          "lng": 88.3635,
+          "type": "University"
+        },
+        {
+          "id": "lm-48-5",
+          "name": "Indian Coffee House",
+          "lat": 22.5748,
+          "lng": 88.3629,
+          "type": "Historic Cafe"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.60",
+        "population": "44,500",
+        "activeHotspots": 2,
+        "resolutionRate": 92,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 1
+      }
+    },
+    {
+      "id": "ward-12",
+      "wardNumber": "Ward 12",
+      "name": "Shyambazar – Hatibagan",
+      "borough": "Borough II",
+      "zone": "North Kolkata",
+      "color": "#14b8a6",
+      "center": [
+        22.604,
+        88.374
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.611,
+          88.365
+        ],
+        [
+          22.6115,
+          88.384
+        ],
+        [
+          22.597,
+          88.383
+        ],
+        [
+          22.5965,
+          88.364
+        ],
+        [
+          22.611,
+          88.365
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Smt. Sunanda Sarkar",
+          "designation": "Ward Councillor",
+          "phone": "+91 98305 12900",
+          "email": "councillor.w12@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Pranab Ganguly",
+          "department": "Solid Waste Management (Borough II)",
+          "phone": "+91 94331 99887",
+          "email": "ee.swm.b2@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Mihir Das",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98318 22334",
+          "email": "csi.ward12@kmchealth.org"
+        },
+        "office": {
+          "address": "14 Bidhan Sarani, Shyambazar 5-Point, Kolkata 700004",
+          "phone": "033-2555-1100",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2555-6677",
+          "whatsapp": "+91 98304 88990",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Hatibagan Market Compactor Yard",
+          "supervisor": "Sri Gourango Paul",
+          "fleetCapacity": "11 Battery Tippers, 3 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Shyampukur Police Station",
+          "officer": "Inspector Sandip Roy (OC)",
+          "phone": "033-2555-3344"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-12-1",
+          "name": "Shyambazar 5-Point Crossing & Netaji Statue",
+          "lat": 22.6045,
+          "lng": 88.3732,
+          "type": "Iconic Junction"
+        },
+        {
+          "id": "lm-12-2",
+          "name": "Hatibagan Market & Bidhan Sarani",
+          "lat": 22.5995,
+          "lng": 88.3725,
+          "type": "Market Hub"
+        },
+        {
+          "id": "lm-12-3",
+          "name": "Star Theatre",
+          "lat": 22.6002,
+          "lng": 88.3728,
+          "type": "Historic Theatre"
+        },
+        {
+          "id": "lm-12-4",
+          "name": "Town School Kolkata",
+          "lat": 22.6025,
+          "lng": 88.371,
+          "type": "Heritage School"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "1.90",
+        "population": "48,900",
+        "activeHotspots": 2,
+        "resolutionRate": 93,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-31",
+      "wardNumber": "Ward 31",
+      "name": "Kankurgachi – Phoolbagan",
+      "borough": "Borough III",
+      "zone": "North Kolkata",
+      "color": "#2FCB8A",
+      "center": [
+        22.5785,
+        88.3945
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.586,
+          88.384
+        ],
+        [
+          22.5865,
+          88.406
+        ],
+        [
+          22.571,
+          88.405
+        ],
+        [
+          22.5705,
+          88.383
+        ],
+        [
+          22.586,
+          88.384
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Paresh Paul",
+          "designation": "Ward Councillor & MLA (Beliaghata)",
+          "phone": "+91 98300 45678",
+          "email": "councillor.w31@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Dilip Roy",
+          "department": "Solid Waste Management (Borough III)",
+          "phone": "+91 94334 77889",
+          "email": "ee.swm.b3@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Anirban Dutta",
+          "designation": "Senior Health Inspector",
+          "phone": "+91 98313 55667",
+          "email": "csi.ward31@kmchealth.org"
+        },
+        "office": {
+          "address": "21 CIT Road, Scheme VI-M, Kankurgachi, Kolkata 700054",
+          "phone": "033-2362-8800",
+          "hours": "08:00 AM – 06:00 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2362-9900",
+          "whatsapp": "+91 98306 11223",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Phoolbagan Modern Compactor Station",
+          "supervisor": "Sri Alok Ghosh",
+          "fleetCapacity": "10 Battery Tippers, 3 Compactors"
+        },
+        "policeLiaison": {
+          "station": "Phoolbagan Police Station",
+          "officer": "Inspector Debashis Kar (OC)",
+          "phone": "033-2362-3322"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-31-1",
+          "name": "Kankurgachi Pantaloons Crossing",
+          "lat": 22.5815,
+          "lng": 88.393,
+          "type": "Retail Junction"
+        },
+        {
+          "id": "lm-31-2",
+          "name": "Phoolbagan Metro Station & Crossing",
+          "lat": 22.5728,
+          "lng": 88.3942,
+          "type": "Metro Station"
+        },
+        {
+          "id": "lm-31-3",
+          "name": "Subhas Sarobar Lake",
+          "lat": 22.5685,
+          "lng": 88.402,
+          "type": "Lake & Eco Park"
+        },
+        {
+          "id": "lm-31-4",
+          "name": "Apollo Gleneagles Hospital Proximity",
+          "lat": 22.576,
+          "lng": 88.4035,
+          "type": "Super Specialty Hospital"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "2.15",
+        "population": "47,300",
+        "activeHotspots": 1,
+        "resolutionRate": 95,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 2
+      }
+    },
+    {
+      "id": "ward-108",
+      "wardNumber": "Ward 108",
+      "name": "Anandapur – Ruby – EM Bypass",
+      "borough": "Borough XII",
+      "zone": "East Kolkata / EM Bypass",
+      "color": "#06b6d4",
+      "center": [
+        22.52,
+        88.4045
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.53,
+          88.394
+        ],
+        [
+          22.5305,
+          88.416
+        ],
+        [
+          22.51,
+          88.415
+        ],
+        [
+          22.5095,
+          88.393
+        ],
+        [
+          22.53,
+          88.394
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Sushanta Kumar Ghosh",
+          "designation": "Ward Councillor & Borough XII Chairman",
+          "phone": "+91 98301 99887",
+          "email": "councillor.w108@kmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2021 – 2026"
+        },
+        "executiveEngineer": {
+          "name": "Er. Tarun Biswas",
+          "department": "Solid Waste Management (Borough XII)",
+          "phone": "+91 94330 66778",
+          "email": "ee.swm.b12@kmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Rajat Sen",
+          "designation": "Chief Sanitary Inspector",
+          "phone": "+91 98317 88990",
+          "email": "csi.ward108@kmchealth.org"
+        },
+        "office": {
+          "address": "Borough XII Office, Anandapur Main Road, Kolkata 700107",
+          "phone": "033-2443-5500",
+          "hours": "08:00 AM – 06:30 PM"
+        },
+        "helpline": {
+          "controlRoom": "033-2443-8899",
+          "whatsapp": "+91 98309 88776",
+          "tollFree": "14420"
+        },
+        "depot": {
+          "name": "Anandapur High-Capacity SWM Depot",
+          "supervisor": "Sri Rabin Das",
+          "fleetCapacity": "14 Battery Tippers, 4 Compactors, 1 Waste Segregator"
+        },
+        "policeLiaison": {
+          "station": "Anandapur Police Station",
+          "officer": "Inspector K. N. Sinha (OC)",
+          "phone": "033-2443-2211"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-108-1",
+          "name": "Ruby General Hospital & Crossing",
+          "lat": 22.514,
+          "lng": 88.4015,
+          "type": "Hospital Hub"
+        },
+        {
+          "id": "lm-108-2",
+          "name": "Fortis Hospital Anandapur",
+          "lat": 22.5185,
+          "lng": 88.4038,
+          "type": "Medical Center"
+        },
+        {
+          "id": "lm-108-3",
+          "name": "Science City (EM Bypass Junction)",
+          "lat": 22.539,
+          "lng": 88.3965,
+          "type": "Science Museum"
+        },
+        {
+          "id": "lm-108-4",
+          "name": "Urbana Residential Complex",
+          "lat": 22.517,
+          "lng": 88.411,
+          "type": "Mega Township"
+        },
+        {
+          "id": "lm-108-5",
+          "name": "PC Chandra Gardens",
+          "lat": 22.536,
+          "lng": 88.398,
+          "type": "Convention / Garden"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "3.10",
+        "population": "58,700",
+        "activeHotspots": 2,
+        "resolutionRate": 94,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 3
+      }
+    },
+    {
+      "id": "bmc-32",
+      "wardNumber": "Ward BMC-32",
+      "name": "Salt Lake Sector V – Electronics Complex",
+      "borough": "BMC Zone IV",
+      "zone": "Bidhannagar / Salt Lake",
+      "color": "#38bdf8",
+      "center": [
+        22.577,
+        88.434
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.588,
+          88.423
+        ],
+        [
+          22.5885,
+          88.446
+        ],
+        [
+          22.566,
+          88.445
+        ],
+        [
+          22.5655,
+          88.422
+        ],
+        [
+          22.588,
+          88.423
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Debraj Chakraborty",
+          "designation": "Bidhannagar Municipal Corporation (MMIC SWM & Cleanliness)",
+          "phone": "+91 98302 33441",
+          "email": "mmic.swm@bmcgov.in",
+          "party": "All India Trinamool Congress (AITC)",
+          "term": "2022 – 2027"
+        },
+        "executiveEngineer": {
+          "name": "Er. S. Bhattacharya",
+          "department": "BMC Sector V Smart Waste Management Cell",
+          "phone": "+91 94335 11009",
+          "email": "ee.sector5@bmcgov.in"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Kunal Roy",
+          "designation": "Chief Health & Sanitation Officer, BMC",
+          "phone": "+91 98319 44332",
+          "email": "healthofficer@bmcgov.in"
+        },
+        "office": {
+          "address": "Poura Bhavan, FD Block, Sector III, Bidhannagar, Kolkata 700091",
+          "phone": "033-2337-1234",
+          "hours": "08:00 AM – 07:00 PM (Emergency 24x7)"
+        },
+        "helpline": {
+          "controlRoom": "033-2359-7988",
+          "whatsapp": "+91 98305 11000",
+          "tollFree": "1800-345-3644"
+        },
+        "depot": {
+          "name": "Sector V Eco Clean Transfer Station",
+          "supervisor": "Sri Amitava Saha",
+          "fleetCapacity": "16 Electric Waste Vans, 4 Hydraulic Compactors, 2 Drone Surveillance Pods"
+        },
+        "policeLiaison": {
+          "station": "Electronic Complex Police Station",
+          "officer": "Inspector Tanmoy Mukherjee (OC)",
+          "phone": "033-2357-1111"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-bmc-1",
+          "name": "Sector V IT & Webel More Hub",
+          "lat": 22.5768,
+          "lng": 88.4338,
+          "type": "IT Tech Park"
+        },
+        {
+          "id": "lm-bmc-2",
+          "name": "Nicco Park & Water World",
+          "lat": 22.571,
+          "lng": 88.4235,
+          "type": "Theme Park"
+        },
+        {
+          "id": "lm-bmc-3",
+          "name": "Karunamoyee International Bus Terminal",
+          "lat": 22.5855,
+          "lng": 88.419,
+          "type": "Transit Interchange"
+        },
+        {
+          "id": "lm-bmc-4",
+          "name": "Central Park Salt Lake",
+          "lat": 22.5875,
+          "lng": 88.42,
+          "type": "City Forest / Lake"
+        },
+        {
+          "id": "lm-bmc-5",
+          "name": "Godrej Waterside / RDB Cinemas",
+          "lat": 22.5745,
+          "lng": 88.4352,
+          "type": "Commercial Complex"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "3.40",
+        "population": "72,000 (Daytime: 250,000)",
+        "activeHotspots": 1,
+        "resolutionRate": 99,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 3
+      }
+    },
+    {
+      "id": "nkda-01",
+      "wardNumber": "Ward NKDA-01",
+      "name": "New Town Action Area 1 – Smart City",
+      "borough": "NKDA Area I",
+      "zone": "New Town (NKDA)",
+      "color": "#10b981",
+      "center": [
+        22.5945,
+        88.4615
+      ],
+      "zoom": 15,
+      "boundary": [
+        [
+          22.608,
+          88.448
+        ],
+        [
+          22.6085,
+          88.476
+        ],
+        [
+          22.581,
+          88.475
+        ],
+        [
+          22.5805,
+          88.447
+        ],
+        [
+          22.608,
+          88.448
+        ]
+      ],
+      "authorities": {
+        "councillor": {
+          "name": "Sri Debashis Sen (IAS Retd.)",
+          "designation": "Chairman, New Town Kolkata Development Authority (NKDA)",
+          "phone": "+91 98300 00111",
+          "email": "chairman@nkda.org",
+          "party": "NKDA Smart City Statutory Board",
+          "term": "Appointed Administration"
+        },
+        "executiveEngineer": {
+          "name": "Er. Supriyo Sengupta",
+          "department": "Chief Executive Engineer (Smart Clean City SWM)",
+          "phone": "+91 94331 00222",
+          "email": "cee.swm@nkda.org"
+        },
+        "sanitaryInspector": {
+          "name": "Dr. Rita Sen",
+          "designation": "Chief Public Health Officer",
+          "phone": "+91 98315 11223",
+          "email": "cpho@nkda.org"
+        },
+        "office": {
+          "address": "NKDA Administrative Building, 01 MAR, Action Area I, New Town 700156",
+          "phone": "033-2324-2134",
+          "hours": "08:00 AM – 08:00 PM (Control Desk 24x7)"
+        },
+        "helpline": {
+          "controlRoom": "1800-103-7652 (NKDA Smart City Helpline)",
+          "whatsapp": "+91 90510 55660",
+          "tollFree": "1800-103-7652"
+        },
+        "depot": {
+          "name": "New Town Smart Solid Waste Segregation & Processing Hub",
+          "supervisor": "Er. Kaushik Guha",
+          "fleetCapacity": "20 Electric Compactors, 6 Drone Launch Pads, 4 Road Vacuum Cleaners"
+        },
+        "policeLiaison": {
+          "station": "New Town Police Station",
+          "officer": "Inspector R. N. Pathak (OC)",
+          "phone": "033-2324-4400"
+        }
+      },
+      "landmarks": [
+        {
+          "id": "lm-nkda-1",
+          "name": "Biswa Bangla Gate (Kolkata Gate)",
+          "lat": 22.5862,
+          "lng": 88.4682,
+          "type": "Iconic Architectural Landmark"
+        },
+        {
+          "id": "lm-nkda-2",
+          "name": "Prakriti Tirtha (Eco Park)",
+          "lat": 22.6035,
+          "lng": 88.467,
+          "type": "Ecological Mega Park"
+        },
+        {
+          "id": "lm-nkda-3",
+          "name": "Mother's Wax Museum",
+          "lat": 22.588,
+          "lng": 88.468,
+          "type": "Tourism / Museum"
+        },
+        {
+          "id": "lm-nkda-4",
+          "name": "New Town Bus Terminus & Pride Hotel",
+          "lat": 22.5835,
+          "lng": 88.459,
+          "type": "Transit Terminal"
+        },
+        {
+          "id": "lm-nkda-5",
+          "name": "Nazrul Tirtha Cultural Center",
+          "lat": 22.5828,
+          "lng": 88.4552,
+          "type": "Cultural Centre"
+        }
+      ],
+      "stats": {
+        "areaSqKm": "4.80",
+        "population": "85,000",
+        "activeHotspots": 2,
+        "resolutionRate": 98,
+        "status": "Active Surveillance",
+        "surveillanceDrones": 4
+      }
+    }
+  ]
+}

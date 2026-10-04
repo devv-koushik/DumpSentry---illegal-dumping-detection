@@ -19,9 +19,9 @@ import { useAuth } from "../context/AuthContext";
 
 const STATUS_FILTERS = ["All", "Suspected Illegal", "Pending Review", "Resolved"];
 const LEGEND = [
-  { label: "Suspected Illegal", color: "#c94b3f" },
-  { label: "Pending Review", color: "#e2a33b" },
-  { label: "Resolved", color: "#3f8a5c" },
+  { label: "Suspected Illegal", color: "#E5484D" },
+  { label: "Pending Review", color: "#F5A524" },
+  { label: "Resolved", color: "#3FB950" },
 ];
 
 export default function MapPage() {
@@ -194,7 +194,7 @@ export default function MapPage() {
             </>
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-pill bg-paper border border-line px-3 py-1 text-[11px] font-medium text-muted">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               Public Civic View
             </span>
           )}
@@ -294,7 +294,7 @@ export default function MapPage() {
                 <div className="absolute top-3 left-3 z-[1000] flex items-center gap-2 rounded-pill bg-white/95 px-3 py-1.5 shadow-md border border-line backdrop-blur-md text-xs">
                   <span
                     className="h-2.5 w-2.5 rounded-full animate-pulse"
-                    style={{ backgroundColor: selectedWard.color || "#e2a33b" }}
+                    style={{ backgroundColor: selectedWard.color || "#2FCB8A" }}
                   />
                   <span className="font-bold text-ink">{selectedWard.wardNumber}: {selectedWard.name}</span>
                   <span className="text-[11px] text-muted">({wardDetectionsCount} dumping hotspots in boundary)</span>

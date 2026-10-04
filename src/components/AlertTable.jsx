@@ -64,8 +64,8 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
                         {sendingId === a.detectionId
                           ? "Sending…"
                           : a.status === "Failed"
-                          ? "Retry"
-                          : "Send Alert"}
+                            ? "Retry"
+                            : "Send Alert"}
                       </button>
                     ) : a.previewUrl ? (
                       <a

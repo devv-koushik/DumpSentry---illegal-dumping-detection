@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 import DetectionStatus from "./DetectionStatus";
 import ConfidenceBadge from "./ConfidenceBadge";
 import EmptyState from "./EmptyState";
+import { useAuth } from "../context/AuthContext";
 
 function formatDate(ts) {
   return new Date(ts).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-export default function DetectionTable({ detections }) {
+export default function DetectionTable({ detections, onDelete }) {
+  const { isAdmin } = useAuth();
   if (!detections?.length) {
     return <EmptyState title="No detections match your filters" description="Try widening your search or clearing filters." />;
   }
@@ -41,9 +43,16 @@ export default function DetectionTable({ detections }) {
                 <td className="px-5 py-3 text-muted">{d.authority}</td>
                 <td className="px-5 py-3"><DetectionStatus status={d.status} /></td>
                 <td className="px-5 py-3 text-right">
-                  <Link to={`/dashboard/detections/${d.id}`} className="text-xs font-medium text-accent-deep hover:underline">
-                    View →
-                  </Link>
+                  <div className="flex justify-end gap-3">
+                    <Link to={`/dashboard/detections/${d.id}`} className="text-xs font-medium text-accent-deep hover:underline">
+                      View →
+                    </Link>
+                    {isAdmin && onDelete && (
+                      <button onClick={() => onDelete(d.id)} className="text-xs font-medium text-danger hover:underline">
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

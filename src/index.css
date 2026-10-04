@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* Lenis smooth scrolling rules */
-html.lenis, html.lenis-smooth {
+html.lenis,
+html.lenis-smooth {
   height: auto;
 }
 
@@ -35,7 +36,9 @@ body {
   @apply bg-paper text-ink font-sans antialiased;
 }
 
-::selection { background: #e2a33b55; }
+::selection {
+  background: #e2a33b55;
+}
 
 .container-x {
   @apply mx-auto w-full max-w-[1240px] px-5 md:px-8;
@@ -44,15 +47,19 @@ body {
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-pill px-5 py-2.5 text-sm font-medium transition-all;
 }
+
 .btn-primary {
   @apply btn bg-ink text-white hover:bg-surface2;
 }
+
 .btn-accent {
   @apply btn bg-accent text-surface hover:bg-accent-deep hover:text-white;
 }
+
 .btn-outline {
   @apply btn border border-ink/20 text-ink hover:border-ink hover:bg-ink hover:text-white;
 }
+
 .btn-ghost {
   @apply btn text-ink/70 hover:text-ink hover:bg-ink/5;
 }
@@ -73,10 +80,12 @@ body {
   0% {
     box-shadow: inset 0 0 0 2px rgba(226, 163, 59, 0);
   }
+
   30% {
     box-shadow: inset 0 0 0 2px rgba(226, 163, 59, 0.4);
     background-color: rgba(226, 163, 59, 0.03);
   }
+
   100% {
     box-shadow: inset 0 0 0 2px rgba(226, 163, 59, 0);
   }
@@ -99,10 +108,13 @@ body {
 .leaflet-container {
   z-index: 0 !important;
 }
+
 .leaflet-pane {
   z-index: 0 !important;
 }
-.leaflet-top, .leaflet-bottom {
+
+.leaflet-top,
+.leaflet-bottom {
   z-index: 1 !important;
 }
 
@@ -132,13 +144,16 @@ body {
 .custom-scrollbar::-webkit-scrollbar {
   width: 3px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(226, 163, 59, 0.15);
   border-radius: 999px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(226, 163, 59, 0.3);
 }
@@ -148,14 +163,24 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 /* Drone pulse animation for CSS (used by map marker HTML) */
 @keyframes dronePulseCSS {
-  0%, 100% { transform: scale(1); opacity: 0.4; }
-  50% { transform: scale(2); opacity: 0; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 
 /* Command center Leaflet overrides */
@@ -164,11 +189,13 @@ body {
   border-radius: 8px !important;
   overflow: hidden;
 }
+
 .leaflet-control-zoom a {
   background: rgba(10, 16, 13, 0.9) !important;
   color: #e8ede9 !important;
   border-color: rgba(226, 163, 59, 0.12) !important;
 }
+
 .leaflet-control-zoom a:hover {
   background: rgba(20, 30, 24, 0.95) !important;
   color: #e2a33b !important;

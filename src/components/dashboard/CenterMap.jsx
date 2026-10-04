@@ -23,12 +23,12 @@ function createDivIcon(color, size = 12, pulse = false) {
 }
 
 const MARKER_ICONS = {
-  "Suspected Illegal": createDivIcon("#c94b3f", 12),
-  "Pending Review": createDivIcon("#e2a33b", 12),
-  Resolved: createDivIcon("#3f8a5c", 10),
+  "Suspected Illegal": createDivIcon("#E5484D", 12),
+  "Pending Review": createDivIcon("#F5A524", 12),
+  Resolved: createDivIcon("#3FB950", 10),
 };
 
-const DRONE_ICON = createDivIcon("#5ba4c9", 14, true);
+const DRONE_ICON = createDivIcon("#38BDF8", 14, true);
 
 // ── Fly to selected detection ──
 function FlyToDetection({ detection }) {
@@ -141,7 +141,7 @@ export default function CenterMap({ detections, selectedDetection, onSelectDetec
         <Polyline
           positions={FLIGHT_PATH}
           pathOptions={{
-            color: "#5ba4c9",
+            color: "#38BDF8",
             weight: 2,
             opacity: 0.4,
             dashArray: "6, 8",

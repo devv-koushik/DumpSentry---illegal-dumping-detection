@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Clock } from "lucide-react";
 import DetectionStatus from "./DetectionStatus";
 import ConfidenceBadge from "./ConfidenceBadge";
+import { useAuth } from "../context/AuthContext";
 
 function formatTime(ts) {
   return new Date(ts).toLocaleString("en-IN", {
@@ -13,7 +14,8 @@ function formatTime(ts) {
   });
 }
 
-export default function DetectionCard({ detection, delay = 0, onReview }) {
+export default function DetectionCard({ detection, delay = 0, onReview, onDelete }) {
+  const { isAdmin } = useAuth();
   const d = detection;
   return (
     <motion.div
@@ -50,11 +52,18 @@ export default function DetectionCard({ detection, delay = 0, onReview }) {
 
         <div className="mt-4 flex gap-2">
           <Link to={`/dashboard/detections/${d.id}`} className="btn-outline flex-1 !py-2 text-xs">
-            View Details
+            View
           </Link>
-          <button onClick={() => onReview?.(d)} className="btn-accent flex-1 !py-2 text-xs">
-            Review
-          </button>
+          {!isAdmin && (
+            <button onClick={() => onReview?.(d)} className="btn-accent flex-1 !py-2 text-xs">
+              Review
+            </button>
+          )}
+          {isAdmin && onDelete && (
+            <button onClick={() => onDelete(d.id)} className="btn-outline !border-danger/30 !text-danger hover:!bg-danger hover:!text-white flex-1 !py-2 text-xs">
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

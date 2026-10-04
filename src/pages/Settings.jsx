@@ -202,7 +202,7 @@ function WardAuthorityManager() {
       name: newName,
       borough: "Borough X",
       zone: "South Kolkata",
-      color: "#6366f1",
+      color: "#2FCB8A",
       center: [22.51, 88.38],
       authorities: {
         councillor: { name: "Civic Councillor", phone: "+91 98300 00000", email: "councillor@kmcgov.in" },
@@ -323,7 +323,7 @@ function WardAuthorityManager() {
                         <div className="flex items-center gap-2">
                           <span
                             className="h-2 w-2 rounded-full"
-                            style={{ backgroundColor: w.color || "#e2a33b" }}
+                            style={{ backgroundColor: w.color || "#2FCB8A" }}
                           />
                           <div>
                             <span className="font-mono font-bold text-ink">{w.wardNumber}</span>

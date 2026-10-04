@@ -5,7 +5,7 @@ import DetectionCard from "../components/DetectionCard";
 import DetectionTable from "../components/DetectionTable";
 import LoadingSpinner from "../components/LoadingSpinner";
 import EmptyState from "../components/EmptyState";
-import { fetchDetections } from "../services/api";
+import { fetchDetections, deleteDetection } from "../services/api";
 
 const REAL_YOLO_CLASSES = [
   "construction_waste",
@@ -92,6 +92,16 @@ export default function Detections() {
     });
   }, [all, query, status, context, wasteType]);
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this detection?")) return;
+    try {
+      await deleteDetection(id);
+      setAll((prev) => prev.filter(d => d.id !== id));
+    } catch (err) {
+      alert("Failed to delete detection: " + (err.message || "Unknown error"));
+    }
+  };
+
   return (
     <div>
       <PageHeader title="Detections" description={`${filtered.length} of ${all.length} detections shown`} />
@@ -144,11 +154,11 @@ export default function Detections() {
       ) : view === "grid" ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((d, i) => (
-            <DetectionCard key={d.id} detection={d} delay={Math.min(i * 0.04, 0.3)} />
+            <DetectionCard key={d.id} detection={d} delay={Math.min(i * 0.04, 0.3)} onDelete={handleDelete} />
           ))}
         </div>
       ) : (
-        <DetectionTable detections={filtered} />
+        <DetectionTable detections={filtered} onDelete={handleDelete} />
       )}
     </div>
   );

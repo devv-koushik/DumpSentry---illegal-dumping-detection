@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function AdminAuthModal({ isOpen, onClose, message }) {
   const { isAdmin, user, login, logout } = useAuth();
-  const [email, setEmail] = useState("admin@dumpsentry.ai");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,18 +30,7 @@ export default function AdminAuthModal({ isOpen, onClose, message }) {
       login(data.user || { email, name: "Admin", role: "admin" });
       setTimeout(() => onClose(), 1200);
     } catch (err) {
-      // Demo mode fallback — allow well-known credentials offline
-      if (
-        email === "admin@dumpsentry.ai" &&
-        (password === "DumpSentry@2026" || password === "Admin@123456")
-      ) {
-        localStorage.setItem("dumpsentry_admin_token", "demo-admin-token");
-        login({ email, name: "DumpSentry Admin", role: "admin" });
-        setSuccess("Admin session started (demo mode).");
-        setTimeout(() => onClose(), 1200);
-      } else {
-        setError(err.message || "Invalid credentials. Please try again.");
-      }
+      setError(err.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -74,7 +63,7 @@ export default function AdminAuthModal({ isOpen, onClose, message }) {
             <div
               className="relative overflow-hidden px-6 pt-6 pb-5"
               style={{
-                background: "linear-gradient(135deg, #16241d 0%, #1e3328 60%, #243d2f 100%)",
+                background: "linear-gradient(135deg, #10201A 0%, #1e3328 60%, #243d2f 100%)",
               }}
             >
               {/* Decorative rings */}
@@ -103,22 +92,7 @@ export default function AdminAuthModal({ isOpen, onClose, message }) {
                 </button>
               </div>
 
-              {/* Status indicator bar */}
-              <div className="mt-4 flex items-center gap-3 rounded-lg bg-white/5 px-3 py-2">
-                <span className="flex items-center gap-1.5 text-[10px] tracking-wider text-white/50 uppercase">
-                  <Wifi size={9} className="text-accent animate-pulse" />
-                  Backend Online
-                </span>
-                <span className="h-2 w-px bg-white/10" />
-                <span className="flex items-center gap-1.5 text-[10px] tracking-wider text-white/50 uppercase">
-                  <Cpu size={9} className="text-accent" />
-                  AI Service Active
-                </span>
-                <span className="ml-auto flex items-center gap-1 text-[10px] text-white/40">
-                  <Shield size={9} />
-                  JWT Auth
-                </span>
-              </div>
+
             </div>
 
             {/* Body */}
@@ -251,17 +225,7 @@ export default function AdminAuthModal({ isOpen, onClose, message }) {
                     </div>
                   </div>
 
-                  {/* Hint */}
-                  <div className="rounded-xl bg-paper2 px-3 py-2.5">
-                    <p className="text-[10px] text-muted">
-                      <span className="font-semibold text-ink">Default credentials:</span>{" "}
-                      admin@dumpsentry.ai / DumpSentry@2026
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-muted">
-                      Set via <code className="font-mono text-[9px]">ADMIN_EMAIL</code> &amp;{" "}
-                      <code className="font-mono text-[9px]">ADMIN_PASSWORD</code> in backend .env
-                    </p>
-                  </div>
+
 
                   <button
                     type="submit"
@@ -269,8 +233,8 @@ export default function AdminAuthModal({ isOpen, onClose, message }) {
                     className="relative w-full overflow-hidden rounded-xl py-3 text-xs font-bold uppercase tracking-widest text-white shadow-md transition-all disabled:opacity-60"
                     style={{
                       background: loading
-                        ? "#5c665d"
-                        : "linear-gradient(135deg, #16241d 0%, #3f8a5c 100%)",
+                        ? "#566A60"
+                        : "linear-gradient(135deg, #10201A 0%, #3FB950 100%)",
                     }}
                   >
                     {loading ? (

@@ -94,3 +94,16 @@ export function updateReportStatus(reportId, newStatus) {
     return [];
   }
 }
+
+export function deleteReport(reportId) {
+  try {
+    const existing = getPublicReports();
+    const updated = existing.filter((r) => r.id !== reportId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event("dumpsentry_reports_updated"));
+    return updated;
+  } catch (err) {
+    console.error("Failed to delete report:", err);
+    return [];
+  }
+}

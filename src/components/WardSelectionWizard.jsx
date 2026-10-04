@@ -250,7 +250,7 @@ export default function WardSelectionWizard({
                     <div className="flex items-center gap-2 min-w-0">
                       <span
                         className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: w.color || "#e2a33b" }}
+                        style={{ backgroundColor: w.color || "#2FCB8A" }}
                       />
                       <span className="font-mono font-bold text-ink shrink-0">
                         {w.wardNumber}

@@ -17,7 +17,7 @@ import PageHeader from "../components/PageHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { fetchAlerts, fetchAnalytics } from "../services/api";
 
-const COLORS = ["#e2a33b", "#16241d", "#3f8a5c", "#c94b3f", "#5c665d", "#8a9584"];
+const COLORS = ["#2FCB8A", "#10201A", "#3FB950", "#E5484D", "#566A60", "#8a9584"];
 
 export default function Analytics() {
   const [alerts, setAlerts] = useState([]);
@@ -69,10 +69,10 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={260}>
             <LineChart data={analyticsData.trend}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
-              <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={28} />
+              <XAxis dataKey="day" tick={{ fontSize: 12, fill: "#566A60" }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: "#566A60" }} axisLine={false} tickLine={false} width={28} />
               <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(22,36,29,.1)", fontSize: 13 }} />
-              <Line type="monotone" dataKey="detections" stroke="#e2a33b" strokeWidth={2.5} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="detections" stroke="#2FCB8A" strokeWidth={2.5} dot={{ r: 3 }} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -102,10 +102,10 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.statusDistribution}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#5c665d" }} axisLine={false} tickLine={false} interval={0} />
-              <YAxis tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={28} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#566A60" }} axisLine={false} tickLine={false} interval={0} />
+              <YAxis tick={{ fontSize: 12, fill: "#566A60" }} axisLine={false} tickLine={false} width={28} />
               <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(22,36,29,.1)", fontSize: 13 }} />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#16241d" />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#10201A" />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -118,10 +118,10 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={analyticsData.contextDistribution} layout="vertical" margin={{ left: 24 }}>
               <CartesianGrid stroke="rgba(22,36,29,.08)" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "#5c665d" }} axisLine={false} tickLine={false} width={100} />
+              <XAxis type="number" tick={{ fontSize: 12, fill: "#566A60" }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "#566A60" }} axisLine={false} tickLine={false} width={100} />
               <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(22,36,29,.1)", fontSize: 13 }} />
-              <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="#e2a33b" />
+              <Bar dataKey="value" radius={[0, 6, 6, 0]} fill="#2FCB8A" />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

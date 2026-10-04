@@ -1,7 +1,10 @@
 import User from "../models/User.js";
 import Authority from "../models/Authority.js";
+import Ward from "../models/Ward.js";
 import { seedDefaultRules } from "./ruleEngine.js";
 import env from "../config/env.js";
+import fs from "fs";
+import path from "path";
 
 export const DEFAULT_AUTHORITIES = [
   {
@@ -99,12 +102,19 @@ export async function seedInitialData() {
     if (!existingAdmin) {
       const admin = new User({
         email: adminEmail,
-        passwordHash: adminPassword, // will be hashed by User pre-save hook
-        name: "DumpSentry Admin",
+        passwordHash: adminPassword,
+        name: env.adminName || "DumpSentry Admin",
         role: "admin",
       });
       await admin.save();
       console.log(`[Seed] Initial Admin created: ${adminEmail}`);
+    } else {
+      const targetName = env.adminName || "DumpSentry Admin";
+      if (existingAdmin.name !== targetName) {
+        existingAdmin.name = targetName;
+        await existingAdmin.save();
+        console.log(`[Seed] Admin name updated to: ${targetName}`);
+      }
     }
 
     // 2. Correct any misclassified authorities (e.g. State Pollution Control Board from CIVIC -> POLLUTION_CONTROL)
@@ -138,6 +148,26 @@ export async function seedInitialData() {
 
     // 4. Seed / Sync Default Rules
     await seedDefaultRules();
+
+    // 5. Seed Wards from JSON
+    try {
+      const wardsPath = path.resolve(process.cwd(), "../src/data/wardAuthorities.json");
+      if (fs.existsSync(wardsPath)) {
+        const wardsData = JSON.parse(fs.readFileSync(wardsPath, "utf-8"));
+        if (wardsData && wardsData.INITIAL_WARD_AUTHORITIES) {
+          let count = 0;
+          for (const w of wardsData.INITIAL_WARD_AUTHORITIES) {
+            await Ward.findOneAndUpdate({ id: w.id }, w, { upsert: true, new: true });
+            count++;
+          }
+          console.log(`[Seed] Successfully seeded ${count} wards into MongoDB.`);
+        }
+      } else {
+        console.log(`[Seed] Ward JSON not found at ${wardsPath}`);
+      }
+    } catch (e) {
+      console.error("[Seed] Failed to seed Wards:", e.message);
+    }
 
   } catch (err) {
     console.error("[Seed] Error during seeding:", err.message);

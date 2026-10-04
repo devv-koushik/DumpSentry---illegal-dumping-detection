@@ -279,6 +279,17 @@ export async function fetchAuthorities() {
   return request("/authorities");
 }
 
+export async function fetchWards() {
+  return request("/wards");
+}
+
+export async function updateWardApi(id, data) {
+  return request(`/wards/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
 export async function createAuthority(data) {
   return request("/authorities", {
     method: "POST",
@@ -331,6 +342,8 @@ export default {
   fetchOverviewStats,
   fetchAnalytics,
   fetchAuthorities,
+  fetchWards,
+  updateWardApi,
   createAuthority,
   fetchRules,
   createRule,

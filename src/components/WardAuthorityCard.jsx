@@ -14,8 +14,8 @@ import {
 
 export default function WardAuthorityCard({
   ward,
-  onEdit = () => {},
-  onSelectLandmark = () => {},
+  onEdit = () => { },
+  onSelectLandmark = () => { },
   isAdmin = false,
 }) {
   const [copied, setCopied] = useState("");
@@ -43,7 +43,7 @@ export default function WardAuthorityCard({
       <div
         className="p-4 text-white relative overflow-hidden"
         style={{
-          background: `linear-gradient(135deg, #16241d 0%, #1f3029 100%)`,
+          background: `linear-gradient(135deg, #10201A 0%, #1f3029 100%)`,
         }}
       >
         <div className="flex items-start justify-between gap-3 relative z-10">
@@ -87,19 +87,19 @@ export default function WardAuthorityCard({
           </div>
           <div className="rounded-lg bg-white/5 p-1.5">
             <p className="text-[10px] text-white/60">Active Alerts</p>
-            <p className="font-mono text-xs font-bold text-amber-400">{ward.stats?.activeHotspots || 0}</p>
+            <p className="font-mono text-xs font-bold text-warning">{ward.stats?.activeHotspots || 0}</p>
           </div>
           <div className="rounded-lg bg-white/5 p-1.5">
             <p className="text-[10px] text-white/60">Resolution</p>
-            <p className="font-mono text-xs font-bold text-emerald-400">{ward.stats?.resolutionRate || 95}%</p>
+            <p className="font-mono text-xs font-bold text-accent">{ward.stats?.resolutionRate || 95}%</p>
           </div>
         </div>
       </div>
 
       {/* ── 24/7 Emergency Dispatch Strip ── */}
-      <div className="bg-amber-500/10 border-y border-amber-500/20 px-4 py-2.5 flex items-center justify-between text-xs">
+      <div className="bg-warning/10 border-y border-warning/20 px-4 py-2.5 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+          <span className="flex h-2 w-2 rounded-full bg-warning animate-pulse" />
           <span className="font-semibold text-ink">Ward SWM Hotline:</span>
           <a
             href={`tel:${helpline.controlRoom?.split("/")[0]?.trim() || "1800-345-5620"}`}
@@ -114,7 +114,7 @@ export default function WardAuthorityCard({
             href={`https://wa.me/${helpline.whatsapp.replace(/[^0-9]/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded bg-emerald-600 px-2 py-0.5 text-[11px] font-bold text-white hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center gap-1 rounded bg-accent-deep px-2 py-0.5 text-[11px] font-bold text-white hover:bg-emerald-700 transition-colors"
           >
             <MessageSquare size={11} /> WhatsApp Grievance
           </a>
