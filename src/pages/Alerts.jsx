@@ -4,27 +4,26 @@ import { ShieldCheck, ExternalLink } from "lucide-react";
 import PageHeader from "../components/PageHeader";
 import AlertTable from "../components/AlertTable";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { fetchAlerts, sendAlert } from "../services/api";
-import { AUTHORITIES } from "../data/authorities";
+import { fetchAlerts, sendAlert, fetchAuthorities } from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
+  const [authorities, setAuthorities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendingId, setSendingId] = useState(null);
   const [toast, setToast] = useState("");
   const { isAdmin, requireAdmin } = useAuth();
 
   useEffect(() => {
-    fetchAlerts()
-      .then((a) => {
-        setAlerts(Array.isArray(a) ? a : []);
-        setLoading(false);
-      })
-      .catch(() => {
-        setAlerts([]);
-        setLoading(false);
-      });
+    Promise.all([
+      fetchAlerts().catch(() => []),
+      fetchAuthorities().catch(() => [])
+    ]).then(([aData, authData]) => {
+      setAlerts(Array.isArray(aData) ? aData : []);
+      setAuthorities(Array.isArray(authData) ? authData : []);
+      setLoading(false);
+    });
   }, []);
 
   async function handleSend(alert) {
@@ -76,10 +75,10 @@ export default function Alerts() {
       )}
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {AUTHORITIES.map((a) => (
-          <div key={a.context} className="card p-4">
-            <p className="text-xs text-muted">{a.context}</p>
-            <p className="mt-1 text-sm font-medium text-ink">{a.authority}</p>
+        {authorities.map((a) => (
+          <div key={a._id || a.id || a.name} className="card p-4">
+            <p className="text-xs text-muted">{a.type}</p>
+            <p className="mt-1 text-sm font-medium text-ink">{a.name}</p>
             <p className="mt-0.5 truncate text-xs text-muted">{a.email}</p>
           </div>
         ))}

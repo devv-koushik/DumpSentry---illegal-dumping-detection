@@ -100,7 +100,7 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
         : "Municipal SWM & PWD",
     };
 
-    savePublicReport(newReport);
+    await savePublicReport(newReport);
     setReportId(generatedId);
     setSubmitting(false);
     setSubmitted(true);

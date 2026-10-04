@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Send, Sparkles, Loader2 } from "lucide-react";
+import { Search, Send, Terminal, Loader2 } from "lucide-react";
 import { askDumpSentryAI, QUICK_CHIPS } from "../../services/commandAI";
 
 export default function AICommandBar() {
@@ -50,9 +50,9 @@ export default function AICommandBar() {
             className="mb-2 px-4 py-3 rounded-xl bg-white/95 backdrop-blur-xl border border-line shadow-pop"
           >
             <div className="flex items-center gap-1.5 mb-2">
-              <Sparkles size={10} className="text-accent" />
+              <Terminal size={10} className="text-accent" />
               <span className="text-[9px] font-semibold tracking-widest text-accent-deep uppercase">
-                DumpSentry AI
+                DumpSentry Commands
               </span>
               <button
                 onClick={() => setShowResponse(false)}
@@ -101,7 +101,7 @@ export default function AICommandBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          placeholder="Ask DumpSentry AI..."
+          placeholder="Search alerts and commands..."
           className="flex-1 bg-transparent text-xs text-ink placeholder:text-muted/50 outline-none"
         />
         <button

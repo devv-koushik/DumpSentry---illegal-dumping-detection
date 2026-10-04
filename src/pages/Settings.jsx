@@ -13,7 +13,6 @@ import {
 import PageHeader from "../components/PageHeader";
 import AdminGuard from "../components/AdminGuard";
 import EditWardAuthorityModal from "../components/EditWardAuthorityModal";
-import { AUTHORITIES } from "../data/authorities";
 import { ZONES } from "../data/wardAuthorities";
 import {
   getStoredWards,
@@ -156,10 +155,19 @@ function WardAuthorityManager() {
   const [search, setSearch] = useState("");
   const [editingWard, setEditingWard] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [contextRules, setContextRules] = useState([]);
 
   useEffect(() => {
     const unsub = subscribeWards((updated) => setWards(updated));
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    import("../services/api").then(({ fetchRules }) => {
+      fetchRules().then((rules) => {
+        if (Array.isArray(rules)) setContextRules(rules);
+      }).catch(console.error);
+    });
   }, []);
 
   const filteredWards = wards.filter((w) => {
@@ -383,13 +391,13 @@ function WardAuthorityManager() {
             Configure fallback dispatch authorities when dumping occurs near specific facility contexts.
           </p>
           <div className="space-y-2">
-            {AUTHORITIES.map((a) => (
-              <div key={a.context} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line p-3">
+            {contextRules.map((rule) => (
+              <div key={rule.id || rule._id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line p-3">
                 <div>
-                  <p className="text-sm font-bold text-ink">{a.context}</p>
-                  <p className="text-xs text-muted">{a.authority} ({a.department})</p>
+                  <p className="text-sm font-bold text-ink">{rule.contextType.replace(/_/g, " ")}</p>
+                  <p className="text-xs text-muted">{rule.authority?.name} ({rule.authority?.type})</p>
                 </div>
-                <input defaultValue={a.email} className={`${inputClass} max-w-xs text-xs font-mono`} />
+                <input defaultValue={rule.authority?.email || ""} className={`${inputClass} max-w-xs text-xs font-mono`} />
               </div>
             ))}
           </div>

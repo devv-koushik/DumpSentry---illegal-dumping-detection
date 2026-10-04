@@ -8,6 +8,7 @@ import ruleRoutes from "./ruleRoutes.js";
 import dashboardRoutes from "./dashboardRoutes.js";
 import droneRoutes from "./droneRoutes.js";
 import wardRoutes from "./wardRoutes.js";
+import reportRoutes from "./reportRoutes.js";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/rules", ruleRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/drones", droneRoutes);
 router.use("/wards", wardRoutes);
+router.use("/reports", reportRoutes);
 
 // Health route
 router.get("/health", (req, res) => {

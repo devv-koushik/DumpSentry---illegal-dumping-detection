@@ -16,24 +16,26 @@ const STATUS_TABS = ["All", "Pending Review", "Drone Dispatched", "Resolved"];
 
 export default function PublicReports() {
   const { isAdmin } = useAuth();
-  const [reports, setReports] = useState(() => getPublicReports());
+  const [reports, setReports] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedReport, setSelectedReport] = useState(null);
   const [toast, setToast] = useState("");
 
   useEffect(() => {
-    function handleUpdate() {
-      setReports(getPublicReports());
+    async function handleUpdate() {
+      const data = await getPublicReports();
+      setReports(data);
     }
+    handleUpdate();
     window.addEventListener("dumpsentry_reports_updated", handleUpdate);
     return () => {
       window.removeEventListener("dumpsentry_reports_updated", handleUpdate);
     };
   }, []);
 
-  function handleStatusChange(id, status) {
-    const updated = updateReportStatus(id, status);
+  async function handleStatusChange(id, status) {
+    const updated = await updateReportStatus(id, status);
     setReports(updated);
     if (selectedReport?.id === id) {
       setSelectedReport((prev) => (prev ? { ...prev, status } : null));
@@ -42,10 +44,10 @@ export default function PublicReports() {
     setTimeout(() => setToast(""), 3000);
   }
 
-  function handleDelete(e, id) {
+  async function handleDelete(e, id) {
     e.stopPropagation();
     if (confirm("Are you sure you want to delete this report?")) {
-      const updated = deleteReport(id);
+      const updated = await deleteReport(id);
       setReports(updated);
       if (selectedReport?.id === id) {
         setSelectedReport(null);
