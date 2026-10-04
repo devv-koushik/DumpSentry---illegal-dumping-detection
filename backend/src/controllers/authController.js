@@ -54,7 +54,7 @@ export async function login(req, res, next) {
  */
 export async function getMe(req, res, next) {
   try {
-    const user = await User.findById(req.user.id);
+    const user = req.user;
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }

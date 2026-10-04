@@ -147,7 +147,7 @@ export async function updateDetectionStatus(req, res, next) {
     // Log admin action if req.user exists
     if (req.user) {
       await AuditLog.create({
-        userId: req.user.id,
+        userId: req.user._id,
         userEmail: req.user.email,
         action: "UPDATE_DETECTION_STATUS",
         targetId: detection._id.toString(),
