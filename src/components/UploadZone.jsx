@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
-import { UploadCloud, ImageIcon } from "lucide-react";
+import { UploadCloud, ImageIcon, Camera } from "lucide-react";
 
 const ACCEPT = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-export default function UploadZone({ onFileSelected }) {
+export default function UploadZone({ onFileSelected, onCameraClick }) {
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
@@ -53,6 +53,19 @@ export default function UploadZone({ onFileSelected }) {
         <p className="flex items-center gap-1.5 text-xs text-muted">
           <ImageIcon size={13} /> JPG · JPEG · PNG · WEBP
         </p>
+        {onCameraClick && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onCameraClick();
+            }}
+            className="mt-1 inline-flex items-center gap-2 rounded-full border border-line bg-paper px-4 py-1.5 text-xs font-semibold text-ink hover:bg-ink hover:text-white transition-all shadow-sm"
+          >
+            <Camera size={13} className="text-accent" />
+            <span>Launch Live Drone Camera</span>
+          </button>
+        )}
         <input
           ref={inputRef}
           type="file"

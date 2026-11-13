@@ -24,7 +24,7 @@ const ALL_NAV_ITEMS = [
   { label: "Map", path: "/dashboard/map", icon: Map },
   { label: "Upload", path: "/dashboard/upload", icon: Upload, adminOnly: true },
   { label: "Citizen Reports", path: "/dashboard/reports", icon: ClipboardList },
-  { label: "Analytics", path: "/dashboard/analytics", icon: BarChart3 },
+  { label: "Analytics", path: "/dashboard/analytics", icon: BarChart3, adminOnly: true },
 ];
 
 export default function TopBar({ onOpenUpload }) {

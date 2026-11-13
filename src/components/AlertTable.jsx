@@ -67,18 +67,28 @@ export default function AlertTable({ alerts, onSend, sendingId }) {
                             ? "Retry"
                             : "Send Alert"}
                       </button>
-                    ) : a.previewUrl ? (
-                      <a
-                        href={a.previewUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline"
-                        title="View dispatched email in Ethereal"
-                      >
-                        View Email ↗
-                      </a>
                     ) : (
-                      <span className="text-xs text-muted">—</span>
+                      <div className="inline-flex items-center gap-3">
+                        {a.previewUrl && (
+                          <a
+                            href={a.previewUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-accent-deep hover:underline"
+                            title="View dispatched email in Ethereal"
+                          >
+                            View Email ↗
+                          </a>
+                        )}
+                        <button
+                          onClick={() => onSend?.(a)}
+                          disabled={sendingId === a.detectionId}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-ink/70 hover:text-accent-deep hover:underline disabled:opacity-50"
+                          title="Resend alert email"
+                        >
+                          {sendingId === a.detectionId ? "Sending…" : "Resend"}
+                        </button>
+                      </div>
                     )}
                   </td>
                 )}

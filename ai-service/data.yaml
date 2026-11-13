@@ -1,14 +1,11 @@
-# DumpSentry YOLOv11 Waste Detection Dataset Configuration
+path: ./dataset/processed/dronewaste_yolo
 
-path: ./dataset # dataset root dir
-train: train/images # train images (relative to 'path')
-val: val/images # val images (relative to 'path')
-test: test/images # test images (optional)
+train: train/images
+val: val/images
+test: test/images
 
-# Number of classes
 nc: 13
 
-# Class names mapping
 names:
   0: construction_waste
   1: appliances

@@ -6,13 +6,15 @@ import {
   deleteReport,
 } from "../controllers/reportController.js";
 import { requireAdmin } from "../middleware/auth.js";
-import { globalLimiter } from "../middleware/rateLimit.js";
+import { reportLimiter } from "../middleware/rateLimit.js";
+import upload from "../middleware/upload.js";
+import { verifyMagicBytes } from "../middleware/magicBytes.js";
 
 const router = Router();
 
-// Public can submit reports and view them
-router.get("/", globalLimiter, getReports);
-router.post("/", globalLimiter, createReport);
+// Public can submit reports and view them (globalLimiter is already applied on /api in app.js)
+router.get("/", getReports);
+router.post("/", reportLimiter, upload.single("image"), verifyMagicBytes, createReport);
 
 // Only admins can update status or delete
 router.patch("/:id/status", requireAdmin, updateReportStatus);

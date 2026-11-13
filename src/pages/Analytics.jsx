@@ -15,11 +15,24 @@ import {
 } from "recharts";
 import PageHeader from "../components/PageHeader";
 import LoadingSpinner from "../components/LoadingSpinner";
+import AdminGuard from "../components/AdminGuard";
 import { fetchAlerts, fetchAnalytics } from "../services/api";
 
 const COLORS = ["#2FCB8A", "#10201A", "#3FB950", "#E5484D", "#566A60", "#8a9584"];
 
 export default function Analytics() {
+  return (
+    <AdminGuard
+      action="view macro environmental analytics and trend charts"
+      title="Administrator Analytics Required"
+      description="Citizens can view live detection maps, incident feeds, and public reports. Detailed environmental analytics are restricted to administrators."
+    >
+      <AnalyticsContent />
+    </AdminGuard>
+  );
+}
+
+function AnalyticsContent() {
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState({

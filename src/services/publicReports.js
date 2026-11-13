@@ -22,12 +22,30 @@ export async function getPublicReports() {
 
 export async function savePublicReport(report) {
   try {
-    await request("/reports", {
+    let body;
+    if (report?.imageFile instanceof File || report?.imageFile instanceof Blob) {
+      const formData = new FormData();
+      formData.append("image", report.imageFile);
+      Object.entries(report).forEach(([key, value]) => {
+        if (key === "imageFile" || key === "imagePreview" || value == null) return;
+        formData.append(key, String(value));
+      });
+      body = formData;
+    } else {
+      const payload = { ...report };
+      delete payload.imageFile;
+      if (typeof payload.imagePreview === "string" && payload.imagePreview.startsWith("blob:")) {
+        delete payload.imagePreview;
+      }
+      body = JSON.stringify(payload);
+    }
+
+    const created = await request("/reports", {
       method: "POST",
-      body: JSON.stringify(report),
+      body,
     });
     triggerUpdate();
-    return getPublicReports();
+    return created;
   } catch (err) {
     console.error("Failed to save report:", err);
     throw err;

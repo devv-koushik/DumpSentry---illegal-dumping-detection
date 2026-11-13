@@ -50,6 +50,9 @@ const env = {
     from: process.env.SMTP_FROM || `"DumpSentry Alerts" <alerts@dumpsentry.ai>`,
   },
 
+  // Global Alert Recipient Override (when set, all alerts route to this email)
+  alertOverrideEmail: (process.env.ALERT_OVERRIDE_EMAIL || "").trim(),
+
   // Controlled Test Recipient
   alertTestRecipient:
     process.env.ALERT_TEST_RECIPIENT || process.env.CONTROLLED_TEST_RECIPIENT || "controlled-test@dumpsentry.ai",
@@ -62,7 +65,7 @@ const env = {
 
   // Rate limiting
   rateLimitWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "900000", 10),
-  rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || "100", 10),
+  rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || "1000", 10),
 };
 
 if (env.nodeEnv === "production") {

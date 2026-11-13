@@ -53,22 +53,25 @@ names:
 Run the training script:
 
 ```bash
-python training/train.py --model yolo11n.pt --epochs 50 --batch 16 --imgsz 640
+python training/train.py --model yolo11n.pt --epochs 50 --batch 4 --imgsz 640
 ```
 
 ### Key Training Options:
 - `--model`: Base architecture (`yolo11n.pt` for speed/edge drone deployment, `yolo11s.pt` or `yolo11m.pt` for higher accuracy).
 - `--epochs`: Total iterations over the training set (default: 50).
-- `--batch`: Batch size (adjust based on GPU VRAM; e.g. 16 for 8GB GPU, 8 for 4GB GPU).
-- `--imgsz`: Input image resolution (640 is standard; 1024 or 1280 is recommended for high-altitude small-object drone aerials).
-- `--device`: Target device (`0` for first GPU, `cpu` for CPU-only).
+- `--batch`: Batch size (default: 4; safe for CPU and lower VRAM).
+- `--imgsz`: Input image resolution (default: 640).
+- `--device`: Target device (`0` for first GPU, `cpu` for CPU-only, auto-detected if omitted).
+- `--optimizer`: `AdamW` (default), `SGD`, or `Adam`.
+- `--lr0`, `--lrf`: Initial learning rate and final factor with Cosine LR annealing.
 
-### Drone-Specific Data Augmentations
-The training script includes aerial-optimized augmentations:
-- **Rotation:** $\pm 15^\circ$ (aerial drone captures are orientation-agnostic)
-- **Flip Up/Down & Left/Right:** 50% probability
-- **Mosaic Augmentation:** 1.0 (combines 4 images into one, enhancing small-object waste detection)
-- **Mixup:** 0.1
+### Staged Augmentations (Rare-Class Friendly)
+To avoid diluting or obscuring rare small-debris classes, conservative augmentations are configured by default:
+- **Gentle Rotation:** $\pm 5^\circ$ (`--degrees 5.0`)
+- **Translation:** $\pm 10\%$ (`--translate 0.1`)
+- **Horizontal Flip:** 50% probability (`--fliplr 0.5`)
+- **Mosaic:** 0.5 probability (`--mosaic 0.5`)
+- **Mixup:** 0.0 initially disabled (`--mixup 0.0`, avoid early on to prevent occluding rare classes)
 
 Upon completion, the best checkpoint is automatically saved to:
 `ai-service/models/best.pt`

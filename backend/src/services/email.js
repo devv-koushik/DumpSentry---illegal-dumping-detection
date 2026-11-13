@@ -4,8 +4,14 @@
  * Enforces placeholder protection, idempotency, and full delivery tracking.
  */
 
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import env from "../config/env.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 
 let transporter = null;
 
@@ -125,9 +131,25 @@ export async function getTransporter() {
  * @param {string} [params.customSubject] - Optional subject line
  * @returns {Promise<{ success: boolean, messageId: string, previewUrl: string, recipient: string }>}
  */
-export async function sendAlertEmail({ to, authorityName, detection, reason, customSubject }) {
+export async function sendAlertEmail({
+  to,
+  authorityName,
+  detection,
+  reason,
+  customSubject,
+  reroutedFrom: initialReroutedFrom = null,
+}) {
   let targetEmail = (to || "").trim();
-  let reroutedFrom = null;
+  let reroutedFrom = initialReroutedFrom;
+
+  // Global override: route all alerts to the configured recipient while preserving authority context
+  const overrideEmail = (env.alertOverrideEmail || process.env.ALERT_OVERRIDE_EMAIL || "").trim();
+  if (overrideEmail && !isPlaceholderEmail(overrideEmail)) {
+    if (targetEmail && targetEmail.toLowerCase() !== overrideEmail.toLowerCase()) {
+      reroutedFrom = reroutedFrom || targetEmail;
+    }
+    targetEmail = overrideEmail;
+  }
 
   // Validate basic email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,7 +161,7 @@ export async function sendAlertEmail({ to, authorityName, detection, reason, cus
   if (isPlaceholderEmail(targetEmail)) {
     const controlledTestRecipient = env.alertTestRecipient || process.env.ALERT_TEST_RECIPIENT;
     if (controlledTestRecipient && !isPlaceholderEmail(controlledTestRecipient)) {
-      reroutedFrom = targetEmail;
+      reroutedFrom = reroutedFrom || targetEmail;
       targetEmail = controlledTestRecipient.trim();
       console.warn(
         `[EmailService] Authority recipient "${reroutedFrom}" is a placeholder address. Rerouted to controlled test recipient: "${targetEmail}"`
@@ -175,14 +197,31 @@ export async function sendAlertEmail({ to, authorityName, detection, reason, cus
       </ul>`
     : `<span style="color: #64748b;">No nearby facilities recorded within 300m</span>`;
 
-  // Image evidence URL
+  // Image evidence URL & inline CID attachment (so local uploads render in Gmail/external clients)
   const backendBase = (env.frontendUrl || "http://localhost:5173").replace(/:\d+$/, ":5000");
   const rawImageUrl = detection.annotatedImageUrl || detection.originalImageUrl || detection.image;
-  const imageUrl = rawImageUrl
-    ? (rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")
-      ? rawImageUrl
-      : `${backendBase}${rawImageUrl.startsWith("/") ? "" : "/"}${rawImageUrl}`)
-    : null;
+  const attachments = [];
+  let imageSrc = null;
+
+  if (rawImageUrl) {
+    if (rawImageUrl.startsWith("/uploads/")) {
+      const localImagePath = path.join(UPLOADS_DIR, path.basename(rawImageUrl));
+      if (fs.existsSync(localImagePath)) {
+        attachments.push({
+          filename: path.basename(localImagePath),
+          path: localImagePath,
+          cid: "dumpsentry-evidence",
+        });
+        imageSrc = "cid:dumpsentry-evidence";
+      }
+    }
+    if (!imageSrc) {
+      imageSrc =
+        rawImageUrl.startsWith("http://") || rawImageUrl.startsWith("https://")
+          ? rawImageUrl
+          : `${backendBase}${rawImageUrl.startsWith("/") ? "" : "/"}${rawImageUrl}`;
+    }
+  }
 
   const incidentId = detection.detectionId || detection.id || detection._id;
   const contextLabel = detection.context || detection.contextType || "General Area";
@@ -220,7 +259,7 @@ export async function sendAlertEmail({ to, authorityName, detection, reason, cus
         ${
           reroutedFrom
             ? `<div style="background-color: #fffbeb; border-bottom: 1px solid #fef3c7; padding: 12px 24px; font-size: 12px; color: #92400e;">
-                <strong>Controlled Test Delivery:</strong> Rerouted from authority address <code>${reroutedFrom}</code> to verified test inbox <code>${targetEmail}</code>.
+                <strong>Centralized Alert Routing:</strong> Generated for authority address <code>${reroutedFrom}</code> and delivered to <code>${targetEmail}</code>.
               </div>`
             : ""
         }
@@ -279,13 +318,13 @@ export async function sendAlertEmail({ to, authorityName, detection, reason, cus
           </table>
 
           ${
-            imageUrl
+            imageSrc
               ? `
               <div style="margin: 20px 0; text-align: center;">
                 <p style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; text-transform: uppercase;">
                   Drone Aerial Evidence (YOLO Annotated)
                 </p>
-                <img src="${imageUrl}" alt="Aerial Detection Evidence" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1;" />
+                <img src="${imageSrc}" alt="Aerial Detection Evidence" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1;" />
               </div>
             `
               : ""
@@ -308,11 +347,19 @@ export async function sendAlertEmail({ to, authorityName, detection, reason, cus
     </html>
   `;
 
+  const smtpHost = (env.smtp?.host || process.env.SMTP_HOST || "").toLowerCase();
+  const smtpUser = env.smtp?.user || process.env.SMTP_USER || "";
+  let fromAddress = env.smtp?.from || process.env.SMTP_FROM || `"DumpSentry Alerts" <alerts@dumpsentry.ai>`;
+  if (smtpHost.includes("gmail.com") && smtpUser && !fromAddress.includes(smtpUser)) {
+    fromAddress = `"DumpSentry Alerts" <${smtpUser}>`;
+  }
+
   const mailOptions = {
-    from: env.smtp?.from || process.env.SMTP_FROM || `"DumpSentry Alerts" <alerts@dumpsentry.ai>`,
+    from: fromAddress,
     to: targetEmail,
     subject,
     html,
+    ...(attachments.length > 0 ? { attachments } : {}),
   };
 
   const info = await mailer.sendMail(mailOptions);

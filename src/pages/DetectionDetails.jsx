@@ -85,14 +85,16 @@ export default function DetectionDetails() {
     if (!requireAdmin("dispatch alerts to municipal authorities")) return;
     setBusy(true);
     try {
-      await sendAlert(id);
+      const res = await sendAlert(id, {
+        forceRetry: detection?.alertStatus === "Sent" || detection?.alertStatus === "Failed",
+      });
       const updated = await updateAlertStatus(id, "Sent");
       setDetection(updated);
-      notify(`Alert dispatched to ${detection.authority}.`);
-    } catch {
+      notify(res?.message || `Alert dispatched to ${res?.alert?.email || detection.authority}.`);
+    } catch (err) {
       const updated = await updateAlertStatus(id, "Failed");
       setDetection(updated);
-      notify("Alert dispatch failed. You can retry from the Alerts page.");
+      notify(err?.message || "Alert dispatch failed. You can retry from the Alerts page.");
     } finally {
       setBusy(false);
     }
@@ -267,10 +269,10 @@ export default function DetectionDetails() {
                 </button>
                 <button
                   onClick={handleSendAlert}
-                  disabled={busy || d.alertStatus === "Sent"}
+                  disabled={busy}
                   className="btn-accent w-full justify-center disabled:opacity-40"
                 >
-                  <Send size={15} /> {d.alertStatus === "Sent" ? "Alert Sent" : d.alertStatus === "Failed" ? "Retry Alert" : "Send Alert"}
+                  <Send size={15} /> {d.alertStatus === "Sent" ? "Resend Alert" : d.alertStatus === "Failed" ? "Retry Alert" : "Send Alert"}
                 </button>
                 <button
                   onClick={handleResolve}

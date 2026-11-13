@@ -45,17 +45,24 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [reportId, setReportId] = useState("");
+  const [submitError, setSubmitError] = useState("");
 
   if (!isOpen) return null;
 
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-        imagePreview: URL.createObjectURL(file),
-      }));
+      setSubmitError("");
+      setFormData((prev) => {
+        if (prev.imagePreview && prev.imagePreview.startsWith("blob:")) {
+          URL.revokeObjectURL(prev.imagePreview);
+        }
+        return {
+          ...prev,
+          imageFile: file,
+          imagePreview: URL.createObjectURL(file),
+        };
+      });
     }
   }
 
@@ -83,16 +90,13 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
     e.preventDefault();
     if (!formData.location.trim()) return;
 
+    setSubmitError("");
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    const generatedId = `PUB-${Math.floor(1000 + Math.random() * 9000)}`;
     const newReport = {
-      id: generatedId,
       ...formData,
       status: "Pending Review",
       priority: formData.problemType.includes("Biomedical") || formData.context.includes("Hospital") ? "Urgent" : "High",
-      timestamp: new Date().toISOString(),
       assignedAuthority: formData.context.includes("Hospital")
         ? "Hospital Superintendent / Borough Health Officer"
         : formData.context.includes("School")
@@ -101,23 +105,27 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
     };
 
     try {
-      await savePublicReport(newReport);
-      setReportId(generatedId);
+      const savedReport = await savePublicReport(newReport);
+      setReportId(savedReport?.id || savedReport?.reportId || "Filed");
       setSubmitting(false);
       setSubmitted(true);
 
       if (onSubmitted) {
-        onSubmitted(newReport);
+        onSubmitted(savedReport || newReport);
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to submit report. Please try again.");
+      setSubmitError(err?.message || "Failed to submit report. Please try again.");
       setSubmitting(false);
     }
   }
 
   function handleResetAndClose() {
     setSubmitted(false);
+    setSubmitError("");
+    if (formData.imagePreview && formData.imagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(formData.imagePreview);
+    }
     setFormData({
       location: "",
       landmark: "",
@@ -289,7 +297,7 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
                     <span>{formData.imageFile ? formData.imageFile.name : "Choose photo or capture"}</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/tiff"
                       onChange={handleFileChange}
                       className="hidden"
                     />
@@ -335,6 +343,12 @@ export default function ReportProblemModal({ isOpen, onClose, onSubmitted }) {
                   />
                 </div>
               </div>
+
+              {submitError && (
+                <div className="rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5 text-xs font-medium text-danger">
+                  {submitError}
+                </div>
+              )}
 
               {/* Submit CTA */}
               <div className="pt-2 flex items-center justify-end gap-3">

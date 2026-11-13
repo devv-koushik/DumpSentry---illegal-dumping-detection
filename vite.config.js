@@ -7,11 +7,21 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          recharts: ['recharts'],
-          leaflet: ['leaflet', 'react-leaflet'],
-          framer: ['framer-motion'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-router-dom') || id.includes('react-dom') || id.includes('react/')) {
+              return 'vendor'
+            }
+            if (id.includes('recharts')) {
+              return 'recharts'
+            }
+            if (id.includes('leaflet')) {
+              return 'leaflet'
+            }
+            if (id.includes('framer-motion')) {
+              return 'framer'
+            }
+          }
         }
       }
     }

@@ -11,6 +11,7 @@ import {
 import PageHeader from "../components/PageHeader";
 import { useAuth } from "../context/AuthContext";
 import { getPublicReports, updateReportStatus, deleteReport } from "../services/publicReports";
+import { getImageUrl } from "../services/api";
 
 const STATUS_TABS = ["All", "Pending Review", "Drone Dispatched", "Resolved"];
 
@@ -62,10 +63,10 @@ export default function PublicReports() {
     const q = search.toLowerCase();
     const matchesSearch =
       !q ||
-      r.id.toLowerCase().includes(q) ||
-      r.location.toLowerCase().includes(q) ||
-      r.problemType.toLowerCase().includes(q) ||
-      (r.reporterName && r.reporterName.toLowerCase().includes(q));
+      String(r.id || "").toLowerCase().includes(q) ||
+      String(r.location || "").toLowerCase().includes(q) ||
+      String(r.problemType || "").toLowerCase().includes(q) ||
+      String(r.reporterName || "").toLowerCase().includes(q);
     return matchesStatus && matchesSearch;
   });
 
@@ -176,9 +177,9 @@ export default function PublicReports() {
                         </p>
                       </div>
 
-                      {report.imagePreview && (
+                      {report.imagePreview && !report.imagePreview.startsWith("blob:") && (
                         <img
-                          src={report.imagePreview}
+                          src={getImageUrl(report.imagePreview)}
                           alt="Citizen capture"
                           className="h-14 w-14 rounded-xl object-cover border border-line flex-shrink-0"
                         />
@@ -187,7 +188,7 @@ export default function PublicReports() {
 
                     <div className="mt-3 flex items-center justify-between border-t border-line/60 pt-2 text-[10px] text-muted font-mono">
                       <span>
-                        {new Date(report.timestamp).toLocaleDateString("en-IN", {
+                        {new Date(report.timestamp || report.createdAt).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",
                           hour: "2-digit",
@@ -242,10 +243,10 @@ export default function PublicReports() {
                 </div>
 
                 {/* Evidence Image */}
-                {selectedReport.imagePreview && (
+                {selectedReport.imagePreview && !selectedReport.imagePreview.startsWith("blob:") && (
                   <div className="overflow-hidden rounded-xl border border-line bg-paper">
                     <img
-                      src={selectedReport.imagePreview}
+                      src={getImageUrl(selectedReport.imagePreview)}
                       alt="Citizen Evidence"
                       className="max-h-64 w-full object-cover"
                     />
@@ -289,7 +290,7 @@ export default function PublicReports() {
                       Filed At
                     </span>
                     <span className="font-mono text-muted mt-0.5 block">
-                      {new Date(selectedReport.timestamp).toLocaleString("en-IN")}
+                      {new Date(selectedReport.timestamp || selectedReport.createdAt).toLocaleString("en-IN")}
                     </span>
                   </div>
                 </div>

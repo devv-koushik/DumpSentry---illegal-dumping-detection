@@ -12,13 +12,14 @@ import {
   Settings,
   Shield,
   Layers,
+  BarChart3,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 /**
  * AdminGuard component
  * Protects pages and full sections that require Admin privileges.
- * Public users can freely view public sections (Landing, Dashboard, Map, History, Details, Analytics).
+ * Public users can freely view public sections (Landing, Dashboard, Map, History, Details).
  * Admin-only actions and management screens display this locked gate with direct sign-in.
  */
 export default function AdminGuard({
@@ -35,7 +36,7 @@ export default function AdminGuard({
 
   const defaultDescription =
     description ||
-    `Public users can explore detection maps, incident feeds, and environmental analytics. Only authorized administrators can ${action}.`;
+    `Public users can explore detection maps, incident feeds, and public reports. Only authorized administrators can ${action}.`;
 
   return (
     <motion.div
@@ -100,10 +101,6 @@ export default function AdminGuard({
               <span className="h-1.5 w-1.5 rounded-full bg-success" />
               <span>Public incident detail view & GPS data</span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-success" />
-              <span>Macro environmental analytics & charts</span>
-            </li>
           </ul>
         </div>
 
@@ -133,6 +130,10 @@ export default function AdminGuard({
             <li className="flex items-center gap-2">
               <Bell size={12} className="text-accent-deep" />
               <span>Dispatch authority alerts & notifications</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <BarChart3 size={12} className="text-accent-deep" />
+              <span>Macro environmental analytics & trend charts</span>
             </li>
             <li className="flex items-center gap-2">
               <Settings size={12} className="text-accent-deep" />

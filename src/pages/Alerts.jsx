@@ -30,15 +30,17 @@ export default function Alerts() {
     if (!requireAdmin("dispatch alert notifications to municipal authorities")) return;
     setSendingId(alert.detectionId);
     try {
-      await sendAlert(alert.detectionId);
-      setToast(`Alert sent to ${alert.authority}.`);
-    } catch {
-      setToast(`Failed to notify ${alert.authority}. It can be retried.`);
+      const res = await sendAlert(alert.detectionId, {
+        forceRetry: alert.status === "Sent" || alert.status === "Failed",
+      });
+      setToast(res?.message || `Alert sent to ${res?.alert?.email || alert.email || alert.authority}.`);
+    } catch (err) {
+      setToast(err?.message || `Failed to notify ${alert.authority}. It can be retried.`);
     }
     const updated = await fetchAlerts().catch(() => []);
     setAlerts(Array.isArray(updated) ? updated : []);
     setSendingId(null);
-    setTimeout(() => setToast(""), 3000);
+    setTimeout(() => setToast(""), 4000);
   }
 
   return (

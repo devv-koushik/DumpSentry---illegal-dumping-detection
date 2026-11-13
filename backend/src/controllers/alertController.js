@@ -1,6 +1,7 @@
 import Alert from "../models/Alert.js";
 import Detection from "../models/Detection.js";
 import Authority from "../models/Authority.js";
+import env from "../config/env.js";
 import { getAuthorityForContext } from "../services/ruleEngine.js";
 import { sendAlertEmail } from "../services/email.js";
 
@@ -120,7 +121,13 @@ export async function dispatchAlertForDetection({
     targetAuthority = await getAuthorityForContext(detection.contextType);
   }
 
-  const targetEmail = (customEmail || targetAuthority?.email || "municipal.waste@dumpsentry.gov.in").trim();
+  const authorityEmail = (customEmail || targetAuthority?.email || "municipal.waste@dumpsentry.gov.in").trim();
+  const overrideEmail = (env.alertOverrideEmail || process.env.ALERT_OVERRIDE_EMAIL || "").trim();
+  const targetEmail = overrideEmail || authorityEmail;
+  const intendedEmail =
+    overrideEmail && overrideEmail.toLowerCase() !== authorityEmail.toLowerCase()
+      ? authorityEmail
+      : null;
   const targetName = targetAuthority?.name || detection.authorityName || "Responsible Authority";
   const detectionCode = detection.detectionId || (detection._id ? detection._id.toString() : "DS-ALERT");
 
@@ -211,6 +218,7 @@ export async function dispatchAlertForDetection({
       email: targetEmail,
       department: targetAuthority?.type || detection.contextType || "Enforcement",
     };
+    alertRecord.idempotencyKey = key;
     if (customMessage) {
       alertRecord.bodySnippet = customMessage;
     }
@@ -225,11 +233,16 @@ export async function dispatchAlertForDetection({
       detection,
       reason: customMessage || detection.suspicionReason,
       customSubject: alertRecord.subject,
+      reroutedFrom: intendedEmail,
     });
 
     // Update alert status to "sent"
     alertRecord.status = "sent";
     alertRecord.emailStatus = "sent";
+    alertRecord.recipientEmail = sendResult.recipient || targetEmail;
+    if (alertRecord.recipient) {
+      alertRecord.recipient.email = sendResult.recipient || targetEmail;
+    }
     alertRecord.messageId = sendResult.messageId;
     alertRecord.previewUrl = sendResult.previewUrl;
     alertRecord.sentAt = new Date();

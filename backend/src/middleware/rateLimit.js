@@ -4,10 +4,20 @@ import env from "../config/env.js";
 // Global rate limiter for most API endpoints
 export const globalLimiter = rateLimit({
   windowMs: env.rateLimitWindowMs,
-  max: env.rateLimitMax,
+  max: env.isDev ? Math.max(env.rateLimitMax, 2000) : env.rateLimitMax,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.method === "OPTIONS",
   message: { error: "Too many requests from this IP, please try again later." },
+});
+
+// Dedicated rate limiter for public citizen report submissions
+export const reportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: env.isDev ? 100 : 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many report submissions from this IP, please try again shortly." },
 });
 
 // Stricter rate limiter for authentication to prevent brute force
